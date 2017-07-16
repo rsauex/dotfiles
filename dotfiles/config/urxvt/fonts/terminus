@@ -1,0 +1,11 @@
+
+URxvt.font:             -*-terminus-medium-*-*-*-16-*-*-*-*-*-iso10646-*,\
+                                xft:IPAexGothic:antialias=true
+URxvt.boldFont:	        -*-terminus-bold-*-*-*-16-*-*-*-*-*-iso10646-*,\
+				xft:IPAexGothic:antialias=true
+URxvt.italicFont:	-*-terminus-medium-*-*-*-16-*-*-*-*-*-iso10646-*,\
+				xft:IPAexGothic:antialias=true
+URxvt.boldItalicFont:	-*-terminus-bold-*-*-*-16-*-*-*-*-*-iso10646-*,\
+				xft:IPAexGothic:antialias=true
+
+! vim:ft=xdefaults:

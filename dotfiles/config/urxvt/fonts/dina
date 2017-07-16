@@ -1,0 +1,11 @@
+
+URxvt.font:  xft:Dina:size=10:antialias=false:Regular,\
+             xft:IPAexGothic:size=10:antialias=false
+URxvt.boldFont:  xft:Dina:size=10:antialias=false:Bold,\
+                 xft:IPAexGothic:size=10:antialias=false
+URxvt.italicFont:  xft:Dina:size=10:antialias=false:Regular,\
+                   xft:IPAexGothic:size=10:antialias=false
+URxvt.boldItalicFont:	xft:Dina:size=10:antialias=false:Bold,\
+                      xft:IPAexGothic:size=10:antialias=false
+
+! vim:ft=xdefaults:
