@@ -1,0 +1,6 @@
+trap '' SIGRTMIN+10
+trap '' SIGRTMIN+11
+trap '' SIGRTMIN+12
+
+exec i3blocks $@ &
+python3 ~/.bin/acpi.py
