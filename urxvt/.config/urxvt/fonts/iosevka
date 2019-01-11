@@ -1,0 +1,6 @@
+! -*- mode: conf-xdefaults -*-
+
+URxvt.font:              xft:Iosevka Term:pixelsize=16:antialias=true, xft:WenQuanYi Zen Hei Mono:antialias=true
+URxvt.boldFont:	         xft:Iosevka Term:pixelsize=16:antialias=true, xft:WenQuanYi Zen Hei Mono:antialias=true
+URxvt.italicFont:        xft:Iosevka Term:pixelsize=16:antialias=true, xft:WenQuanYi Zen Hei Mono:antialias=true
+URxvt.boldItalicFont:	 xft:Iosevka Term:pixelsize=16:antialias=true, xft:WenQuanYi Zen Hei Mono:antialias=true
