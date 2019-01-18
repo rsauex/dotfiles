@@ -1,0 +1,41 @@
+[alias]
+  d  = "diff"
+  
+  ## Adding
+  a  = "add"
+  unadd   = "reset HEAD --"
+  ua = "reset HEAD --"
+  
+  ## Commiting
+  c = "commit"
+  cm  = "commit -m"
+  ca = "commit --amend"
+  uncommit = "reset --soft 'HEAD^'"
+  uc = "reset --soft 'HEAD^'"
+  
+  o  = "checkout"
+
+  b  = "branch"
+
+  r  = "remote -v"
+  p  = "push"
+  u  = "pull upstream master"
+
+  last = "log -1 HEAD"
+  l  = "log --graph --decorate --pretty=oneline --abbrev-commit --all"
+  s  = "status"
+  m  = "status -uno -s"
+
+  k  = "!gitk &"
+  
+[merge]
+  # Include summaries of merged commits in newly created merge commit messages
+  log = true
+  # tool = meld
+  tool = kdiff3
+  
+[push]
+  default = simple
+
+[diff]
+  guitool = kdiff3
