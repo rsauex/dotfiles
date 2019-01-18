@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# get default sink name
+SINK_NAME=$(pacmd dump | perl -a -n -e 'print $F[1] if /set-default-sink/')
+VOL_NOW=`pacmd dump | grep -P "^set-sink-volume $SINK_NAME\s+" | perl -p -n -e 's/.+\s(.x.+)$/$1/'`
+MUTE_STATE=`pacmd dump | grep -P "^set-sink-mute $SINK_NAME\s+" | perl -p -n -e 's/.+\s(yes|no)$/$1/'`
+
+function plus () {
+  if [ -z "$1" ]; then
+    pactl set-sink-volume $SINK_NAME +1%
+  else
+    pactl set-sink-volume $SINK_NAME +$1%
+  fi
+}
+
+function minus () {
+  if [ -z "$1" ]; then
+    pactl set-sink-volume $SINK_NAME -1%
+  else
+    pactl set-sink-volume $SINK_NAME -$1%
+  fi
+}
+
+function mute() {
+  pactl set-sink-mute $SINK_NAME toggle
+}
+
+if [ $# -eq 0 ]; then
+  echo "pa_vol (+|-|mute) {[0-9]+%}"
+else
+  case "$1" in
+    +)
+      plus $2
+    ;;
+    -)
+      minus $2
+    ;;
+    mute)
+      mute
+  esac
+fi

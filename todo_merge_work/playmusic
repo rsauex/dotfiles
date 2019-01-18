@@ -1,0 +1,37 @@
+#!/usr/bin/env python2
+
+activate_this_file = "/home/yhryhorenko/.bin/marionette/bin/activate_this.py"
+execfile(activate_this_file, dict(__file__=activate_this_file))
+
+from marionette_driver.marionette import Marionette
+from marionette_driver import By
+import sys
+
+## Forward
+def s_next():
+    client.find_element(By.ID, "player-bar-forward").click()
+
+## Backward
+def s_prev():
+    client.find_element(By.ID, "player-bar-rewind").click()
+
+## Play/Pause
+def s_play_pause():
+    client.find_element(By.ID, "player-bar-play-pause").click()
+
+### Main part
+
+client = Marionette(host='localhost', port=2828)
+client.start_session()
+
+client.switch_to_window(client.window_handles[0], focus=False)
+
+opt = sys.argv[1]
+if opt == "next":
+    s_next()
+elif opt == "prev":
+    s_prev()
+elif opt == "play-pause":
+    s_play_pause()
+
+client.delete_session()

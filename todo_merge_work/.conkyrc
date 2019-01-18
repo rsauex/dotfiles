@@ -1,0 +1,37 @@
+-- vim: ts=4 sw=4 noet ai cindent syntax=lua
+
+conky.config = {
+   alignment = 'top_left',
+   background = false,
+   cpu_avg_samples = 2,
+   default_color = '#c5c3d6',
+   draw_borders = false,
+   draw_graph_borders = false,
+   draw_outline = false,
+   draw_shades = false,
+   use_xft = true,
+   font = 'Terminus:size=12',
+   gap_x = 5,
+   gap_y = 60,
+   minimum_height = 5,
+   minimum_width = 5,
+   net_avg_samples = 2,
+   out_to_console = false,
+   out_to_stderr = false,
+   extra_newline = false,
+   stippled_borders = 0,
+   update_interval = 1.0,
+   uppercase = false,
+   use_spacer = 'none',
+   show_graph_scale = false,
+   show_graph_range = false,
+   own_window = true,
+   own_window_class = 'Conky',
+   own_window_type = 'override',
+   own_window_transparent = true,
+   own_window_argb_visual = true,
+   double_buffer = true,
+   lua_load = '/home/yhryhorenko/.conky/bars.lua'
+}
+
+conky.text = [[${lua pre}${execp timew conky :week}${lua post}]]

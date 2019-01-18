@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rofi -show run -rnow -run-command "bash -i -c '{cmd}'"

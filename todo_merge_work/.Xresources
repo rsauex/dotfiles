@@ -1,0 +1,59 @@
+! Urxvt settings -------------------------------------------------------------
+URxvt*termName:		xterm-256color
+URxvt*urgentOnBell:	true
+URxvt*letterSpace:	-1
+URxvt*loginShell:	true
+URxvt*renderFont:	true
+URxvt*saveLines:	65535
+
+! borderless and no scrollbar !
+URxvt*scrollBar:	false
+URxvt*borderLess:	false
+URxvt*internalBorder:	3
+
+! clickable links, etc. !
+URxvt.perl-ext-common:	default,matcher
+URxvt.urlLauncher:	firefox
+URxvt.underlineURLs:	false
+URxvt.matcher.button:	1
+
+! font & colour & KeySet -----------------------------------------------------
+#include ".config/urxvt/fonts/iosevka"
+! ".config/urxvt/fonts/terminus"
+#include ".config/urxvt/colours/tomorrow-night"
+#include ".config/urxvt/KeySet"
+
+! Emacs settings -------------------------------------------------------------
+emacs.menuBar:			off
+emacs.cursorBlink:		off
+emacs.toolBar:			off
+emacs.verticalScrollBars:	off
+emacs.font:                     Iosevka Term-12
+emacs.dialogBox:		off
+
+
+! Xft settings ---------------------------------------------------------------
+Xft.dpi:        96
+Xft.antialias:  true
+Xft.rgba:       rgb
+Xft.hinting:    true
+Xft.hintstyle:  hintfull
+
+! Rofi -----------------------------------------------------------------------
+
+!! rofi.theme:  base16-tomorrow-night
+rofi.font:   Iosevka Term 12
+
+! Enable the extended coloring options
+rofi.color-enabled: true
+
+! Property Name     BG       Border   Separator
+rofi.color-window:  #282a2e, #282a2e, #1d1f21
+
+! Property Name     BG       FG       BG-alt   Head-BG  Head-FG
+rofi.color-normal:  #282a2e, #c5c8c6, #2d2f33, #005f5f, #ffffff
+rofi.color-active:  #282a2e, #81a2be, #2d2f33, #005f5f, #81a2be
+rofi.color-urgent:  #282a2e, #cc6666, #2d2f33, #005f5f, #cc6666
+
+! Set the desired separator style
+rofi.separator-style: solid

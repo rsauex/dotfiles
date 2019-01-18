@@ -1,0 +1,9 @@
+
+- name: 'Kingston HyperX Alloy FPS Pro Mechanical Gaming Keyboard'
+  layouts:  [us,  ua]
+  variants: [dvp, '']
+  options: ['ctrl:swapcaps', 'grp:shifts_toggle']
+  
+- name: '.*'
+  layouts: [us, ua]
+  options: ['grp:shifts_toggle']
