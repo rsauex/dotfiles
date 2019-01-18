@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Stop current time tracking
+timew stop Working
+# Start tracking away time
+timew start Away
+
+# Start lock screen
+lock
+
+# Get start time of current tracking
+s_time=`timew get dom.active.start`
+# If start time is today, stop tracking otherwice cancel it
+[[ ${s_time%T*} == `date -I` ]] && timew stop Away || timew cancel
+
+# Start working time tracking
+timew start Working
