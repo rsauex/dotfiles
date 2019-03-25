@@ -1,0 +1,174 @@
+#!/bin/bash
+
+### Runs a program if no window can be found using the given critera
+### otherwise toggles the window from and to scratchpad.
+
+### Format: singletone-popup [OPTIONS] CRITERIA '--' PROGRAM...
+
+## OPTIONS
+# -n, --no-focus   Do not focus window upon opening
+
+## CRITERIA :
+#     <criteria-with-value> '=' <string>
+#   | <criteria-without-value>
+#   ;
+#
+# criteria-with-value : 'title' | 'class' | 'instance' ;
+# criteria-without-value : 'floating' | 'tiling' ;
+
+ARGUMENTS=( "$@" )
+
+# Focus by default
+NO_FOCUS=''
+
+PROGRAM=''
+
+I3_CRITERIA=''
+
+JQ_CRITERIA=''
+ONLY_FLOATING=''
+ONLY_TILING=''
+
+error() {
+    >&2 echo "$@"; exit 1
+}
+
+append_i3_criteria() {
+    if [[ -z "${I3_CRITERIA}" ]]; then
+        I3_CRITERIA="$@"
+    else
+        I3_CRITERIA="${I3_CRITERIA} $@"
+    fi
+}
+
+append_jq_criteria() {
+    if [[ -z "${JQ_CRITERIA}" ]]; then
+        JQ_CRITERIA="$@"
+    else
+        JQ_CRITERIA="${JQ_CRITERIA}, $@"
+    fi
+}
+
+parse_long_option() {
+    case "$1" in
+        --no-focus)
+            NO_FOCUS='true'
+            ;;
+        *)
+            error "Unknown option: $1"
+            ;;
+    esac
+}
+
+parse_short_option() {
+    case "$1" in
+        -n)
+            NO_FOCUS='true'
+            ;;
+        *)
+            error "Unknown option: $1"
+            ;;
+    esac
+}
+
+parse_options() {
+    set -- "${ARGUMENTS[@]}"
+    while [[ $# -gt 0 ]]; do
+        local key="$1";
+        if [[ "${key:0:1}" != "-" ]]; then
+            break
+        elif [[ "${key:1:1}" != "-" ]]; then
+            parse_short_option "$key"
+        else
+            parse_long_option "$key"
+        fi
+        shift
+    done
+    ARGUMENTS=( "$@" )
+}
+
+parse_criteria() {
+    set -- "${ARGUMENTS[@]}"
+    while [[ $# -gt 0 ]]; do
+        if [[ "$1" == '--' ]]; then
+            break
+        fi
+        local type="$1"; shift
+        case "$type" in
+            title|class|instance)
+                [[ "$1" != '=' ]] && error 'Malformed criteria: "=" expected.'
+                shift
+                local value="$1"; shift
+                append_i3_criteria "$type=\"$value\""
+                append_jq_criteria ".$type == \"$value\""
+                ;;
+            floating)
+                append_i3_criteria "$type"
+                ONLY_FLOATING=true
+                ;;
+            tiling)
+                append_i3_criteria "$type"
+                ONLY_TILING=true
+                ;;
+            *)
+                error 'Malformed criteria.'
+                ;;
+        esac
+    done
+    ARGUMENTS=( "$@" )
+}               
+
+parse_program() {
+    set -- "${ARGUMENTS[@]}"
+    [[ "$1" != '--' ]] && error "Malformed arguments."
+    shift
+    PROGRAM=( "$@" )
+}
+
+parse_arguments() {
+    parse_options
+    parse_criteria
+    parse_program
+}    
+
+join_by() {
+    local d=$1; shift
+    echo -n "$1"; shift
+    printf "%s" "${@/#/$d}"
+}
+
+get_windows() {
+    local conditions=`join_by ', ' "$@"`
+    if [[ "$conditions" == "" ]]; then
+        conditions='[true]'
+    fi
+    i3-msg -t get_tree | jq "[recurse(.nodes[], .floating_nodes[]) | select(.window_properties | ${conditions} | all)]"
+}
+
+parse_arguments
+
+windows=`get_windows "[$JQ_CRITERIA]"`
+window_exists=`echo "${windows}" | jq 'any'`
+window_in_scratch=`echo "${windows}" | jq 'any(.output == "__i3")'`
+
+focused=`i3-msg -t get_tree | jq 'recurse(.nodes[], .floating_nodes[]) | select(.focused == true) | .id'`
+
+focus() {
+    if ! [[ -z "$NO_FOCUS" ]]; then
+        i3-msg "[con_id=\"$focused\"] focus"
+    else
+        i3-msg "[$I3_CRITERIA] focus"
+    fi
+}
+
+if [[ "$window_exists" == 'false' ]]; then
+    i3-msg "[$I3_CRITERIA] floating enable, sticky enable"
+    "${PROGRAM[@]}" &
+    focus
+elif [[ "$window_in_scratch" == 'false' ]]; then
+    i3-msg "[$I3_CRITERIA] move scratchpad"
+else
+    current_ws=`i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true).name'`
+    i3-msg "[$I3_CRITERIA] move to workspace ${current_ws}"
+    focus
+fi
