@@ -1,0 +1,41 @@
+#!/bin/bash
+
+shopt -s extglob
+
+comprsuffix='.@([glx]z|bz2|lzma|Z)'
+
+manpath=$( manpath 2>/dev/null || command man -w 2>/dev/null )
+[[ -z $manpath ]] && manpath="/usr/share/man:/usr/local/share/man"
+
+manpath="${manpath}:"
+manpath="${manpath//://*man*/ } ${manpath//://*cat*/ }"
+
+mans=( $(eval command find "$manpath" -type f 2>/dev/null) )
+
+# names=( )
+
+# for man in "${mans[@]}"; do
+#     names+=( "$(echo $man | sed 's/^.*\/:\?\(.*\)\.\([^.]\+\)\.\([glx]z\|bz2\|lzma\|Z\)\?$/\1 (\2)/')" )
+# done
+
+names=( ${mans[@]##*/?(:)} )
+names=( ${names[@]%$comprsuffix} )
+
+#printf '%s\n' "${names[@]}"
+
+man_to_show=`printf '%s\n' "${names[@]}" | rofi -dmenu -p 'Man page'`
+
+if [[ -z "$man_to_show" ]]; then
+    exit 1
+fi
+
+for ((i=0; i < ${#names[@]}; ++i)); do
+    if [[ "${names[$i]}" == "${man_to_show}" ]]; then
+        path_to_page="${mans[$i]}"
+        break
+    fi
+done
+
+emacsclient -c -F '((title . "Man popup") (height . 24) (width . 80))' -e "(woman-find-file \"$path_to_page\")"
+
+
