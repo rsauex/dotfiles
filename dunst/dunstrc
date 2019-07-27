@@ -11,7 +11,7 @@
     # <http://developer.gnome.org/pango/stable/PangoMarkupFormat.html>.
     # If markup is not allowed, those tags will be stripped out of the
     # message.
-    markup = yes
+    allow_markup = yes
     
     # The format of the message.  Possible variables are:
     #   %a  appname
@@ -135,17 +135,19 @@
     startup_notification = false
     
     # dmenu path.
-    dmenu = /usr/bin/dmenu -fn "Terminus-12" -p dunst:
+    # dmenu = /usr/bin/dmenu -fn "Terminus-12" -p dunst:
+    dmenu = rofi -dmenu
     
     # Browser for opening urls in context menu.
-    browser = /usr/bin/palemoon -new-tab
+    browser = /usr/bin/firefox -new-tab
 
     # Align icons left/right/off
-    icon_position = off
+    icon_position = left
 
     # Paths to default icons.
     icon_path = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
 
+[frame]
     frame_width = 0
     frame_color = "#111113"
 
@@ -160,7 +162,7 @@
     close = ctrl+space
     
     # Close all notifications.
-    # close_all = ctrl+mod1+space
+    close_all = ctrl+shift+space
     
     # Redisplay last message(s).
     # On the US keyboard layout "grave" is normally above TAB and left
@@ -168,7 +170,7 @@
     history = ctrl+dollar
     
     # Context menu.
-    context = mod1+grave
+    context = mod4+dollar
 
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.

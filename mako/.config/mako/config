@@ -1,0 +1,10 @@
+anchor=bottom-right
+
+font=Ubuntu 10
+
+background-color=#231F20
+text-color=#CECFD1
+border-color=#005F5F
+
+format=<b>[%s]</b>\n%b
+

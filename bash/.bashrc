@@ -25,63 +25,23 @@ shopt -s globstar
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-    C_IS_ON=true
-    C_BOLD="\[\e[1m\]"
-    C_DEF="\[\e[0m\]"
-    C_BLACK="\[$(/usr/bin/tput setaf 0)\]"
-    C_RED="\[$(/usr/bin/tput setaf 1)\]"
-    C_GREEN="\[$(/usr/bin/tput setaf 2)\]"
-    C_YELLOW="\[$(/usr/bin/tput setaf 3)\]"
-    C_BLUE="\[$(/usr/bin/tput setaf 4)\]"
-    C_MAGENTA="\[$(/usr/bin/tput setaf 5)\]"
-    C_CYAN="\[$(/usr/bin/tput setaf 6)\]"
-    C_WHITE="\[$(/usr/bin/tput setaf 7)\]"
-    C_GRAY="\[$(/usr/bin/tput setaf 8)\]"
-    C_OFF="\[$(/usr/bin/tput sgr0)\]"
-    C_ERROR="$(/usr/bin/tput setab 1)$(/usr/bin/tput setaf 7)"
-    C_ERROR_OFF="$(/usr/bin/tput sgr0)"
-fi
+# colors
+. ~/.config/bash/colors
 
-function prompt_command {
-        local PWDNAME=$PWD
-    local TIME=$(date +%R)
-    local TTY=${SSH_TTY:-o}
-    
-        # beautify working firectory name
-        if [[ "$HOME" == "$PWD" ]]; then
-                PWDNAME="~"
-        elif [[ "$HOME" ==  "${PWD:0:${#HOME}}" ]]; then
-                PWDNAME="~${PWD:${#HOME}}"
-        fi
-
-    # calculate prompt length
-        local PS1_length=$((${#TIME}+${#USER}+${#HOSTNAME}+${#TTY}+${#SHLVL}+${#PWDNAME}+13))
-        local FILL=
-
-        # if length is greater, than terminal width
-        if [[ $PS1_length -gt $COLUMNS ]]; then
-                # strip working directory name
-                PWDNAME="...${PWDNAME:$(($PS1_length-$COLUMNS+3))}"
-        else
-                # else calculate fillsize
-                local fillsize=$(($COLUMNS-$PS1_length))
-                FILL="$C_GRAY"
-                while [[ $fillsize -gt 0 ]]; do FILL="${FILL}─"; fillsize=$(($fillsize-1)); done
-                FILL="${FILL}${C_OFF}"
-        fi
-    
-    local TIME="${C_CYAN}${TIME}"
-    local USER_HOST="${C_BOLD}${C_BLACK}[${C_BLUE}${USER}@${HOSTNAME}${C_BLACK}:${C_DEF}${C_WHITE}${TTY} ${C_GREEN}+${SHLVL}${C_BLACK}${C_BOLD}]"
-    local PWDNAME="${C_WHITE}${PWDNAME}"
-        # set new color prompt
-        PS1="\n>>> ${TIME} ${USER_HOST} ${PWDNAME} ${FILL}\n$ "
-}
-PROMPT_COMMAND=prompt_command
+# prompt
+. ~/.config/bash/prompt
+PROMPT_COMMAND=fancy_prompt_command
 
 # enable local dircolors
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
 fi
 
 # colored GCC warnings and errors
@@ -101,10 +61,4 @@ if ! shopt -oq posix; then
     fi
 fi
 
-# set PATH so it includes user's private bin directories
-export PATH="$HOME/.cask/bin:$HOME/.bin:$HOME/.local/bin:$PATH"
-
-# set default editor
-export EDITOR="$HOME/.bin/edit"
-
-export NO_AT_BRIDGE=1
+eval "$(direnv hook bash)"

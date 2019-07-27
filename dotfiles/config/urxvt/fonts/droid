@@ -1,7 +1,0 @@
-
-URxvt.font:xft:droid sans mono:style=regular:pixelsize=13:antialias=natural
-URxvt.boldFont:xft:droid sans mono:style=regular:pixelsize=13:antialias=natural
-URxvt.italicFont:xft:droid sans mono:style=regular:pixelsize=13:antialias=natural
-URxvt.boldItalicFont:xft:droid sans mono:style=regular:pixelsize=13:antialias=natural
-
-! vim:ft=xdefaults

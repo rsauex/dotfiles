@@ -1,7 +1,0 @@
-
-URxvt.font:xft:ubuntu mono:style=regular:pixelsize=15:antialias=false
-URxvt.boldFont:xft:ubuntu mono:style=regular:pixelsize=15:antialias=false
-URxvt.italicFont:xft:ubuntu mono:style=regular:pixelsize=15:antialias=false
-URxvt.boldItalicFont:xft:ubuntu mono:style=regular:pixelsize=15:antialias=false
-
-! vim:ft=xdefaults

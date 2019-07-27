@@ -1,0 +1,42 @@
+# -*- mode: sh; sh-shell: bash -*-
+
+declare -A PATH_ALIASES
+PATH_ALIASES=( ["$HOME"]="~" )
+
+function fancy_prompt_command {
+    # current dir
+    local PWDNAME=$PWD
+    # current time
+    local TIME=$(date +%R)
+    # current tty
+    local TTY=${SSH_TTY:-o}
+    
+    # apply path aliases
+    for i in "${!PATH_ALIASES[@]}"; do
+        if [ "$i" ==  "${PWD:0:${#i}}" ]; then
+            PWDNAME="${PATH_ALIASES[$i]}${PWD:${#i}}"
+        fi
+    done
+
+    # calculate prompt length
+    local PS1_length=$((${#TIME}+${#USER}+${#HOSTNAME}+${#TTY}+${#SHLVL}+${#PWDNAME}+13))
+    local FILL=
+
+    # if length is greater, than terminal width
+    if [[ $PS1_length -gt $COLUMNS ]]; then
+        # strip working directory name
+        PWDNAME="...${PWDNAME:$(($PS1_length-$COLUMNS+3))}"
+    else
+        # else calculate fillsize
+        local fillsize=$(($COLUMNS-$PS1_length))
+        FILL="$C_GRAY"
+        while [[ $fillsize -gt 0 ]]; do FILL="${FILL}─"; fillsize=$(($fillsize-1)); done
+        FILL="${FILL}${C_OFF}"
+    fi
+    
+    local TIME="${C_CYAN}${TIME}"
+    local USER_HOST="${C_DEF}${C_BOLD}[${C_DEF}${C_BLUE}${USER}@${HOSTNAME}${C_BLACK}:${C_DEF}${C_WHITE}${TTY} ${C_GREEN}+${SHLVL}${C_DEF}${C_BOLD}]${C_DEF}"
+    local PWDNAME="${C_WHITE}${PWDNAME}"
+    # set new color prompt
+    PS1="\n>>> ${TIME} ${USER_HOST} ${PWDNAME} ${FILL}\n$ "
+}

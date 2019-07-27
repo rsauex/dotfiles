@@ -1,0 +1,95 @@
+! Urxvt settings -------------------------------------------------------------
+URxvt*termName:     rxvt-256color
+URxvt*urgentOnBell: true
+URxvt*letterSpace:  -1
+URxvt*loginShell:   true
+URxvt*renderFont:   true
+URxvt*saveLines:    65535
+
+! borderless and no scrollbar !
+URxvt*scrollBar:      false
+URxvt*borderLess:     false
+URxvt*internalBorder: 2
+
+! font & colour & KeySet !
+! #include ".config/urxvt/colors/tomorrow-night"
+#include ".config/urxvt/colors/nord"
+#include ".config/urxvt/fonts/iosevka"
+#include ".config/urxvt/KeySet"
+
+! clickable links, etc. !
+URxvt*urlLauncher:   firefox
+URxvt*underlineURLs: false
+
+! Extentions !
+URxvt.perl-ext: default,matcher
+!,keyboard-select
+
+URxvt.matcher.button:	1
+
+! Use Meta-Escape to activate selection mode, then use the following keys:
+!   h/j/k/l:    Move cursor left/down/up/right (also with arrow keys)
+!   g/G/0/^/$/H/M/L/f/F/;/,/w/W/b/B/e/E: More vi-like cursor movement keys
+!   '/'/?:      Start forward/backward search
+!   n/N:        Repeat last search, N: in reverse direction
+!   Ctrl-f/b:   Scroll down/up one screen
+!   Ctrl-d/u:   Scroll down/up half a screen
+!   v/V/Ctrl-v: Toggle normal/linewise/blockwise selection
+!   y/Return:   Copy selection to primary buffer, Return: quit afterwards
+!   Y:          Copy selected lines to primary buffer or cursor line and quit
+!   q/Escape:   Quit keyboard selection mode
+!URxvt.keyboard-select.clipboard: true
+!URxvt.keysym.M-Escape: perl:keyboard-select:activate
+!URxvt.keysym.M-s: perl:keyboard-select:search
+
+! Xft ------------------------------------------------------------------------
+Xft.hintstyle: hintslight
+Xft.lcdfilter: lcddefault
+Xft.rgba:      rgb
+
+! Emacs ----------------------------------------------------------------------
+Emacs.cursorBlink: off
+Emacs.default.attributeHeight: 120
+Emacs.dialogBox: off
+Emacs.menuBar: off
+Emacs.toolBar: off
+Emacs.verticalScrollBars: off
+Emacs*fontBackend: xft
+Emacs*font: Iosevka Term-16
+
+! Tk theme -------------------------------------------------------------------
+! *TkTheme: clearlooks
+
+! x3270 ----------------------------------------------------------------------
+x3270.container.menuBarContainer*background:  #1D1F21
+x3270.container.menuBarContainer*borderColor: #005F5F
+x3270.container.menuBarContainer*font:         -*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*
+x3270.TransientShell*font:                     -*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*
+x3270.keypadPopup.container.keyPad.large.font: -*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*
+x3270.keypadPopup.container.keyPad.small.font: -*-terminus-medium-*-*-*-12-*-*-*-*-*-*-*
+x3270.hostsFile: ~/.config/x3270/ibm_hosts
+x3270.emulatorFont: -xos4-terminus-medium-r-normal--14-140-72-72-c-80-iso8859-1
+
+! EditRes --------------------------------------------------------------------
+Editres*font: -*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*
+
+! XFontSel -------------------------------------------------------------------
+Xfontsel*font: -*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*
+
+! Rofi -----------------------------------------------------------------------
+!! rofi.theme:  base16-tomorrow-night
+Rofi.font:   Iosevka Term 12
+
+! Enable the extended coloring options
+Rofi.color-enabled: true
+
+! Property Name     BG       Border   Separator
+Rofi.color-window:  #282a2e, #282a2e, #1d1f21
+
+! Property Name     BG       FG       BG-alt   Head-BG  Head-FG
+Rofi.color-normal:  #282a2e, #c5c8c6, #2d2f33, #005f5f, #ffffff
+Rofi.color-active:  #282a2e, #81a2be, #2d2f33, #005f5f, #81a2be
+Rofi.color-urgent:  #282a2e, #cc6666, #2d2f33, #005f5f, #cc6666
+
+! Set the desired separator style
+Rofi.separator-style: solid

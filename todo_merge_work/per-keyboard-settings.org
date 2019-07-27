@@ -1,7 +1,0 @@
-* Per keyboard settings:
- - specify keyboard by ~xinput name~? ~device id~?
- - specify settings in ~script~?? ~config file~?
- - config file format ~yaml~??
- - reload config + re-apply settings on SIGUSR1
- - apply settings on startup
-

@@ -7,3 +7,4 @@ all:
 	stow -t ~/.config/dunst/ dunst
 	stow fontconfig
 	stow urxvt
+	stow -t ~/.config/rofi/ rofi

@@ -1,7 +1,0 @@
-#!/bin/sh
-
-if [ ! -z "$DISPLAY" ]; then
-    emacsclient -c "$@" &
-else
-    emacsclient -c "$@"
-fi
