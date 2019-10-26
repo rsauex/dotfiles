@@ -39,20 +39,32 @@ unpack () {
     else
         if [ -f $1 ]; then
             case $1 in
-                *.tar.bz2)   tar xjf $1 ;;
-                *.tar.gz)    tar xzf $1 ;;
+                ## tar
+                *.tar)       tar xvf $1  ;;
+                ## bz2
+                *.tar.bz2)   tar xvjf $1 ;;
+                *.tar.bz)    tar xvjf $1 ;;
+                *.tbz2)      tar xvjf $1 ;;
+                *.tbz)       tar xvjf $1 ;;
+                *.bz2)       bunzip2 $1  ;;
+                *.bz)        bunzip2 $1  ;;
+                ## gz
+                *.tar.gz)    tar xvzf $1 ;;
+                *.tgz)       tar xvzf $1 ;;
+                *.gz)        gunzip $1   ;;
+                ## xz
                 *.tar.xz)    tar xvJf $1 ;;
-                *.bz2)       bunzip2 $1 ;;
-                *.rar)       unrar x $1 ;;
-                *.gz)        gunzip $1 ;;
-                *.tar)       tar xf $1 ;;
-                *.tbz2)      tar xjf $1 ;;
-                *.tbz)       tar -xjvf $1 ;;
-                *.tgz)       tar xzf $1 ;;
-                *.zip)       unzip $1 ;;
+                *.txz)       tar xvJf $1 ;;
+                *.xz)        unxz $1     ;;
+                ## rar
+                *.rar)       unrar x $1  ;;
+                ## zip
+                *.zip)       unzip $1    ;;
+                ## Z
                 *.Z)         uncompress $1 ;;
-                *.7z)        7z x $1 ;;
-                *.xz)        unxz $1 ;;
+                ## 7z
+                *.7z)        7z x $1     ;;
+                ## not recongized
                 *)           echo "I don't know how to extract '$1'..." ;;
             esac
         else
