@@ -3,4 +3,5 @@
 ## SUSPEND DISPLAYS
 xset dpms force suspend
 
-i3lock -c '#1D1F21' -n
+# -c '#1D1F21'
+i3lock -i "${HOME}/.wallpapers/.current.png" -n
