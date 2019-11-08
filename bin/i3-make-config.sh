@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Remove old version
 rm -f $XDG_CONFIG_HOME/i3/config
