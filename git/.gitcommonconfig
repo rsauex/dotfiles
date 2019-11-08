@@ -1,38 +1,77 @@
+# -*- mode: conf -*-
+
+## Main idea:
+# - every important command has a one-character alias (OCA)
+# - undo'ing a command is 'un-<command>' and 'u<OCA>'
+
 [alias]
-  d  = "diff"
   
-  ## Adding
-  a  = "add"
-  unadd   = "reset HEAD --"
-  ua = "reset HEAD --"
+  ## -- Add --------------------------------------------------------------------
   
-  ## Commiting
-  c = "commit"
-  cm  = "commit -m"
-  ca = "commit --amend"
-  uncommit = "reset --soft 'HEAD^'"
-  uc = "reset --soft 'HEAD^'"
+  a  = "add"                    # Add
+  ap = "add --patch"            # Add by path
+  au = "add --update"           # Add just the files that are updated
+  ai = "add --interactive"      # Add interactively (do I need this?)
+  
+  un-add = "reset HEAD --"      # Undo add
+  ua     = "reset HEAD --"      # Undo add
+  
+  ## -- Commit -----------------------------------------------------------------
+  
+  c  = "commit"                 # Commit
+  cm = "commit -m"              # Commit with message
+  ca = "commit --amend"         # Commit amend
+  #  ca! = "commit --amend --no-edit"  # ! is not allowed
+  
+  un-commit = "reset --soft 'HEAD^'" # Undo last commit
+  uc        = "reset --soft 'HEAD^'" # Undo last commit
+
+  ## -- Checkout ---------------------------------------------------------------
   
   o  = "checkout"
+  ob = "checkout -b"
 
+  ## -- Branch -----------------------------------------------------------------
+  
   b  = "branch"
+  bm = "branch -m"
+
+  ## -- Pull -------------------------------------------------------------------
+  
+  p  = "pull"
+  pf = "pull --ff-only"
+  pm = "pull origin master"
+  pr = "pull --rebase"
 
   r  = "remote -v"
-  p  = "push"
-  u  = "pull upstream master"
+  h  = "push"
+  w  = "worktree"
+  m  = "merge"
+  d  = "diff"
 
+  ## -- Log --------------------------------------------------------------------
+  
   last = "log -1 HEAD"
   l  = "log --graph --decorate --pretty=oneline --abbrev-commit --all"
-  s  = "status"
-  m  = "status -uno -s"
 
-  k  = "!gitk &"
+  ## -- Status -----------------------------------------------------------------
   
+  s  = "status"
+  sm = "status -unormal -s"
+
+  ## -- Misc -------------------------------------------------------------------
+  
+  k  = "!gitk &"
+  exec = "!exec "
+  run-ci = "!exec ./run-ci-for-current-branch"
+
 [merge]
   # Include summaries of merged commits in newly created merge commit messages
   log = true
-  # tool = meld
+  # Use kdiff3 for merging
   tool = kdiff3
+  # no fast forward
+  ff = false
   
 [push]
   default = simple

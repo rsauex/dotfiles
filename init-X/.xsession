@@ -21,5 +21,5 @@ blueman-applet &
 compton -b &
 emacs --daemon &
 #gajim &
-dropbox start &
+#dropbox start &
 wait $wmpid
