@@ -2,4 +2,4 @@
 
 POPUP_NAME='Stats popup'
 
-singleton-popup -n title = "$POPUP_NAME"  --  urxvt -title "$POPUP_NAME" -geometry '112x9-15-67' -e 'htop'
+i3-launch-or-popup.sh --title "$POPUP_NAME"  urxvt -title "$POPUP_NAME" -geometry '112x9-15-67' -e 'htop'
