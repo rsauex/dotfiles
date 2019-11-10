@@ -10,6 +10,15 @@ if [[ $# -lt 5 ]]; then
     exit 1
 fi
 
+prepare_exec_str() {
+    for value in "$@"; do
+        case "$value" in  
+            *\ * )  echo -n "\"$value\" " ;;
+            *)      echo -n "$value "     ;;
+        esac
+    done
+}
+
 # Attempt to match the running program and obtain its window id.
 
 case "$1" in
