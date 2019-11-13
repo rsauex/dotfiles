@@ -33,21 +33,21 @@ W=$(xdotool search "$option" "$2" | head -1)
 if [[ -z "$W" ]]; then
     # Change to the specified workspace.
     if [[ "$3" != 'none' ]]; then
-        i3-msg "workspace $3"
+        i3-msg "workspace $3" > /dev/null
     fi
     exec_str=( "${@:5}" )
     # Launch the program.
-    i3-msg "exec `prepare_exec_str \"${exec_str[@]}\"`"
+    i3-msg "exec `prepare_exec_str \"${exec_str[@]}\"`" > /dev/null
     # Change to the specified output when the window appears.
     if [[ "$4" != 'none' ]]; then
         sleep 0.3
-        i3-msg "move workspace to output $4"
+        i3-msg "move workspace to output $4" > /dev/null
     fi
 else
     # Focus the workspace.
     if [[ "$3" != 'none' ]]; then
-        i3-msg "workspace $3"
+        i3-msg "workspace $3" > /dev/null
     fi
     # Focus the program.
-    i3-msg "[${1:2}=\"$2\" workspace=\"__focused__\"] focus"
+    i3-msg "[${1:2}=\"$2\" workspace=\"__focused__\"] focus" > /dev/null
 fi

@@ -22,7 +22,7 @@ prepare_exec_str() {
 window_in_scratch() {
     i3-msg -t get_tree | jq "[recurse(.nodes[], .floating_nodes[]) \
                                 | select(.window_properties | [.$1 == \"$2\"] | all)] \
-                             | any(.output == \"__i3\")"
+                             | any(.output == \"__i3\")"  > /dev/null
 }
 
 ## TODO: timeout if something goes wrong with the program?
@@ -49,15 +49,15 @@ CRITERIA="${1:2}=\"$2\""
 if [[ -z "$W" ]]; then
     # Launch the program.
     exec_str=( "${@:3}" )
-    i3-msg "exec `prepare_exec_str \"${exec_str[@]}\"`"
+    i3-msg "exec `prepare_exec_str \"${exec_str[@]}\"`" > /dev/null
     # Wait for it to open a window.
     wait_for_window "$option" "$2"
     # Set floating and sticky.
-    i3-msg "[$CRITERIA] floating enable, sticky enable"
+    i3-msg "[$CRITERIA] floating enable, sticky enable" > /dev/null
 elif [[ `window_in_scratch "${1:2}" "$2"` == 'true' ]]; then
     # Focus the program.
-    i3-msg "[$CRITERIA] move workspace current, move position center"
+    i3-msg "[$CRITERIA] move workspace current, move position center" > /dev/null
 else
     # Hide the progarm.
-    i3-msg "[$CRITERIA] move scratchpad"
+    i3-msg "[$CRITERIA] move scratchpad" > /dev/null
 fi
