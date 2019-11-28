@@ -22,7 +22,7 @@ prepare_exec_str() {
 window_in_scratch() {
     i3-msg -t get_tree | jq "[recurse(.nodes[], .floating_nodes[]) \
                                 | select(.window_properties | [.$1 == \"$2\"] | all)] \
-                             | any(.output == \"__i3\")"  > /dev/null
+                             | any(.output == \"__i3\")"
 }
 
 ## TODO: timeout if something goes wrong with the program?
