@@ -1,0 +1,27 @@
+x3270.keymap: Emacs
+x3270.keymap.Emacs: #override     \
+  Ctrl<Key>p:   Up()           \n \
+  Ctrl<Key>n:   Down()         \n \
+  Ctrl<Key>b:   Left()         \n \
+  Ctrl<Key>f:   Right()        \n \
+  Meta<Key>b:   PreviousWord() \n \
+  Meta<Key>f:   NextWord()     \n \
+  Meta<Key>v:   PF(7)          \n \
+  Ctrl<Key>v:   PF(8)          \n \
+  Ctrl<Key>d:   Delete()       \n \
+  Ctrl<Key>k:   EraseEOF()     \n \
+  Ctrl<Key>(:   PF(1)          \n \
+  Ctrl<Key>):   PF(2)          \n \
+  Ctrl<Key>}:   PF(3)          \n \
+  Ctrl<Key>+:   PF(4)          \n \
+  Ctrl<Key>{:   PF(5)          \n \
+  Ctrl<Key>]:   PF(6)          \n \
+  Ctrl<Key>[:   PF(7)          \n \
+  Ctrl<Key>!:   PF(8)          \n \
+  Ctrl<Key>=:   PF(9)          \n \
+  Ctrl<Key>*:   PF(10)         \n \
+  Ctrl<Key>$:   PF(11)         \n \
+  Ctrl<Key>#:   PF(12)         \n \
+  Ctrl<Key>a:   BackTab()      \n \
+  Ctrl<Key>e:   FieldEnd()
+  
