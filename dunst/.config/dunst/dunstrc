@@ -1,5 +1,5 @@
 [global]
-    font = Ubuntu 10
+    font = Ui-sans-serif 10
     
     # Allow a small subset of html markup:
     #   <b>bold</b>
@@ -159,18 +159,16 @@
     # Xev might be helpful to find names for keys.
     
     # Close notification.
-    close = ctrl+space
+    close = mod4+ctrl+c
     
     # Close all notifications.
-    close_all = ctrl+shift+space
+    #close_all = mod4+ctrl+shift+space
     
     # Redisplay last message(s).
-    # On the US keyboard layout "grave" is normally above TAB and left
-    # of "1".
-    history = ctrl+dollar
+    history = mod4+ctrl+h
     
     # Context menu.
-    context = mod4+dollar
+    context = mod4+ctrl+g
 
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
