@@ -9,7 +9,7 @@ xset dpms 0 600 900
 xset r rate 400 44
 
 # keyboard settings
-setxkbmap -layout us,ua -variant dvp, -option ctrl:nocaps,grp:lctrl_toggle,gep_led:scroll
+setxkbmap -layout us,ua -variant dvp, -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll
 
 exec i3 &
 wmpid=$!
