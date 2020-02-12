@@ -1,13 +1,9 @@
-alias ls='ls --color=auto -CF'
-alias dir='dir --color=auto'
-alias vdir='vdir --color=auto'
-
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-
-alias ll='ls -l'
-alias la='ls -A'
+# -*- mode: shell-script; -*-
+alias ls='/bin/ls --color=always'
+alias lsnoext='/bin/ls | sed -e '"'"'s/\.[a-zA-Z]*$//'"'"
+alias ll='/bin/ls --color=always -lh'
+alias lt='/bin/ls --color=always -rtlh'
+alias la='/bin/ls --color=always -lah'
 
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -15,10 +11,10 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias ......='cd ../../../../..'
 
+alias e='sensible-editor'
+
 alias pbcopy='xclip -selection clipboard'
 alias pbpaste='xclip -selection clipboard -o'
-
-alias vlc-buf='vlc `pbpaste`'
 
 # copy output of last command to clipboard
 alias cl="fc -e - | pbcopy"
@@ -26,6 +22,12 @@ alias cl="fc -e - | pbcopy"
 # copy the working directory path
 alias cpwd='pwd|tr -d "\n" | pbcopy'
 
+fail_icon="/usr/share/icons/HighContrast/48x48/stock/gtk-no.png"
+finish_icon="/usr/share/icons/HighContrast/48x48/stock/gtk-ok.png"
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send -i "$([ $? = 0 ] && echo $finish_icon || echo $fail_icon)" "Finished" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 #####################
 ## Useful functions
@@ -39,32 +41,20 @@ unpack () {
     else
         if [ -f $1 ]; then
             case $1 in
-                ## tar
-                *.tar)       tar xvf $1  ;;
-                ## bz2
-                *.tar.bz2)   tar xvjf $1 ;;
-                *.tar.bz)    tar xvjf $1 ;;
-                *.tbz2)      tar xvjf $1 ;;
-                *.tbz)       tar xvjf $1 ;;
-                *.bz2)       bunzip2 $1  ;;
-                *.bz)        bunzip2 $1  ;;
-                ## gz
-                *.tar.gz)    tar xvzf $1 ;;
-                *.tgz)       tar xvzf $1 ;;
-                *.gz)        gunzip $1   ;;
-                ## xz
+                *.tar.bz2)   tar xjf $1 ;;
+                *.tar.gz)    tar xzf $1 ;;
                 *.tar.xz)    tar xvJf $1 ;;
-                *.txz)       tar xvJf $1 ;;
-                *.xz)        unxz $1     ;;
-                ## rar
-                *.rar)       unrar x $1  ;;
-                ## zip
-                *.zip)       unzip $1    ;;
-                ## Z
+                *.bz2)       bunzip2 $1 ;;
+                *.rar)       unrar x $1 ;;
+                *.gz)        gunzip $1 ;;
+                *.tar)       tar xf $1 ;;
+                *.tbz2)      tar xjf $1 ;;
+                *.tbz)       tar -xjvf $1 ;;
+                *.tgz)       tar xzf $1 ;;
+                *.zip)       unzip $1 ;;
                 *.Z)         uncompress $1 ;;
-                ## 7z
-                *.7z)        7z x $1     ;;
-                ## not recongized
+                *.7z)        7z x $1 ;;
+                *.xz)        unxz $1 ;;
                 *)           echo "I don't know how to extract '$1'..." ;;
             esac
         else

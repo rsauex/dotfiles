@@ -30,6 +30,7 @@ shopt -s globstar
 
 # prompt
 . ~/.config/bash/prompt
+
 PROMPT_COMMAND=fancy_prompt_command
 
 # enable local dircolors

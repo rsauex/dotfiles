@@ -1,7 +1,22 @@
 # -*- mode: sh; sh-shell: bash -*-
 
 declare -A PATH_ALIASES
-PATH_ALIASES=( ["$HOME"]="~" )
+PATH_ALIASES["$HOME"]="~"
+
+function apply_path_aliases {
+    local original_path=$1
+    local current_path=$1
+    local short_path=
+    while ! [[ "$current_path" == "/" ]]; do
+        short_path="${PATH_ALIASES[$current_path]}"
+        if ! [[ -z "$short_path" ]]; then
+            echo "${short_path}${original_path:${#current_path}}"
+            return
+        fi
+        current_path="$(dirname "$current_path")"
+    done
+    echo "$original_path"
+}
 
 function fancy_prompt_command {
     # current dir
@@ -12,11 +27,7 @@ function fancy_prompt_command {
     local TTY=${SSH_TTY:-o}
     
     # apply path aliases
-    for i in "${!PATH_ALIASES[@]}"; do
-        if [ "$i" ==  "${PWD:0:${#i}}" ]; then
-            PWDNAME="${PATH_ALIASES[$i]}${PWD:${#i}}"
-        fi
-    done
+    PWDNAME="$(apply_path_aliases "$PWDNAME")"
 
     # calculate prompt length
     local PS1_length=$((${#TIME}+${#USER}+${#HOSTNAME}+${#TTY}+${#SHLVL}+${#PWDNAME}+13))
