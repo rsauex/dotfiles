@@ -119,6 +119,12 @@ un-bash:
 	stow -D bash
 .PHONY: bash un-bash
 
+powershell:
+	stow    powershell
+un-powershell:
+	stow -D powershell
+.PHONY: powershell un-powershell
+
 bin:
 	stow    -t ~/.bin/ bin
 un-bin:
