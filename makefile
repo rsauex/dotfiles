@@ -2,6 +2,7 @@ help:
 	@echo "Targets:"
 	@echo " - Common:"
 	@echo "    bash             - Bash stuff"
+	@echo "    powershell       - Powershell stuff"
 	@echo "    bin              - some utilites"
 	@echo "    fontconfig       - Fonts settings"
 	@echo "    git              - Git settings"
