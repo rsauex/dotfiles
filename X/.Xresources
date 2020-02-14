@@ -2,7 +2,7 @@
 URxvt*termName:     rxvt-256color
 URxvt*urgentOnBell: true
 URxvt*letterSpace:  -1
-URxvt*loginShell:   true
+URxvt*loginShell:   false
 URxvt*renderFont:   true
 URxvt*saveLines:    65535
 
