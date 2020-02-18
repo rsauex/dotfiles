@@ -143,3 +143,9 @@ git:
 un-git:
 	stow -D git
 .PHONY: git un-git 
+
+syncthing:
+	stow    syncthing
+un-syncthing:
+	stow -D syncthing
+.PHONY: syncthing un-syncthing
