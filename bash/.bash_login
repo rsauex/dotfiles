@@ -37,6 +37,6 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-if [ ! -z "$(which start-wm)" ] && [ 1 -eq "$(fgconsole 2>/dev/null)" ]; then
+if [ ! -z "$(which start-wm)" ] && [ "1" = "$(fgconsole 2>/dev/null)" ]; then
     start-wm &> /dev/null
 fi
