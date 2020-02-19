@@ -9,4 +9,4 @@ if [[ -f "$workenv_dir/.envrc" ]]; then
     cd -
 fi
 
-eval "$@"
+exec "$@"
