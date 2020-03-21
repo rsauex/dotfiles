@@ -151,3 +151,11 @@ syncthing:
 un-syncthing:
 	stow -D syncthing
 .PHONY: syncthing un-syncthing
+
+nm-applet:
+	stow    nm-applet
+	systemctl --user enable nm-applet.service
+un-nm-applet:
+	systemctl --user disable nm-applet.service
+	stow -D nm-applet
+.PHONY: nm-applet un-nm-applet

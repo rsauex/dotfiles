@@ -19,7 +19,6 @@ systemctl --user start x-session.target
 
 #~/.fehbg &
 #conky &
-nm-applet &
 #blueman-applet &
 #emacs --daemon &
 #dropbox start &

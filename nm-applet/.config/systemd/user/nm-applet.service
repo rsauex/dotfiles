@@ -1,0 +1,10 @@
+[Unit]
+Description=Network Manager Applet
+Documentation=man:nm-applet(1)
+
+[Service]
+ExecStart=/usr/bin/nm-applet
+Restart=on-failure
+
+[Install]
+WantedBy=x-session.target
