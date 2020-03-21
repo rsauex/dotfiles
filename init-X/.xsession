@@ -17,6 +17,8 @@ wmpid=$!
 systemctl --user import-environment
 systemctl --user start x-session.target
 
+lxpolkit & # TODO: create a systemd unit
+
 #~/.fehbg &
 #conky &
 #blueman-applet &
