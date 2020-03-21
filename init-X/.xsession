@@ -9,17 +9,19 @@ xset dpms 0 600 900
 xset r rate 400 44
 
 # keyboard settings
-setxkbmap -layout us,ua -variant dvp, -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll
+setxkbmap -option -layout us,ua -variant dvp, -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll
 
 exec i3 &
 wmpid=$!
 
-~/.fehbg &
-conky &
+systemctl --user import-environment
+systemctl --user start x-session.target
+
+#~/.fehbg &
+#conky &
 nm-applet &
-blueman-applet &
-compton -b &
-emacs --daemon &
-#gajim &
+#blueman-applet &
+#emacs --daemon &
 #dropbox start &
+
 wait $wmpid

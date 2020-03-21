@@ -1,0 +1,10 @@
+[Unit]
+Description=Compton - A compositor for X11
+Documentation=man:compton(1)
+
+[Service]
+ExecStart=/usr/bin/compton -d ${DISPLAY}
+Restart=on-failure
+
+[Install]
+WantedBy=x-session.target

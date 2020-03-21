@@ -39,7 +39,9 @@ un-x-init:
 
 compton:
 	stow    compton
+	systemctl --user enable compton.service
 un-compton:
+	systemctl --user disable compton.service
 	stow -D compton
 .PHONY: compton un-compton
 
