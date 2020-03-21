@@ -148,7 +148,9 @@ un-git:
 
 syncthing:
 	stow    syncthing
+	systemctl --user enable syncthing.service
 un-syncthing:
+	systemctl --user disable syncthing.service
 	stow -D syncthing
 .PHONY: syncthing un-syncthing
 
