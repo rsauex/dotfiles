@@ -21,7 +21,6 @@ lxpolkit & # TODO: create a systemd unit
 
 #~/.fehbg &
 #conky &
-#blueman-applet &
 #emacs --daemon &
 #dropbox start &
 

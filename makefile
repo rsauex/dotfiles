@@ -161,3 +161,11 @@ un-nm-applet:
 	systemctl --user disable nm-applet.service
 	stow -D nm-applet
 .PHONY: nm-applet un-nm-applet
+
+blueman-applet:
+	stow    blueman-applet
+	systemctl --user enable blueman-applet.service
+un-blueman-applet:
+	systemctl --user disable blueman-applet.service
+	stow -D blueman-applet
+.PHONY: blueman-applet un-blueman-applet
