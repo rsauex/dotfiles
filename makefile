@@ -9,6 +9,7 @@ help:
 	@echo "    syncthing        - Syncthing systemd unit + enable"
 	@echo "    nm-applet        - Network manager applet systemd unit + enable"
 	@echo "    blueman-applet   - Blueman applet systemd unit + enable"
+	@echo "    tmux             - Terminal multiplexer"
 	@echo " - X specific:"
 	@echo "    x-environment    - all X stuff together"
 	@echo "    x-init           - automatic X and i3 startup"
@@ -172,3 +173,9 @@ un-blueman-applet:
 	systemctl --user disable blueman-applet.service
 	stow -D blueman-applet
 .PHONY: blueman-applet un-blueman-applet
+
+tmux:
+	stow    --dotfiles tmux
+un-tmux:
+	stow -D --dotfiles tmux
+.PHONY: tmux un-tmux
