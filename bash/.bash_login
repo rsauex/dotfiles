@@ -37,10 +37,10 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-if [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
-    exec tmux new-session -t ssh_tmux_group
+if command -v tmux &> /dev/null && [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+    exec tmux new-session -t ssh_tmux_group &> /dev/null
 fi
 
-if [ ! -z "$(which start-wm)" ] && [ "1" = "$(fgconsole 2>/dev/null)" ]; then
-    start-wm &> /dev/null
+if command -v start-wm &> /dev/null && [ "1" = "$(fgconsole 2>/dev/null)" ]; then
+    exec start-wm &> /dev/null
 fi
