@@ -52,7 +52,8 @@
   ## -- Log --------------------------------------------------------------------
   
   last = "log -1 HEAD"
-  l  = "log --graph --decorate --pretty=oneline --abbrev-commit --all"
+  l  = "!sh -c 'git log --pretty=oneline --abbrev-commit ${1:-master}..HEAD' -"
+  lg = "log --graph --decorate --pretty=oneline --abbrev-commit --all"
 
   ## -- Status -----------------------------------------------------------------
   
