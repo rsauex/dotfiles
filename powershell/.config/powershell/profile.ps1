@@ -58,20 +58,22 @@ function Prompt {
     # Invoke hooks
     $PWSH_PROMPT_HOOKS | ForEach { Invoke-Command -ScriptBlock $_ }
 
-    # Output actual prompt
-    Write-Host "PS>" -NoNewline
-    Write-Host " " -NoNewline
+    ## Output actual prompt
+    # First line
+    Write-Host "PS> " -NoNewline
     Write-Host ("{0:HH:mm}" -f (Get-Date)) -NoNewline -ForegroundColor Cyan
-    Write-Host " " -NoNewline
-    Write-Host "[" -NoNewline
+    Write-Host " [" -NoNewline
     Write-Host ("{0}@{1}" -f $env:USER, (hostname)) -NoNewline -ForegroundColor Blue
+    Write-Host (":{0}" -f ($env:SSH_TTY ?? 'o')) -NoNewline -ForegroundColor DarkGray
     Write-Host " " -NoNewline
     Write-Host ("+{0}" -f $env:SHLVL) -NoNewline -ForegroundColor Green
-    Write-Host "]" -NoNewline
+    Write-Host "] " -NoNewline
+    Write-Host $(Convert-PathAlias $pwd.path) -NoNewline -ForegroundColor White
     Write-Host " " -NoNewline
-    Write-Host "$(Convert-PathAlias $pwd.path)" -NoNewline -ForegroundColor White
-    Write-Host ""
-    ">> "
+    # Separator line
+    Write-Host ('─' * ([Console]::WindowWidth - [Console]::CursorLeft)) -ForegroundColor DarkGray
+    # Secord Line
+    " $ "
 }
 
 # ----- Tmux -----
