@@ -4,6 +4,14 @@ case $- in
     *) return ;;
 esac
 
+# If in dumb terminal, don't do anything
+[[ "$TERM" == "dumb" ]] && return
+
+# Try to run powershell. 
+# KLUDGE! Changing login shell to pwsh breaks remote call over ssh and emacs tramp over ssh
+command -v pwsh-preview &>/dev/null && exec pwsh-preview -nologo
+command -v pwsh &>/dev/null && exec pwsh -nologo
+
 # don't put duplicate lines or lines starting with space in the history
 HISTCONTROL=ignoreboth
 

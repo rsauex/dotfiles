@@ -24,23 +24,28 @@ export NO_AT_BRIDGE=1
 # Local bin
 export PATH="$HOME/.bin:$HOME/.local/bin:$PATH"
 
-# include evironment variables
+# Include evironment variables
 if [ -f "$HOME/.environment" ]; then
     . "$HOME/.environment"
 fi
 
-# if running bash
-if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
+# Start tmux if we are in an interactive shell on a non-dumb terminal using ssh
+if command -v tmux &> /dev/null && [[ "$TERM" != "dumb" ]] && [[ -n "$PS1" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+    # Avoid nested tmux
+    if [[ -z "$TMUX" ]]; then
+        exec tmux new-session -t ssh_tmux_group &> /dev/null
     fi
 fi
 
-if command -v tmux &> /dev/null && [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
-    exec tmux new-session -t ssh_tmux_group &> /dev/null
-fi
-
+# Start WM if we are in the first virtual console
 if command -v start-wm &> /dev/null && [ "1" = "$(fgconsole 2>/dev/null)" ]; then
     exec start-wm &> /dev/null
+fi
+
+# If running bash
+if [ -n "$BASH_VERSION" ]; then
+    # Include .bashrc if it exists
+    if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+    fi
 fi
