@@ -46,8 +46,9 @@ function fancy_prompt_command {
     fi
     
     local TIME="${C_CYAN}${TIME}"
-    local USER_HOST="${C_DEF}${C_BOLD}[${C_DEF}${C_BLUE}${USER}@${HOSTNAME}${C_BLACK}:${C_DEF}${C_WHITE}${TTY} ${C_GREEN}+${SHLVL}${C_DEF}${C_BOLD}]${C_DEF}"
+    local USER_HOST="${C_DEF}${C_BOLD}[${C_DEF}${C_BLUE}${USER}@${HOSTNAME}${C_GRAY}:${TTY}${C_DEF} ${C_GREEN}+${SHLVL}${C_DEF}${C_BOLD}]${C_DEF}"
     local PWDNAME="${C_WHITE}${PWDNAME}"
     # set new color prompt
-    PS1="\n>>> ${TIME} ${USER_HOST} ${PWDNAME} ${FILL}\n$ "
+    PS1="\nSH> ${TIME} ${USER_HOST} ${PWDNAME} ${FILL}\n $ "
+    PS2=">>"
 }
