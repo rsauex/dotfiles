@@ -123,6 +123,21 @@ function Find-String() {
       | ForEach-Object { $_.data } | Add-Member -PassThru -MemberType MemberSet -Name PSStandardMembers -Value $PSStandardMembers
 }
 
+function New-Link() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [String[]]$Path,
+
+        [Parameter(Mandatory=$true)]
+        [String]$Target,
+
+        [Switch]$Hard
+    )
+    New-Item -Path $Path -ItemType ($Hard ? "HardLink" : "SymbolicLink") -Value $Target
+}
+
+
 # ----- DirEnv -----
 
 class DirEnvAddition {
