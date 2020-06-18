@@ -167,6 +167,12 @@ class DirEnvDiff {
             }
         }
     }
+
+    [void] Revert() {
+        foreach ($Change in $this.Changes) {
+            $Change.Revert()
+        }
+    }
 }
 
 function Get-EnvironmentDump() {
@@ -221,9 +227,78 @@ function Get-EnvironmentDump() {
     return $Dump
 }
 
-function Invoke-WithDiff([ScriptBlock]$Block) {
+function Invoke-WithDiff([ScriptBlock[]]$Blocks) {
     $Old = (Get-EnvironmentDump)
-    Invoke-Command -ScriptBlock $Block
+    foreach ($Block in $Blocks) {
+        Invoke-Command -ScriptBlock $Block
+    }
     return [DirEnvDiff]::new($Old, (Get-EnvironmentDump))
 }
 
+[ScriptBlock[]]$PWSH_PATH_CONTEXT_HOOKS = @( )
+
+function Add-PathContextHook() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ScriptBlock]$Hook
+    )
+    $global:PWSH_PATH_CONTEXT_HOOKS += $Hook
+}
+
+$PWSH_PATH_CONTEXT_STACK = New-Object -TypeName 'Collections.Generic.LinkedList[PSCustomObject]'
+
+function Get-PathContext() {
+    $Drive = (Get-Location).Drive
+    return @( $Drive.Name ) + ($Drive.CurrentLocation.Split([IO.Path]::DirectorySeparatorChar))
+}
+
+function Update-PathContextStack() {
+    $PathContext = (Get-PathContext)
+    $EndIndex = 0
+    foreach ($location in $PWSH_PATH_CONTEXT_STACK.GetEnumerator()) {
+        if ($location.Part -ne $PathContext[$EndIndex]) {
+            break
+        }
+        $EndIndex++
+    }
+    while ($PWSH_PATH_CONTEXT_STACK.Count -gt $EndIndex) {
+        if ($null -ne $PWSH_PATH_CONTEXT_STACK.Last.Value) {
+            $PWSH_PATH_CONTEXT_STACK.Last.Value.Diff.Revert()
+        }
+        $PWSH_PATH_CONTEXT_STACK.RemoveLast()
+    }
+    $Drive = (Get-PSDrive -Name $PathContext[0])
+    $Path = $Drive.Root -ne "" ? $Drive.Root : ($Drive.Name + ":")
+    for ($i = 1; $i -lt $EndIndex; $i++) {
+        $Path = Join-Path -Path $Path -ChildPath $PathContext[$i]
+    }
+    for ($i = $EndIndex; $i -lt $PathContext.Count; $i++) {
+        $Diff = $null
+        if ($i -ne 0) {
+            $Path = Join-Path -Path $Path -ChildPath $PathContext[$i]
+            $Blocks = ($PWSH_PATH_CONTEXT_HOOKS | ForEach-Object { Invoke-Command -ScriptBlock $_ -ArgumentList $Path } | Where-Object { $null -ne $_ })
+            if ($Blocks.Count -ne 0) {
+                $Diff = (Invoke-WithDiff $Blocks)
+            }
+        }
+        $PWSH_PATH_CONTEXT_STACK.AddLast([PSCustomObject]@{ Part = $PathContext[$i]; Diff = $Diff })
+    }
+    return $null
+}
+
+Add-PromptHook {
+    Update-PathContextStack | Out-Null # TODO: Remove Out-Null
+}
+
+# Add-PathContextHook {
+#     Write-Host $args[0]
+#     return $null
+# }
+
+# Add-PathContextHook {
+#     if (Test-Path (Join-Path -Path $args[0] -ChildPath ".git")) {
+#         return { Set-Content Env:/IS_IN_GIT_TEST 'TRUE' }
+#     }
+#     return $null
+# }
