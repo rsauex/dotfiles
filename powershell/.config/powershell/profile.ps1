@@ -54,6 +54,8 @@ function Add-PromptHook() {
     $global:PWSH_PROMPT_HOOKS += $Hook
 }
 
+$env:SHLVL = [int]$env:SHLVL + 1
+
 function Prompt {
     # Invoke hooks
     $PWSH_PROMPT_HOOKS | ForEach-Object { Invoke-Command -ScriptBlock $_ }
