@@ -63,7 +63,7 @@ function Prompt {
     Write-Host "PS> " -NoNewline
     Write-Host ("{0:HH:mm}" -f (Get-Date)) -NoNewline -ForegroundColor Cyan
     Write-Host " [" -NoNewline
-    Write-Host ("{0}@{1}" -f $env:USER, (hostname)) -NoNewline -ForegroundColor Blue
+    Write-Host ("{0}@{1}" -f [System.Environment]::UserName, [System.Environment]::MachineName) -NoNewline -ForegroundColor Blue
     Write-Host (":{0}" -f ($env:SSH_TTY ?? 'o')) -NoNewline -ForegroundColor DarkGray
     Write-Host " " -NoNewline
     Write-Host ("+{0}" -f $env:SHLVL) -NoNewline -ForegroundColor Green
