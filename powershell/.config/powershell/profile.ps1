@@ -139,4 +139,4 @@ function New-Link() {
 
 # ----- PathContext -----
 
-. Join-Path (Split-Path -Parent $PROFILE) "PathContext.ps1" | Out-Null
+. (Join-Path (Split-Path -Parent $PROFILE) "PathContext.ps1")
