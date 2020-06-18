@@ -121,15 +121,40 @@ function Add-PathContextHook() {
     $global:PWSH_PATH_CONTEXT_HOOKS += $Hook
 }
 
+function Invoke-PathContextHooks() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [Object[]]$ArgumentList
+    )
+    $global:PWSH_PATH_CONTEXT_HOOKS | ForEach-Object { Invoke-Command -ScriptBlock $_ -ArgumentList @ArgumentList }
+}
+
 $PWSH_PATH_CONTEXT_STACK = New-Object -TypeName 'Collections.Generic.LinkedList[PSCustomObject]'
+
+function Pop-PathContext() {
+    if ($null -ne $PWSH_PATH_CONTEXT_STACK.Last.Value.Diff) {
+        $PWSH_PATH_CONTEXT_STACK.Last.Value.Diff.Revert()
+    }
+    $PWSH_PATH_CONTEXT_STACK.RemoveLast()
+}
+
+function Push-PathContext($PathPart, $Diff) {
+    $PWSH_PATH_CONTEXT_STACK.AddLast([PSCustomObject]@{ Part = $PathPart; Diff = $Diff }) | Out-Null
+}
 
 function Get-PathContext() {
     $Drive = (Get-Location).Drive
-    return @( $Drive.Name ) + ($Drive.CurrentLocation.Split([IO.Path]::DirectorySeparatorChar))
+    $PathContext = @( $Drive.Name )
+    if ($Drive.CurrentLocation -ne "") {
+        $PathContext = $PathContext + ($Drive.CurrentLocation.Split([IO.Path]::DirectorySeparatorChar))
+    }
+    return $PathContext
 }
 
 function Update-PathContextStack() {
     $PathContext = (Get-PathContext)
+    # Find first index where path has changed
     $EndIndex = 0
     foreach ($location in $PWSH_PATH_CONTEXT_STACK.GetEnumerator()) {
         if ($location.Part -ne $PathContext[$EndIndex]) {
@@ -137,33 +162,32 @@ function Update-PathContextStack() {
         }
         $EndIndex++
     }
-    while ($PWSH_PATH_CONTEXT_STACK.Count -gt $EndIndex) {
-        if ($null -ne $PWSH_PATH_CONTEXT_STACK.Last.Value) {
-            $PWSH_PATH_CONTEXT_STACK.Last.Value.Diff.Revert()
-        }
-        $PWSH_PATH_CONTEXT_STACK.RemoveLast()
+    # Skip everything else if nothing changed
+    if ($PWSH_PATH_CONTEXT_STACK.Count -eq $EndIndex -and $PathContext.Count -eq $EndIndex) {
+        return
     }
-    $Drive = (Get-PSDrive -Name $PathContext[0])
+    # Remove the changed part from PathContext stack
+    while ($PWSH_PATH_CONTEXT_STACK.Count -gt $EndIndex) {
+        Pop-PathContext
+    }
+    # Bulid common part of the path
+    $Drive = Get-PSDrive -Name $PathContext[0]
     $Path = $Drive.Root -ne "" ? $Drive.Root : ($Drive.Name + ":")
     for ($i = 1; $i -lt $EndIndex; $i++) {
-        $Path = Join-Path -Path $Path -ChildPath $PathContext[$i]
+        $Path = Join-Path $Path $PathContext[$i]
     }
+    # Add new parts to PathContext stack
     for ($i = $EndIndex; $i -lt $PathContext.Count; $i++) {
-        $Diff = $null
         if ($i -ne 0) {
-            $Path = Join-Path -Path $Path -ChildPath $PathContext[$i]
-            $Blocks = ($PWSH_PATH_CONTEXT_HOOKS | ForEach-Object { Invoke-Command -ScriptBlock $_ -ArgumentList $Path } | Where-Object { $null -ne $_ })
-            if ($Blocks.Count -ne 0) {
-                $Diff = (Invoke-WithDiff $Blocks)
-            }
+            $Path = Join-Path $Path $PathContext[$i]
         }
-        $PWSH_PATH_CONTEXT_STACK.AddLast([PSCustomObject]@{ Part = $PathContext[$i]; Diff = $Diff })
+        $Blocks = (Invoke-PathContextHooks $Path | Where-Object { $null -ne $_ })
+        Push-PathContext $PathContext[$i] ($Blocks.Count -ne 0 ? (Invoke-WithDiff $Blocks) : $null)
     }
-    return $null
 }
 
 Add-PromptHook {
-    Update-PathContextStack | Out-Null # TODO: Remove Out-Null
+    Update-PathContextStack
 }
 
 # Add-PathContextHook {
