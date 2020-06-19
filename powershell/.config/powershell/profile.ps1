@@ -54,11 +54,23 @@ function Add-PromptHook() {
     $global:PWSH_PROMPT_HOOKS += $Hook
 }
 
+function Invoke-PromptHooks() {
+    foreach ($hook in $PWSH_PROMPT_HOOKS) {
+        try {
+            Invoke-Command -ScriptBlock $hook
+        } catch {
+            Write-Host "Error occured during execution of a prompt hook:"
+            Write-Host $_
+            Write-Host $_.ScriptStackTrace
+        }
+    }
+}
+
 $env:SHLVL = [int]$env:SHLVL + 1
 
 function Prompt {
     # Invoke hooks
-    $PWSH_PROMPT_HOOKS | ForEach-Object { Invoke-Command -ScriptBlock $_ }
+    Invoke-PromptHooks
 
     ## Output actual prompt
     # First line

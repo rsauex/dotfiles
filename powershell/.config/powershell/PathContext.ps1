@@ -127,7 +127,15 @@ function Invoke-PathContextHooks() {
         [Parameter(Mandatory=$true)]
         [Object[]]$ArgumentList
     )
-    $global:PWSH_PATH_CONTEXT_HOOKS | ForEach-Object { Invoke-Command -ScriptBlock $_ -ArgumentList @ArgumentList }
+    foreach ($hook in $PWSH_PATH_CONTEXT_HOOKS) {
+        try {
+            Invoke-Command -ScriptBlock $hook -ArgumentList @ArgumentList
+        } catch {
+            Write-Host "Error occured during execution of a PathContext hook:"
+            Write-Host $_
+            Write-Host $_.ScriptStackTrace
+        }
+    }
 }
 
 $PWSH_PATH_CONTEXT_STACK = New-Object -TypeName 'Collections.Generic.LinkedList[PSCustomObject]'
