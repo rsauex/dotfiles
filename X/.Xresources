@@ -67,8 +67,8 @@ x3270.scrollBar:     false
 ! x3270.menuBar:       false  -- causes x3270 to freeze!!!
 x3270.marginedPaste: true
 
-! x3270.oversize: 160x62
-! x3270.model:    3279-5-E
+x3270.oversize: 160x62
+x3270.model:    3279-5-E
 
 x3270*container*background:  #1D1F21
 x3270*borderColor:           nord0
