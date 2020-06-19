@@ -210,13 +210,63 @@ Add-PromptHook {
 #     return $null
 # }
 
+# ----- Path Context File -----
+
+# TODO: Use other way to auth files!
+
+function Enable-PathContextFile() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [String[]]$Path
+    )
+    foreach ($p in $Path) {
+        $File = Join-Path $p ".envrc.ps1"
+        if (Test-Path $File -Type Leaf) {
+            chmod +x "$File"
+        }
+    }
+}
+$PSDefaultParameterValues.Add("Enable-PathContextFile:Path", ".")
+
+function Disable-PathContextFile() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [String[]]$Path
+    )
+    foreach ($p in $Path) {
+        $File = Join-Path $p ".envrc.ps1"
+        if (Test-Path $File -Type Leaf) {
+            chmod -x "$File"
+        }
+    }
+}
+$PSDefaultParameterValues.Add("Disable-PathContextFile:Path", ".")
+
+Function Test-PathContextFile() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [String[]]$Path
+    )
+    foreach ($p in $Path) {
+        $File = Join-Path $p ".envrc.ps1"
+        if (-not (Test-Path $File -Type Leaf)) {
+            return $false
+        }
+        if (([int]((stat -c "%a" "$Path")[0]) -band 1) -eq 0) {
+            return $false
+        }
+    }
+    return $true
+}
+$PSDefaultParameterValues.Add("Test-PathContextFile:Path", ".")
+
 Add-PathContextHook {
     $Path = Join-Path -Path $args[0] -ChildPath ".envrc.ps1"
-    if (Test-Path $Path -Type Leaf) {
-        # TODO: Use other way to auth files!
-        if (([int]((stat -c "%a" "$Path")[0]) -band 1) -eq 1) {
-            return { . "$Path" }.GetNewClosure()
-        }
+    if (Test-PathContextFile $args[0]) {
+        return { . "$Path" }.GetNewClosure()
     }
     return $null
 }
