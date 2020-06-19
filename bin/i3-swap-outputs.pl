@@ -32,6 +32,12 @@ if (defined $ARGV[0] && $ARGV[0] eq "-r") {
 
 for my $i (0..($outputs_number - 1)) {
     my $output = $outputs[$i]->{'name'};
+    i3_run_or_die "focus output $output";
+    i3_run_or_die "workspace _swap_ws_$i";
+}
+
+for my $i (0..($outputs_number - 1)) {
+    my $output = $outputs[$i]->{'name'};
     my $new_output = $new_outputs[$i]->{'name'};
     foreach (grep { $_->{'output'} eq $output } @workspaces) {
         my $workspace = $_->{'name'};
