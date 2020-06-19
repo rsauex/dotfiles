@@ -212,6 +212,8 @@ Add-PromptHook {
 
 # ----- Path Context File -----
 
+Set-Variable PathContextFileName -Option Constant -Value ".envrc.ps1"
+
 # TODO: Use other way to auth files!
 
 function Enable-PathContextFile() {
@@ -221,7 +223,7 @@ function Enable-PathContextFile() {
         [String[]]$Path
     )
     foreach ($p in $Path) {
-        $File = Join-Path $p ".envrc.ps1"
+        $File = Join-Path $p $PathContextFileName
         if (Test-Path $File -Type Leaf) {
             chmod +x "$File"
         }
@@ -236,7 +238,7 @@ function Disable-PathContextFile() {
         [String[]]$Path
     )
     foreach ($p in $Path) {
-        $File = Join-Path $p ".envrc.ps1"
+        $File = Join-Path $p $PathContextFileName
         if (Test-Path $File -Type Leaf) {
             chmod -x "$File"
         }
@@ -251,7 +253,7 @@ Function Test-PathContextFile() {
         [String[]]$Path
     )
     foreach ($p in $Path) {
-        $File = Join-Path $p ".envrc.ps1"
+        $File = Join-Path $p $PathContextFileName
         if (-not (Test-Path $File -Type Leaf)) {
             return $false
         }
@@ -264,7 +266,7 @@ Function Test-PathContextFile() {
 $PSDefaultParameterValues.Add("Test-PathContextFile:Path", ".")
 
 Add-PathContextHook {
-    $Path = Join-Path -Path $args[0] -ChildPath ".envrc.ps1"
+    $Path = Join-Path -Path $args[0] -ChildPath $PathContextFileName
     if (Test-PathContextFile $args[0]) {
         return { . "$Path" }.GetNewClosure()
     }
