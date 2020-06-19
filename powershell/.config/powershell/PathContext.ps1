@@ -209,3 +209,14 @@ Add-PromptHook {
 #     }
 #     return $null
 # }
+
+Add-PathContextHook {
+    $Path = Join-Path -Path $args[0] -ChildPath ".envrc.ps1"
+    if (Test-Path $Path -Type Leaf) {
+        # TODO: Use other way to auth files!
+        if (([int]((stat -c "%a" "$Path")[0]) -band 1) -eq 1) {
+            return { . "$Path" }.GetNewClosure()
+        }
+    }
+    return $null
+}
