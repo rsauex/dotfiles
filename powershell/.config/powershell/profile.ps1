@@ -20,17 +20,17 @@ function Convert-PathAlias() {
     param(
         [string]$path
     )
-    $path_parts = $path.split('/')
+    $path_parts = $path.split([IO.Path]::DirectorySeparatorChar)
     for($i = $path_parts.count - 1; $i -gt 0; $i--) {
-        $current_subpath = $path_parts[0..$i] -Join '/'
+        $current_subpath = $path_parts[0..$i] -Join [IO.Path]::DirectorySeparatorChar
         if ($PWSH_PATH_ALIASES.ContainsKey($current_subpath)) {
-            return (@( $PWSH_PATH_ALIASES[$current_subpath] ) + $path_parts[($i + 1)..$path_parts.count]) -Join '/'
+            return (@( $PWSH_PATH_ALIASES[$current_subpath] ) + $path_parts[($i + 1)..$path_parts.count]) -Join [IO.Path]::DirectorySeparatorChar
         }
     }
     return $path
 }
 
-Set-PathAlias "/home/$env:USER" '~'
+Set-PathAlias "$HOME" '~'
 
 # ----- Prompt -----
 
