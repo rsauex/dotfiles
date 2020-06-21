@@ -2,27 +2,74 @@
 
 class PathContextAddition {
     [string]$Path
+    $NewValue
 
-    PathContextAddition($Path) {
+    PathContextAddition($Path, $NewValue) {
         $this.Path = $Path
+        $this.NewValue = $NewValue
+        $this.LogOnApply()
     }
 
     [void] Revert() {
         Remove-Item $this.Path
+        $this.LogOnRevert()
+    }
+
+    [void] LogOnApply() {
+        Write-Host ("[PathContext:IN] {0} = {1}" -f $this.Path, $this.NewValue)
+    }
+
+    [void] LogOnRevert() {
+        Write-Host ("[PathContext:OUT] {0} removed" -f $this.Path)
+    }
+}
+
+class PathContextRemoval {
+    [string]$Path
+    $OldValue
+
+    PathContextRemoval($Path, $OldValue) {
+        $this.Path = $Path
+        $this.OldValue = $OldValue
+        $this.LogOnApply()
+    }
+
+    [void] Revert() {
+        Set-Item $this.Path $this.OldValue
+        $this.LogOnRevert()
+    }
+
+    [void] LogOnApply() {
+        Write-Host ("[PathContext:IN] {0} removed" -f $this.Path)
+    }
+
+    [void] LogOnRevert() {
+        Write-Host ("[PathContext:OUT] {0} = {1}" -f $this.Path, $this.OldValue)
     }
 }
 
 class PathContextChange {
     [string]$Path
     $OldValue
+    $NewValue
 
-    PathContextChange($Path, $OldValue) {
+    PathContextChange($Path, $OldValue, $NewValue) {
         $this.Path = $Path
         $this.OldValue = $OldValue
+        $this.LogOnApply()
     }
 
     [void] Revert() {
         Set-Item $this.Path $this.OldValue
+        $this.LogOnRevert()
+    }
+
+    [void] LogOnApply() {
+        Write-Host ("[PathContext:IN] {0} = {1}" -f $this.Path, $this.NewValue)
+    }
+
+    [void] LogOnRevert() {
+        Write-Host ("[PathContext:OUT] {0} = {1}" -f $this.Path, $this.OldValue)
     }
 }
 
@@ -33,14 +80,14 @@ class PathContextDiff {
         $this.Changes = @( )
         $old.GetEnumerator() | ForEach-Object {
             if (-not $new.ContainsKey($_.Key)) {
-                $this.Changes += [PathContextChange]::new($_.Key, $_.Value)
+                $this.Changes += [PathContextRemoval]::new($_.Key, $_.Value)
             } elseif (-not $_.Value.Equals($new[$_.Key])) {
-                $this.Changes += [PathContextChange]::new($_.Key, $_.Value)
+                $this.Changes += [PathContextChange]::new($_.Key, $_.Value, $new[$_.Key])
             }
         }
         $new.GetEnumerator() | ForEach-Object {
             if (-not $old.ContainsKey($_.Key)) {
-                $this.Changes += [PathContextAddition]::new($_.Key)
+                $this.Changes += [PathContextAddition]::new($_.Key, $_.Value)
             }
         }
     }
