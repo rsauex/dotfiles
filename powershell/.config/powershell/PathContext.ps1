@@ -1,3 +1,5 @@
+# ----- Path Context Diff -----
+
 class PathContextAddition {
     [string]$Path
 
@@ -53,7 +55,7 @@ class PathContextDiff {
 function Get-EnvironmentDump() {
     [hashtable]$Dump = @{ }
     Get-Variable -Scope 'global' | ForEach-Object {
-        if ($null -ne $_.PSPath) {
+        if ($null -ne $_.PSPath -and ($_.Options -notlike '*Constant*')) {
             $Dump[$_.PSPath] = (Get-Content $_.PSPath)
         }
     }
@@ -69,12 +71,9 @@ function Get-EnvironmentDump() {
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::_")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::args")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::CurrentlyExecutingCommand")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::Error")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::Event")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::EventArgs")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::EventSubscriber")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::ExecutionContext")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::false")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::foreach")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::input")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::LastExitCode")
@@ -91,24 +90,23 @@ function Get-EnvironmentDump() {
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSScriptRoot")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSSenderInfo")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSUICulture")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSVersionTable")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::PWD")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::Sender")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::ShellId")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::StackTrace")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::switch")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::this")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::true")
     return $Dump
 }
 
-function Invoke-WithDiff([ScriptBlock[]]$Blocks) {
+function Invoke-WithPathContextDiff([ScriptBlock[]]$Blocks) {
     $Old = (Get-EnvironmentDump)
     foreach ($Block in $Blocks) {
         Invoke-Command -ScriptBlock $Block
     }
     return [PathContextDiff]::new($Old, (Get-EnvironmentDump))
 }
+
+# ----- Context Path Hooks -----
 
 [ScriptBlock[]]$PWSH_PATH_CONTEXT_HOOKS = @( )
 
@@ -137,6 +135,8 @@ function Invoke-PathContextHooks() {
         }
     }
 }
+
+# ----- Path Context Stack -----
 
 $PWSH_PATH_CONTEXT_STACK = New-Object -TypeName 'Collections.Generic.LinkedList[PSCustomObject]'
 
@@ -190,7 +190,7 @@ function Update-PathContextStack() {
             $Path = Join-Path $Path $PathContext[$i]
         }
         $Blocks = (Invoke-PathContextHooks $Path | Where-Object { $null -ne $_ })
-        Push-PathContext $PathContext[$i] ($Blocks.Count -ne 0 ? (Invoke-WithDiff $Blocks) : $null)
+        Push-PathContext $PathContext[$i] ($Blocks.Count -ne 0 ? (Invoke-WithPathContextDiff $Blocks) : $null)
     }
 }
 
