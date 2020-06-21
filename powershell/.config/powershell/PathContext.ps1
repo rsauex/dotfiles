@@ -257,7 +257,7 @@ Function Test-PathContextFile() {
         if (-not (Test-Path $File -Type Leaf)) {
             return $false
         }
-        if (([int]((stat -c "%a" "$Path")[0]) -band 1) -eq 0) {
+        if (([int]((stat -c "%a" "$File")[0]) -band 1) -eq 0) {
             Write-Host "Path Context File in $PWD is disabled! Use Enable-PathContextFile cmdlet to enable."
             return $false
         }
