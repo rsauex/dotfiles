@@ -56,6 +56,7 @@ class PathContextChange {
     PathContextChange($Path, $OldValue, $NewValue) {
         $this.Path = $Path
         $this.OldValue = $OldValue
+        $this.NewValue = $NewValue
         $this.LogOnApply()
     }
 
