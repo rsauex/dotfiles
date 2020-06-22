@@ -154,6 +154,25 @@ function Invoke-WithPathContextDiff([ScriptBlock[]]$Blocks) {
     return [PathContextDiff]::new($Old, (Get-EnvironmentDump))
 }
 
+# ----- Utils -----
+
+function Invoke-InTempEnv() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ScriptBlock]$EnvBlock,
+
+        [Parameter(Mandatory=$true)]
+        [ScriptBlock]$ScriptBlock
+    )
+    [PathContextDiff]$Diff = Invoke-WithPathContextDiff($EnvBlock)
+    try {
+        Invoke-Command -ScriptBlock $ScriptBlock
+    } finally {
+        $Diff.Revert()
+    }
+}
+
 # ----- Context Path Hooks -----
 
 [ScriptBlock[]]$PWSH_PATH_CONTEXT_HOOKS = @( )
