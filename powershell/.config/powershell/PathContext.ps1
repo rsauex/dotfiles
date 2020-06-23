@@ -160,17 +160,9 @@ function Invoke-InTempEnv() {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
-        [ScriptBlock]$EnvBlock,
-
-        [Parameter(Mandatory=$true)]
         [ScriptBlock]$ScriptBlock
     )
-    [PathContextDiff]$Diff = Invoke-WithPathContextDiff($EnvBlock)
-    try {
-        Invoke-Command -ScriptBlock $ScriptBlock
-    } finally {
-        $Diff.Revert()
-    }
+    (Invoke-WithPathContextDiff($ScriptBlock)).Revert()
 }
 
 # ----- Context Path Hooks -----
