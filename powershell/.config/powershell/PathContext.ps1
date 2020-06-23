@@ -168,6 +168,23 @@ function Invoke-InTempEnv() {
     (Invoke-WithPathContextDiff($ScriptBlock)).Revert()
 }
 
+function Invoke-InPath() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [String]$Path,
+        [Parameter(Mandatory=$true)]
+        [ScriptBlock]$ScriptBlock
+    )
+    Push-Location
+    try {
+        Set-Location $Path
+        Invoke-Command -ScriptBlock $ScriptBlock
+    } finally {
+        Pop-Location
+    }
+}
+
 # ----- Context Path Hooks -----
 
 [ScriptBlock[]]$PWSH_PATH_CONTEXT_HOOKS = @( )
@@ -185,16 +202,23 @@ function Invoke-PathContextHooks() {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
-        [Object[]]$ArgumentList
+        [String]$Path
     )
-    foreach ($hook in $PWSH_PATH_CONTEXT_HOOKS) {
-        try {
-            Invoke-Command -ScriptBlock $hook -ArgumentList @ArgumentList
-        } catch {
-            Write-Host "Error occured during execution of a PathContext hook:"
-            Write-Host $_
-            Write-Host $_.ScriptStackTrace
+    Push-Location
+    try {
+        foreach ($hook in $PWSH_PATH_CONTEXT_HOOKS) {
+            try {
+                Set-Location $Path
+                Invoke-Command -ScriptBlock $hook | Where-Object { $null -ne $_ } `
+                  | ForEach-Object { $Block = $_; { Invoke-InPath $Path $Block }.GetNewClosure() }
+            } catch {
+                Write-Host "Error occured during execution of a PathContext hook:"
+                Write-Host $_
+                Write-Host $_.ScriptStackTrace
+            }
         }
+    } finally {
+        Pop-Location
     }
 }
 
@@ -329,8 +353,8 @@ Function Test-PathContextFile() {
 $PSDefaultParameterValues.Add("Test-PathContextFile:Path", ".")
 
 Add-PathContextHook {
-    $Path = Join-Path -Path $args[0] -ChildPath $PathContextFileName
-    if (Test-PathContextFile $args[0]) {
+    if (Test-PathContextFile) {
+        $Path = Join-Path -Path $PWD -ChildPath $PathContextFileName
         return { . "$Path" }.GetNewClosure()
     }
     return $null
