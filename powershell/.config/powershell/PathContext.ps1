@@ -104,14 +104,17 @@ function Get-EnvironmentDump() {
     [hashtable]$Dump = @{ }
     Get-Variable -Scope 'global' | ForEach-Object {
         if ($null -ne $_.PSPath -and ($_.Options -notlike '*Constant*')) {
-            $Dump[$_.PSPath] = (Get-Content $_.PSPath)
+            $Dump[$_.PSPath] = (Get-Content -LiteralPath $_.PSPath)
         }
     }
     Get-ChildItem -Path Env: | ForEach-Object {
-        $Dump[$_.PSPath] = (Get-Content $_.PSPath)
+        $Dump[$_.PSPath] = (Get-Content -LiteralPath $_.PSPath)
     }
     Get-ChildItem -Path Function: | ForEach-Object {
-        $Dump[$_.PSPath] = (Get-Content $_.PSPath)
+        $Dump[$_.PSPath] = (Get-Content -LiteralPath $_.PSPath)
+    }
+    Get-ChildItem -Path Alias: | ForEach-Object {
+        $Dump[$_.PSPath] = (Get-Content -LiteralPath $_.PSPath)
     }
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::$")
     $Dump.Remove("Microsoft.PowerShell.Core\Variable::?")
