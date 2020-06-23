@@ -159,13 +159,54 @@ function Invoke-WithPathContextDiff([ScriptBlock[]]$Blocks) {
 
 # ----- Utils -----
 
+function Invoke-Using() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [Object]$Object,
+        [Parameter(Mandatory=$true)]
+        [ScriptBlock]$ScriptBlock
+    )
+    try {
+        Invoke-Command -ScriptBlock $ScriptBlock
+    } finally {
+        $Object.Dispose()
+    }
+}
+
+class TemporaryEnvironment {
+    [hashtable]$Old
+
+    TemporaryEnvironment() {
+        $this.Old = (Get-EnvironmentDump)
+    }
+
+    [void] Dispose() {
+        [PathContextDiff]::new($this.Old, (Get-EnvironmentDump)).Revert()
+    }
+}
+
 function Invoke-InTempEnv() {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
         [ScriptBlock]$ScriptBlock
     )
-    (Invoke-WithPathContextDiff($ScriptBlock)).Revert()
+    Invoke-Using ([TemporaryEnvironment]::new()) {
+        Invoke-Command -ScriptBlock $ScriptBlock
+    }.GetNewClosure()
+}
+
+class TemporaryPath {
+    [String] $Old
+
+    TemporaryPath() {
+        $this.Old = $PWD
+    }
+
+    [void] Dispose() {
+        Set-Location $this.Old
+    }
 }
 
 function Invoke-InPath() {
@@ -176,13 +217,10 @@ function Invoke-InPath() {
         [Parameter(Mandatory=$true)]
         [ScriptBlock]$ScriptBlock
     )
-    Push-Location
-    try {
+    Invoke-Using ([TemporaryPath]::new()) {
         Set-Location $Path
         Invoke-Command -ScriptBlock $ScriptBlock
-    } finally {
-        Pop-Location
-    }
+    }.GetNewClosure()
 }
 
 # ----- Context Path Hooks -----
