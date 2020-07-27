@@ -175,7 +175,7 @@ un-blueman-applet:
 .PHONY: blueman-applet un-blueman-applet
 
 tmux:
-	stow    --dotfiles tmux
+	stow    tmux
 un-tmux:
-	stow -D --dotfiles tmux
+	stow -D tmux
 .PHONY: tmux un-tmux
