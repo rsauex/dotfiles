@@ -9,7 +9,13 @@ xset dpms 0 600 900
 xset r rate 400 44
 
 # keyboard settings
-setxkbmap -option -layout us,ua -variant dvp, -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll
+if [[ xinput | grep "Ergodox" &>/dev/null ]]; then
+    # Ergodox EZ is connected - use QWERY
+    setxkbmap -option -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll -layout us,ua
+else
+    # Ergodox EZ is not connected - use DVORAK
+    setxkbmap -option -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll -layout us,ua -variant dvp,
+fi
 
 exec i3 &
 wmpid=$!
