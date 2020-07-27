@@ -99,10 +99,10 @@ Add-PromptHook {
     foreach ($line in (tmux show-environment)) {
         switch -Regex ($line) {
             '^([a-zA-Z0-9_]+)=(.*)$' {
-                Set-Item -Path Env:$matches[1] -Value $matches[2]
+                Set-Content -Path Env:/$($matches[1]) -Value $matches[2]
             }
             '^-([a-zA-Z0-9_]+)$' {
-                Remove-Item -Path Env:$matches[1]
+                Remove-Item -ErrorAction:Ignore -Path Env:/$($matches[1])
             }
         }
     }
