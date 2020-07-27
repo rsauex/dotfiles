@@ -33,7 +33,12 @@ fi
 if command -v tmux &> /dev/null && [[ "$TERM" != "dumb" ]] && [[ -n "$PS1" ]] && [[ -n "$SSH_CONNECTION" ]]; then
     # Avoid nested tmux
     if [[ -z "$TMUX" ]]; then
-        exec tmux new-session -t ssh_tmux_group &> /dev/null
+        # exec tmux new-session -t ssh_tmux_group &> /dev/null
+        if tmux has -t "TMUX_SSH"; then
+            exec dbus-launch --exit-with-session tmux attach -d -t "TMUX_SSH"
+        else
+            exec dbus-launch --exit-with-session tmux new -s "TMUX_SSH"
+        fi
     fi
 fi
 
