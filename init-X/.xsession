@@ -9,7 +9,7 @@ xset dpms 0 600 900
 xset r rate 400 44
 
 # keyboard settings
-if [[ xinput | grep "Ergodox" &>/dev/null ]]; then
+if xinput | grep "Ergodox" &>/dev/null; then
     # Ergodox EZ is connected - use QWERY
     setxkbmap -option -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll -layout us,ua
 else
