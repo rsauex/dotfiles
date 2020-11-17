@@ -2,7 +2,8 @@ function Test-LoginShell() {
     (ps -p $PID -o cmd=) -match "^-pwsh"
 }
 
-# ----- Path Alias -----
+# ------------------------------------------------------------------------------
+# ----- Path Alias -------------------------------------------------------------
 
 [hashtable]$PWSH_PATH_ALIASES = @{ }
 
@@ -32,7 +33,8 @@ function Convert-PathAlias() {
 
 Set-PathAlias "$HOME" '~'
 
-# ----- Prompt -----
+# ------------------------------------------------------------------------------
+# ----- Prompt Hooks -----------------------------------------------------------
 
 [ScriptBlock[]]$PWSH_PROMPT_HOOKS = @( )
 
@@ -66,6 +68,9 @@ function Invoke-PromptHooks() {
     }
 }
 
+# ------------------------------------------------------------------------------
+# ----- Prompt -----------------------------------------------------------------
+
 $env:SHLVL = [int]$env:SHLVL + 1
 
 function Prompt {
@@ -74,23 +79,32 @@ function Prompt {
 
     ## Output actual prompt
     # First line
-    Write-Host "PS> " -NoNewline
-    Write-Host ("{0:HH:mm}" -f (Get-Date)) -NoNewline -ForegroundColor Cyan
-    Write-Host " [" -NoNewline
-    Write-Host ("{0}@{1}" -f [System.Environment]::UserName, [System.Environment]::MachineName) -NoNewline -ForegroundColor Blue
-    Write-Host (":{0}" -f ($env:SSH_TTY ?? 'o')) -NoNewline -ForegroundColor DarkGray
-    Write-Host " " -NoNewline
-    Write-Host ("+{0}" -f $env:SHLVL) -NoNewline -ForegroundColor Green
-    Write-Host "] " -NoNewline
-    Write-Host $(Convert-PathAlias $pwd.path) -NoNewline -ForegroundColor White
-    Write-Host " " -NoNewline
+    if (Test-Path Env:/IN_NIX_SHELL) {
+        $indicator = "(NIX)"
+    }
+    Write-Host -NoNewline                           -Object "PS${indicator}> "
+    Write-Host -NoNewline -ForegroundColor Cyan     -Object ("{0:HH:mm}" -f (Get-Date))
+    Write-Host -NoNewline                           -Object " ["
+    Write-Host -NoNewline -ForegroundColor Blue     -Object ("{0}@{1}" -f [System.Environment]::UserName, [System.Environment]::MachineName)
+    Write-Host -NoNewline -ForegroundColor DarkGray -Object (":{0}" -f ($env:SSH_TTY ?? 'o'))
+    Write-Host -NoNewline                           -Object " "
+    Write-Host -NoNewline -ForegroundColor Green    -Object ("+{0}" -f $env:SHLVL)
+    Write-Host -NoNewline                           -Object "] "
+    Write-Host -NoNewline -ForegroundColor White    -Object $(Convert-PathAlias $pwd.path)
+    Write-Host -NoNewline                           -Object " "
     # Separator line
-    Write-Host ('─' * ([Console]::WindowWidth - [Console]::CursorLeft)) -ForegroundColor DarkGray
+    Write-Host            -ForegroundColor DarkGray -Object ('─' * ([Console]::WindowWidth - [Console]::CursorLeft))
     # Secord Line
     " $ "
 }
 
-# ----- Tmux -----
+# Display actual info in window title
+Add-PromptHook {
+    $Host.UI.RawUI.WindowTitle = ("{0}@{1}:{2}" -f [System.Environment]::UserName, [System.Environment]::MachineName, $pwd.path)
+}
+
+# ------------------------------------------------------------------------------
+# ----- Tmux -------------------------------------------------------------------
 
 Add-PromptHook {
     if (-not (Test-Path env:TMUX)) {
@@ -108,32 +122,8 @@ Add-PromptHook {
     }
 }
 
-# ----- Utils -----
-
-function Find-String() {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$true)]
-        [String]$Pattern,
-
-        [Parameter(Mandatory=$false)]
-        [String[]]$Path,
-
-        [Parameter(Mandatory=$false)]
-        [Switch]$CaseSensitive
-    )
-
-    $arguments = @( )
-    if ($CaseSensitive) {
-        $arguments += '-s'
-    }
-    [string[]]$DefaultProperties = 'path', 'lines'
-    $ddps = New-Object System.Management.Automation.PSPropertySet DefaultDisplayPropertySet, $DefaultProperties
-    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]$ddps
-
-    (&rg --json $arguments $pattern $path) | ConvertFrom-Json | Where-Object { $_.type -eq 'match' } `
-      | ForEach-Object { $_.data } | Add-Member -PassThru -MemberType MemberSet -Name PSStandardMembers -Value $PSStandardMembers
-}
+# ------------------------------------------------------------------------------
+# ----- Utils ------------------------------------------------------------------
 
 function New-Link() {
     [CmdletBinding()]
@@ -149,6 +139,45 @@ function New-Link() {
     New-Item -Path $Path -ItemType ($Hard ? "HardLink" : "SymbolicLink") -Value $Target
 }
 
-# ----- PathContext -----
+<#
+.Synopsis
+Modify content using some script block.
+.Description
+Get content by Path, pass it to the script block by pipe, set the result
+back to Path
+.Parameter Path
+Path of the item to be modified.
+.Parameter Raw
+Whether split content into lines.
+.Parameter ScriptBlock
+Script block which should be applied to the content
+#>
+function Edit-Content() {
+    [CmdletBinding(PositionalBinding = $False)]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [String]$Path,
+
+        [Parameter()]
+        [Switch]$Raw,
+
+        [Parameter(Mandatory = $true, Position = 0)]
+        [ScriptBlock]$ScriptBlock
+    )
+    Get-Content -Raw:$Raw -LiteralPath $Path
+    | Foreach-Object { Invoke-Command -ScriptBlock $ScriptBlock }
+    | Set-Content -LiteralPath $Path
+}
+
+# ------------------------------------------------------------------------------
+# ----- PathContext ------------------------------------------------------------
 
 . (Join-Path (Split-Path -Parent $PROFILE) "PathContext.ps1")
+
+# ------------------------------------------------------------------------------
+# ----- Aliases ----------------------------------------------------------------
+
+New-Alias -Name 'sc'  -Value Set-Content
+New-Alias -Name 'edc' -Value Edit-Content
+
+# ------------------------------------------------------------------------------
