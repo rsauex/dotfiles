@@ -1,0 +1,28 @@
+env:
+  TERM: xterm-256color
+window:
+  dynamic_padding: true
+colors:
+  primary:
+    background: '#2E3440'
+    foreground: '#D8DEE9'
+  normal:
+    black:   '#3B4252'
+    red:     '#BF616A'
+    yellow:  '#A3BE8C'
+    green:   '#EBCB8B'
+    blue:    '#81A1C1'
+    magenta: '#B48EAD'
+    cyan:    '#88C0D0'
+    white:   '#E5E9F0'
+  bright:
+    black:   '#4C566A'
+    red:     '#BF616A'
+    yellow:  '#A3BE8C'
+    green:   '#EBCB8B'
+    blue:    '#81A1C1'
+    magenta: '#B48EAD'
+    cyan:    '#8FBCBB'
+    white:   '#ECEFF4'
+font:
+  size: 10.0
