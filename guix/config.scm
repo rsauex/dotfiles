@@ -85,9 +85,11 @@
                    (@ (gnu packages gnome) gsettings-desktop-schemas)
                    (list (@ (gnu packages glib) glib) "bin")
 
+                   (@ (gnu packages xdisorg) rofi)
+                   (@ (gnu packages xdisorg) xss-lock)
+
                    (@ (gnu packages terminals) alacritty)
                    (@ (gnu packages gnuzilla) icecat)
-                   (@ (gnu packages xdisorg) rofi)
                    (@ (gnu packages gnome) evince)
                    (@ (gnu packages password-utils) keepassxc)
                    (@ (gnu packages syncthing) syncthing-gtk)
