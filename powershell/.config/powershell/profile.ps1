@@ -155,14 +155,14 @@ Script block which should be applied to the content
 function Edit-Content() {
     [CmdletBinding(PositionalBinding = $False)]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, ValueFromPipeline = $true)]
         [String]$Path,
 
-        [Parameter()]
-        [Switch]$Raw,
+        [Parameter(Mandatory = $true, Position = 1)]
+        [ScriptBlock]$ScriptBlock,
 
-        [Parameter(Mandatory = $true, Position = 0)]
-        [ScriptBlock]$ScriptBlock
+        [Parameter()]
+        [Switch]$Raw
     )
     Get-Content -Raw:$Raw -LiteralPath $Path
     | Foreach-Object { Invoke-Command -ScriptBlock $ScriptBlock }
