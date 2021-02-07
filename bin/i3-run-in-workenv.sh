@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 current_workspace=`i3-msg -t get_workspaces | jq -r '.[] | select(.focused == true) | .name'`
 workenv_dir="${HOME}/work/${current_workspace}"
