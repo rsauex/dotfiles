@@ -18,8 +18,8 @@ xss-lock lock
 setxkbmap -option -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll -layout us,ua -variant dvp,
 
 # keyboard settings - Ergodox EZ
-ergodox_id=$(xinput list --id-only '???' 2>/dev/null)
-[[ -z "$ergodox_id" ]] || setxkbmap -device "$ergodox_id" -option -layout us
+ergodox_id=$(xinput list --id-only 'ZSA Technology Labs Inc ErgoDox EZ' 2>/dev/null)
+[[ -z "$ergodox_id" ]] || setxkbmap -device "$ergodox_id" -option -option -layout us
 
 # DBUS kludge
 export `/run/current-system/systemd/bin/systemctl --user show-environment | grep '^DBUS_SESSION_BUS_ADDRESS'`
