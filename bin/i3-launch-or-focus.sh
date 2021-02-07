@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## --instance|--class|--title <value> none|<workspace> none|<output> <program> <arguments>...
 

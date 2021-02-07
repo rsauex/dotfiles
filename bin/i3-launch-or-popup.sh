@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ### TODO: focus if not focused and is not in scratchpad
 ### TODO: rewrite in perl6 with better i3-ipc

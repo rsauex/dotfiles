@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 ## SUSPEND DISPLAYS
 xset dpms force suspend

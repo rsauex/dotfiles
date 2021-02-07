@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 new_workspace=`i3-select-workspace.sh 'Move to Workspace'`
 
