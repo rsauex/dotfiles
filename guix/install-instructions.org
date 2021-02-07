@@ -1,5 +1,48 @@
-Create keyfile for initrd:
-#+BEGIN_SRC sh
+* Partition Disk
+#+BEGIN_SRC shell-script
+cfdisk /dev/sda
+#+END_SRC
+
+| /dev/sda1 | /boot/efi | EFI System       | FAT       | - EFI partition  |
+| /dev/sda2 | /         | Linux filesystem | LUKS+Ext4 | - Root partition |
+
+Format EFI partition:
+#+BEGIN_SRC shell-script
+mkfs.fat -F32 /dev/sda1
+#+END_SRC
+
+Format root partition:
+#+BEGIN_SRC shell-script
+cryptsetup luksFormat /dev/sda2
+cryptsetup open /dev/sda2 cryptroot
+mkfs.ext4 /dev/mapper/cryptroot
+#+END_SRC
+
+* Mount created partitions:
+#+BEGIN_SRC shell-script
+mount /dev/mapper/cryptroot /mnt
+mkdir -p /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+#+END_SRC
+
+* Create swap file (if needed):
+From Fedora 33 Installation Guide:
+| Amount of RAM in the system | Recommended swap space      | Recommended swap space if allowing for hibernation |
+| less than 2 GB              | 2 times the amount of RAM   | 3 times the amount of RAM                          |
+| 2 GB - 8 GB                 | Equal to the amount of RAM  | 2 times the amount of RAM                          |
+| 8 GB - 64 GB                | 0.5 times the amount of RAM | 1.5 times the amount of RAM                        |
+| more than 64 GB             | workload dependent          | hibernation not recommended                        |
+
+#+BEGIN_SRC shell-script
+dd if=/dev/zero of=/swapfile bs=1G count=8 status=progress
+chmod 600 /swapfile
+mkswap /swapfile
+#+END_SRC
+
+* 
+
+* Key file for initrd
+#+BEGIN_SRC shell-script
 dd bs=512 count=4 if=/dev/urandom of=rsauex-private-files/keyfile iflag=fullblock
 sudo cryptosetup luksAddKey /dev/sda2 rsauex-private-files/keyfile
 #+END_SRC
