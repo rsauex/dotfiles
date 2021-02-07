@@ -31,7 +31,8 @@ my $int_acpi = <I_ACPI>;
 close(I_ACPI);
 # fail on unexpected output
 if ($int_acpi !~ /: (\w+), (\d+)%/) {
-    die "$int_acpi\n";
+    exit 0;
+    #die "$int_acpi\n";
 }
 my $int_status = $1;
 my $int_percent = $2;
@@ -43,7 +44,8 @@ my $ext_acpi = <E_ACPI>;
 close(E_ACPI);
 # fail on unexpected output
 if ($ext_acpi !~ /: (\w+), (\d+)%/) {
-    die "$ext_acpi\n";
+    exit 0;
+    # die "$ext_acpi\n";
 }
 my $ext_status = $1;
 my $ext_percent = $2;
