@@ -3,25 +3,51 @@ set $C Control
 set $M Mod1
 set $S Shift
 
-xwayland enable
+# xwayland enable
 
-font pango:Roboto Condensed,11
+#font pango:UI-Sans-Serif 11
+font pango:Iosevka Term 11
 
-new_window pixel 2
-new_float  pixel 2
+#default_border pixel 2
+#new_float  pixel 2
 
 set $default_mode mode "default", bar hidden_state hide
 
-set $float exec --no-startup-id ugly_workaround_script.sh, floating toggle
+#set $float exec --no-startup-id ugly_workaround_script.sh, floating toggle
+set $float floating toggle
 
-for_window [class="(?i)gigolo"] $float
-for_window [class="(?i)doublecmd"] $float
-for_window [class="(?i)lazarus"] $float
-for_window [class="(?i)yad"] $float
+for_window [window_role="pop-up"]      $float_enable
+for_window [window_role="bubble"]      $float_enable 
+for_window [window_role="task_dialog"] $float_enable
+for_window [window_role="Preferences"] $float_enable
+for_window [window_type="dialog"]      $float_enable 
+for_window [window_type="menu"]        $float_enable
 
-for_window [class=".*"] title_format "[ %title ]"
+for_window [class="(?i)yad"]           $float_enable
+for_window [class="(?i)skype"]         $float_enable
+for_window [class="(?i)gigolo"]        $float_enable
+for_window [class="(?i)thunderbird"]   $float_enable
+for_window [class="(?i)keepassxc"]     $float_enable
+for_window [class="(?i)x3270"]         $float_enable
+for_window [class="(?i)errorPopup"]    $float_enable
 
-exec systemctl --user import-environment
-exec systemctl --user start sway-session.target
+for_window [title="Org Capture"]       $float_enable, sticky enable
+for_window [title="Man popup"]         $float_enable, sticky enable
+for_window [title="Speed Type popup"]  $float_enable, sticky enable
+
+for_window [class="(?i)x3270"]         $float_enable
+
+for_window [class="Steam" title="Friends List"] $float_enable
+
+for_window [class=".*"] title_format " %title "
+
+#exec systemctl --user import-environment
+#exec systemctl --user start sway-session.target
+
+set $exec_or_focus exec i3-launch-or-focus.sh
+set $exec_or_popup exec i3-launch-or-popup.sh
+set $exec_silent   exec --no-startup-id
+#set $exec_workenv  exec i3-run-in-workenv.sh
+set $exec_workenv  exec
 
 include ~/.config/sway/config.d/*
