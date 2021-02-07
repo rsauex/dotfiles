@@ -17,13 +17,16 @@ else
     setxkbmap -option -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll -layout us,ua -variant dvp,
 fi
 
+# DBUS kludge
+export `/run/current-system/systemd/bin/systemctl --user show-environment | grep '^DBUS_SESSION_BUS_ADDRESS'`
+
+# make some vars visible in user services
+systemctl --user import-environment DISPLAY XAUTHORITY
+
 exec i3 &
 wmpid=$!
 
-systemctl --user import-environment
-systemctl --user start x-session.target
-
-lxpolkit & # TODO: create a systemd unit
+#lxpolkit & # TODO: create a systemd unit
 
 #~/.fehbg &
 #conky &
