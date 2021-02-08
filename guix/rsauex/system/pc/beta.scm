@@ -17,12 +17,12 @@
     (firmware (list linux-firmware))
 
     (mapped-devices (list (mapped-device
-                           (source "/dev/sda2")
+                           (source (uuid "1caaeb4e-d8a9-45e0-a2ea-6b84ec9478e8"))
                            (target "cryptroot")
                            (type luks-device-mapping))))
 
     (file-systems (cons* (file-system
-                           (device "/dev/sda1")
+                           (device (uuid "3A7B-4B26" 'fat))
                            (mount-point "/boot/efi")
                            (type "vfat"))
                          (file-system

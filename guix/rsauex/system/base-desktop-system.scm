@@ -11,12 +11,15 @@
 
 (define %base-desktop-system
   (operating-system
+    (host-name "")
     (timezone "Europe/Kiev")
     (locale "en_US.UTF-8")
     
     (bootloader (bootloader-configuration
                  (bootloader grub-efi-bootloader)
                  (target "/boot/efi")))
+
+    (file-systems %base-file-systems)
     
     (issue "THIS COMPUTER IS PRIVATE PROPERTY.\n\n")
 
