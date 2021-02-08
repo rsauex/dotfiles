@@ -34,7 +34,7 @@ wmpid=$!
 #lxpolkit & # TODO: create a systemd unit
 
 # lockscreen
-xss-lock lock
+xss-lock -l -- lock
 
 #~/.fehbg &
 #conky &
