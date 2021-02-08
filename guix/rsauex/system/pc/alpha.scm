@@ -1,8 +1,6 @@
-(define-module (rsauex system pc beta)
+(define-module (rsauex system pc alpha)
   #:use-module (gnu)
   #:use-module (gnu packages)
-  #:use-module (nongnu system linux-initrd)
-  #:use-module (nongnu packages linux)
   #:use-module (rsauex system base-systems)
   #:export (%os))
 
@@ -10,19 +8,15 @@
   (operating-system
     (inherit %my-base-desktop-system)
 
-    (host-name "beta")
+    (host-name "alpha")
     
-    (kernel linux)
-    (initrd microcode-initrd)
-    (firmware (list linux-firmware))
-
     (mapped-devices (list (mapped-device
-                           (source (uuid "1caaeb4e-d8a9-45e0-a2ea-6b84ec9478e8"))
+                           (source (uuid ""))
                            (target "cryptroot")
                            (type luks-device-mapping))))
 
     (file-systems (cons* (file-system
-                           (device (uuid "3A7B-4B26" 'fat))
+                           (device (uuid "" 'fat))
                            (mount-point "/boot/efi")
                            (type "vfat"))
                          (file-system
@@ -33,4 +27,5 @@
                            (dependencies mapped-devices))
                          %base-file-systems))
 
-    (swap-devices '("/swapfile"))))
+    (packages (cons*
+               (operating-system-packages %my-base-desktop-system)))))
