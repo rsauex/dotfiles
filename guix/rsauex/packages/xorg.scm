@@ -4,35 +4,23 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu services)
   #:use-module (gnu services xorg)
+  #:use-module (gnu services dbus)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix licenses)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:export (intel-backlight-service))
 
-;; (define xorg-intel-screen-tearing-fix
-;;   "Section \"Device\"
-;;        Identifier  \"Intel Graphics\"
-;;        Driver      \"intel\"
-;;        Option      \"AccelMethod\"  \"sna\"
-;;        Option      \"TearFree\" \"true\"
-;;     EndSection")
+(define intel-backlight-service
+  ;; Solution to make intel backlight work for non-root users...
+  (simple-service 'intel-backlight
+                  polkit-service-type
+                  (list xf86-video-intel)))
 
-(define xorg-enable-dri3
-  "Section \"Device\"
-       Identifier  \"Intel Graphics\"
-       Driver      \"intel\"
-       Option      \"DRI\"  \"3\"
-   EndSection")
-
-(define-public my-xorg
-  (let* ((start-command (xorg-start-command
-                         (xorg-configuration
-                          (modules
-                           (list xf86-input-libinput
-                                 xf86-video-intel))
-                          (extra-config
-                           (list xorg-enable-dri3)))))
+(define-public (my-xorg config)
+  (let* ((start-command (xorg-start-command config))
          (startx (program-file
                   "startx"
                   #~(let ((xinit (string-append #$xinit "/bin/xinit")))
