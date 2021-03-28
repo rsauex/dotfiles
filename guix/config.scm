@@ -1,5 +1,5 @@
 (define (get-os-module host)
-  (resolve-module (list 'rsauex 'system 'pc (string->symbol host)) #:ensure #f))
+  (resolve-module (list 'rsauex 'systems 'pc (string->symbol host)) #:ensure #f))
 
 (let* ((host (gethostname))
        (os-module (get-os-module host)))
