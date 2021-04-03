@@ -4,6 +4,17 @@ case $- in
     *) return ;;
 esac
 
+# if [[ $- != *i* ]]
+# then
+#     # We are being invoked from a non-interactive shell.  If this
+#     # is an SSH session (as in "ssh host command"), source
+#     # /etc/profile so we get PATH and other essential variables.
+#     [[ -n "$SSH_CLIENT" ]] && source /etc/profile
+#
+#     # Don't do anything else.
+#     return
+# fi
+
 # If in dumb terminal, don't do anything
 [[ "$TERM" == "dumb" ]] && return
 
@@ -11,6 +22,9 @@ esac
 # KLUDGE! Changing login shell to pwsh breaks remote call over ssh and emacs tramp over ssh
 command -v pwsh-preview &>/dev/null && exec pwsh-preview -nologo
 command -v pwsh &>/dev/null && exec pwsh -nologo
+
+# Source the system-wide file.
+source /etc/bashrc
 
 # don't put duplicate lines or lines starting with space in the history
 HISTCONTROL=ignoreboth
@@ -75,12 +89,12 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 # enable programmable completion features
-if ! shopt -oq posix; then
-    if [ -f /usr/share/bash-completion/bash_completion ]; then
-        . /usr/share/bash-completion/bash_completion
-    elif [ -f /etc/bash_completion ]; then
-        . /etc/bash_completion
-    fi
-fi
+# if ! shopt -oq posix; then
+#     if [ -f /usr/share/bash-completion/bash_completion ]; then
+#         . /usr/share/bash-completion/bash_completion
+#     elif [ -f /etc/bash_completion ]; then
+#         . /etc/bash_completion
+#     fi
+# fi
 
 eval "$(direnv hook bash)"
