@@ -44,6 +44,7 @@
                 (@ (gnu packages tmux) tmux)
                 (@ (gnu packages package-management) stow)
                 (@ (rsauex packages powershell) powershell)
+                (@ (gnu packages web) jq)
 
                 (@ (gnu packages security-token) yubikey-personalization)
                 (@ (gnu packages security-token) pam-u2f))
