@@ -1,8 +1,10 @@
 (define-module (rsauex systems pc alpha)
   #:use-module (gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu services xorg)
   #:use-module (rsauex systems base)
   #:use-module (rsauex systems desktop)
+  #:use-module (rsauex packages xorg)
   #:export (%os))
 
 (define %os
@@ -12,12 +14,12 @@
     (host-name "alpha")
 
     (mapped-devices (list (mapped-device
-                           (source (uuid ""))
+                           (source (uuid "eb58fa70-7419-4e29-8d9f-30c53f67cc26"))
                            (target "cryptroot")
                            (type luks-device-mapping))))
 
     (file-systems (cons* (file-system
-                           (device (uuid "" 'fat))
+                           (device (uuid "1776-7414" 'fat))
                            (mount-point "/boot/efi")
                            (type "vfat"))
                          (file-system
@@ -29,4 +31,11 @@
                          %base-file-systems))
 
     (packages (cons*
+               ((@ (rsauex packages xorg) my-xorg)
+                (xorg-configuration
+                 (modules
+                  (list (@ (gnu packages xorg) xf86-input-libinput)
+                        (@ (gnu packages xorg) xf86-video-intel)))
+                 ))
+
                (operating-system-packages %my-base-desktop-system)))))
