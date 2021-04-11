@@ -73,6 +73,8 @@
 
                      (@ (gnu packages security-token) yubikey-personalization)
 
+                     (@ (rsauex packages websigner) aval-websigner)
+
                      (operating-system-packages %my-base-minimal-system)))
 
     (services (append
