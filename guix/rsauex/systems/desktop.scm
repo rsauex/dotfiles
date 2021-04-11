@@ -58,11 +58,13 @@
 
                      (list (@ (gnu packages glib) glib) "bin")
 
+                     (@ (gnu packages dunst) dunst)
                      (@ (gnu packages xdisorg) rofi)
                      (@ (gnu packages xdisorg) xss-lock)
 
                      (@ (gnu packages terminals) alacritty)
-                     (@ (gnu packages gnuzilla) icecat)
+                     (@ (nongnu packages mozilla) firefox)
+                     ;; (@ (gnu packages gnuzilla) icecat)
                      (@ (gnu packages gnome) evince)
                      (@ (gnu packages password-utils) keepassxc)
                      (@ (gnu packages syncthing) syncthing-gtk)
@@ -70,6 +72,9 @@
                      (@ (gnu packages wine) wine)
                      (@ (rsauex packages gigolo) gigolo)
                      (@ (gnu packages libreoffice) libreoffice)
+                     (list (@ (gnu packages version-control) git) "gui")
+                     (@ (gnu packages package-management) flatpak)
+                     (@ (gnu packages telegram) telegram-desktop)
 
                      (@ (gnu packages security-token) yubikey-personalization)
 

@@ -37,6 +37,8 @@
                          %base-file-systems))
 
     (packages (cons*
+               (@ (nongnu packages steam-client) steam)
+
                ((@ (rsauex packages xorg) my-xorg)
                 (xorg-configuration
                  (modules
