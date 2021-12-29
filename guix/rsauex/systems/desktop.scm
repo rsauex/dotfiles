@@ -89,14 +89,14 @@
                      (operating-system-packages %my-base-minimal-system)))
 
     (services (append
-               (list (service my-screen-locker-service-type
-                              (my-screen-locker
-                               (program
-                                (file-append (@ (gnu packages wm) i3lock)
-                                             "/bin/i3lock"))
-                               (pam-service
-                                (my-user-auth-pam-service "i3lock"))))
-                     (service cups-service-type
+               ;; (list (service my-screen-locker-service-type
+               ;;                (my-screen-locker
+               ;;                 (program
+               ;;                  (file-append (@ (gnu packages wm) i3lock)
+               ;;                               "/bin/i3lock"))
+               ;;                 (pam-service
+               ;;                  (my-user-auth-pam-service "i3lock")))))
+               (list (service cups-service-type
                               (cups-configuration
                                (extensions
                                 (list (@ (gnu packages cups) cups-filters)))
