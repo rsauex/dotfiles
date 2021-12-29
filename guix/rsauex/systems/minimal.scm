@@ -72,5 +72,7 @@
                                            "input"
                                            "wheel"
                                            "dialout"
-                                           "disk")))
+                                           "disk"
+                                           "lpadmin"
+                                           "lp")))
                   %base-user-accounts))))
