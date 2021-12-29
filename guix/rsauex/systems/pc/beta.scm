@@ -43,7 +43,8 @@
                            (dependencies mapped-devices))
                          %base-file-systems))
 
-    (swap-devices '("/swapfile"))
+    (swap-devices (list (swap-space
+                         (target "/swapfile"))))
 
     (packages (cons* (@ (gnu packages xorg) xbacklight)
                      ((@ (rsauex packages xorg) my-xorg)
