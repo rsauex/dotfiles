@@ -5,6 +5,7 @@
   #:use-module (gnu services networking)
   #:use-module (gnu services desktop)
   #:use-module (gnu services xorg)
+  #:use-module (gnu services cups)
   #:use-module (gnu system pam)
   #:use-module (rsauex systems base)
   #:use-module (rsauex systems minimal)
@@ -55,6 +56,7 @@
                      (@ (gnu packages gnome) dconf-editor)
                      (@ (gnu packages gnome) gsettings-desktop-schemas)
                      (@ (gnu packages gnome) gvfs)
+                     (@ (gnu packages gnome) system-config-printer)
 
                      (list (@ (gnu packages glib) glib) "bin")
 
@@ -89,8 +91,12 @@
                                 (file-append (@ (gnu packages wm) i3lock)
                                              "/bin/i3lock"))
                                (pam-service
-                                (my-user-auth-pam-service "i3lock")))))
-               (list (service yubikey-session-service-type))
+                                (my-user-auth-pam-service "i3lock"))))
+                     (service cups-service-type
+                              (cups-configuration
+                               (extensions
+                                (list (@ (gnu packages cups) cups-filters)))
+                               (default-paper-size "A4"))))
 
                %my-base-services
 
