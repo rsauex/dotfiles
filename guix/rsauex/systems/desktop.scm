@@ -33,6 +33,7 @@
 
     (packages (cons* (@ (gnu packages fonts) font-iosevka)
                      (@ (gnu packages fonts) font-google-roboto)
+                     (@ (gnu packages fonts) font-google-noto)
                      (@ (gnu packages fonts) font-adobe-source-sans-pro)
                      (@ (gnu packages fonts) font-adobe-source-serif-pro)
                      (@ (gnu packages fonts) font-adobe-source-han-sans)
