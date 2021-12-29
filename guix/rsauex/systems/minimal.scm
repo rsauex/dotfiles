@@ -22,7 +22,7 @@
 
     (bootloader (bootloader-configuration
                  (bootloader grub-efi-bootloader)
-                 (target "/boot/efi")))
+                 (targets (list "/boot/efi"))))
 
     (file-systems %base-file-systems)
 
