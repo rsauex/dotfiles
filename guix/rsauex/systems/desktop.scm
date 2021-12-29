@@ -6,6 +6,7 @@
   #:use-module (gnu services desktop)
   #:use-module (gnu services xorg)
   #:use-module (gnu services cups)
+  #:use-module (gnu services dbus)
   #:use-module (gnu system pam)
   #:use-module (rsauex systems base)
   #:use-module (rsauex systems minimal)
@@ -57,6 +58,7 @@
                      (@ (gnu packages gnome) gsettings-desktop-schemas)
                      (@ (gnu packages gnome) gvfs)
                      (@ (gnu packages gnome) system-config-printer)
+                     (@ (gnu packages polkit) polkit-gnome)
 
                      (list (@ (gnu packages glib) glib) "bin")
 
@@ -96,7 +98,10 @@
                               (cups-configuration
                                (extensions
                                 (list (@ (gnu packages cups) cups-filters)))
-                               (default-paper-size "A4"))))
+                               (default-paper-size "A4")))
+                     (simple-service 'gvfs-polkit
+                                     polkit-service-type
+                                     (list (@ (gnu packages gnome) gvfs))))
 
                %my-base-services
 
