@@ -41,6 +41,7 @@
 
                 (@ (gnu packages fonts) font-terminus)
 
+                (@ (gnu packages admin) htop)
                 (@ (gnu packages tmux) tmux)
                 (@ (gnu packages package-management) stow)
                 (@ (rsauex packages powershell) powershell)
