@@ -81,6 +81,7 @@
                      (@ (gnu packages telegram) telegram-desktop)
 
                      (@ (gnu packages security-token) yubikey-personalization)
+                     (@ (gnu packages security-token) python-yubikey-manager)
 
                      (@ (rsauex packages websigner) aval-websigner)
 
@@ -101,7 +102,8 @@
                                (default-paper-size "A4")))
                      (simple-service 'gvfs-polkit
                                      polkit-service-type
-                                     (list (@ (gnu packages gnome) gvfs))))
+                                     (list (@ (gnu packages gnome) gvfs)))
+                     (udev-rules-service 'yubikey (@ (gnu packages security-token) yubikey-personalization)))
 
                %my-base-services
 
