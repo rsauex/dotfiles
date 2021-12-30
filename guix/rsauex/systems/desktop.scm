@@ -126,7 +126,6 @@
 
                  (cut remove (compose (cut eq? gdm-service-type <>) service-kind) <>)
                  (cut remove (compose (cut eq? screen-locker-service-type <>) service-kind) <>)
-                 (cut remove (compose (cut eq? ntp-service-type <>) service-kind) <>)
-                 (cut remove (compose (cut eq? login-service-type <>) service-kind) <>))
+                 (cut remove (compose (cut eq? ntp-service-type <>) service-kind) <>))
 
                 %desktop-services)))))

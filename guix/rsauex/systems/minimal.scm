@@ -56,9 +56,7 @@
     (services (append
                %my-base-services
                ((compose
-                 my-console-font-service-type
-
-                 (cut remove (compose (cut eq? login-service-type <>) service-kind) <>))
+                 my-console-font-service-type)
 
                 %base-services)))
 
