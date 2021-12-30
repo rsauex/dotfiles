@@ -2,7 +2,6 @@
   #:use-module (gnu)
   #:use-module (gnu services)
   #:use-module (gnu services base)
-  #:use-module (rsauex services login)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (yubikey-session-service-type))

@@ -10,7 +10,6 @@
   #:use-module (gnu system pam)
   #:use-module (rsauex systems base)
   #:use-module (rsauex systems minimal)
-  #:use-module (rsauex services login)
   #:use-module (rsauex services pam-u2f)
   #:use-module (rsauex services yubikey-session)
   #:use-module (srfi srfi-1)

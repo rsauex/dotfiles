@@ -6,7 +6,6 @@
   #:use-module (gnu services desktop)
   #:use-module (gnu services xorg)
   #:use-module (gnu system pam)
-  #:use-module (rsauex services login)
   #:use-module (rsauex services pam-u2f)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
