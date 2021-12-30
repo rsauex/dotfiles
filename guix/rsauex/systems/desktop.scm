@@ -13,7 +13,6 @@
   #:use-module (rsauex services login)
   #:use-module (rsauex services pam-u2f)
   #:use-module (rsauex services yubikey-session)
-  #:use-module (rsauex services screen-locker)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -29,7 +28,7 @@
 
 (define (my-pam-u2f-auth-service)
   (define (my-pam-u2f-auth-extension pam)
-    (if (member (pam-service-name pam) '("login" "su" "sudo"))
+    (if (member (pam-service-name pam) '("login" "su" "sudo" "i3lock"))
         (pam-service
          (inherit pam)
          (auth (cons* (pam-u2f-entry "sufficient")
@@ -100,13 +99,6 @@
                      (operating-system-packages %my-base-minimal-system)))
 
     (services (append
-               ;; (list (service my-screen-locker-service-type
-               ;;                (my-screen-locker
-               ;;                 (program
-               ;;                  (file-append (@ (gnu packages wm) i3lock)
-               ;;                               "/bin/i3lock"))
-               ;;                 (pam-service
-               ;;                  (my-user-auth-pam-service "i3lock")))))
                (list (service cups-service-type
                               (cups-configuration
                                (extensions
@@ -116,7 +108,8 @@
                                      polkit-service-type
                                      (list (@ (gnu packages gnome) gvfs)))
                      (udev-rules-service 'yubikey (@ (gnu packages security-token) yubikey-personalization))
-                     (my-pam-u2f-auth-service))
+                     (my-pam-u2f-auth-service)
+                     (screen-locker-service (@ (gnu packages wm) i3lock) "i3lock"))
 
                %my-base-services
 
