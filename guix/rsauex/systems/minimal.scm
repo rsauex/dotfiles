@@ -62,8 +62,6 @@
 
                 %base-services)))
 
-    (pam-services %my-base-pam-services)
-
     (users (cons* (user-account
                    (name "rsauex")
                    (uid 1000)

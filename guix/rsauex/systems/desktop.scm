@@ -27,6 +27,17 @@
       (inherit config)
       (dns "dnsmasq")))))
 
+(define (my-pam-u2f-auth-service)
+  (define (my-pam-u2f-auth-extension pam)
+    (if (member (pam-service-name pam) '("login" "su" "sudo"))
+        (pam-service
+         (inherit pam)
+         (auth (cons* (pam-u2f-entry "sufficient")
+                      (pam-service-auth pam))))
+        pam))
+
+  (simple-service 'pam-u2f pam-root-service-type (list my-pam-u2f-auth-extension)))
+
 (define %my-base-desktop-system
   (operating-system
     (inherit %my-base-minimal-system)
@@ -104,7 +115,8 @@
                      (simple-service 'gvfs-polkit
                                      polkit-service-type
                                      (list (@ (gnu packages gnome) gvfs)))
-                     (udev-rules-service 'yubikey (@ (gnu packages security-token) yubikey-personalization)))
+                     (udev-rules-service 'yubikey (@ (gnu packages security-token) yubikey-personalization))
+                     (my-pam-u2f-auth-service))
 
                %my-base-services
 
@@ -117,6 +129,4 @@
                  (cut remove (compose (cut eq? ntp-service-type <>) service-kind) <>)
                  (cut remove (compose (cut eq? login-service-type <>) service-kind) <>))
 
-                %desktop-services)))
-
-    (pam-services %my-base-pam-services)))
+                %desktop-services)))))
