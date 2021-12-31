@@ -36,6 +36,23 @@
 
   (simple-service 'pam-u2f pam-root-service-type (list my-pam-u2f-auth-extension)))
 
+(define (add-nonguix-substitute services)
+  (modify-services services
+    (guix-service-type
+     config =>
+     (guix-configuration
+      (inherit config)
+      (substitute-urls
+       (append (list "https://substitutes.nonguix.org")
+               (guix-configuration-substitute-urls config)))
+      (authorized-keys
+       (append (list (plain-file "non-guix.pub"
+                                 "(public-key
+                                   (ecc
+                                    (curve Ed25519)
+                                    (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
+               (guix-configuration-authorized-keys config)))))))
+
 (define %my-base-desktop-system
   (operating-system
     (inherit %my-base-minimal-system)
@@ -115,6 +132,8 @@
                ((compose
                  my-console-font-service-type
                  my-network-manager-service-type
+
+                 add-nonguix-substitute
 
                  (cut remove (compose (cut eq? gdm-service-type <>) service-kind) <>)
                  (cut remove (compose (cut eq? screen-locker-service-type <>) service-kind) <>)
