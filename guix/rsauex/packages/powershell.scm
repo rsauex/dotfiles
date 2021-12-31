@@ -13,6 +13,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages less)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages instrumentation)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
