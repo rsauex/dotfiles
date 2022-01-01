@@ -113,6 +113,7 @@
                      (list glib:glib "bin")
 
                      dunst:dunst
+                     xdisorg:sx
                      xdisorg:rofi
                      xdisorg:xss-lock
 
@@ -145,7 +146,8 @@
                                      (list gnome:gvfs))
                      (udev-rules-service 'yubikey security-token:yubikey-personalization)
                      (my-pam-u2f-auth-service)
-                     (screen-locker-service wm:i3lock "i3lock"))
+                     (screen-locker-service wm:i3lock "i3lock")
+                     (service xorg-server-service-type))
 
                %my-base-services
 

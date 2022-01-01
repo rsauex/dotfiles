@@ -47,13 +47,6 @@
                          (target "/swapfile"))))
 
     (packages (cons* (@ (gnu packages xorg) xbacklight)
-                     ((@ (rsauex packages xorg) my-xorg)
-                      (xorg-configuration
-                       (modules
-                        (list (@ (gnu packages xorg) xf86-input-libinput)
-                              (@ (gnu packages xorg) xf86-video-intel)))
-                       (extra-config
-                        (list xorg-enable-dri3))))
 
                      (@ (gnu packages clojure) clojure)
                      (@ (nongnu packages clojure) leiningen)
@@ -62,4 +55,10 @@
                      (operating-system-packages %my-base-desktop-system)))
 
     (services (cons* intel-backlight-service
-                     (operating-system-user-services %my-base-desktop-system)))))
+                     (modify-services
+                         (operating-system-user-services %my-base-desktop-system)
+                       (xorg-server-service-type
+                        config => (xorg-configuration
+                                   (extra-config
+                                    (cons* xorg-enable-dri3
+                                           (xorg-configuration-extra-config config))))))))))

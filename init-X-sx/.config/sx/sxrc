@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# load xresources
+xrdb -merge -I$HOME ~/.Xresources
+
+# disable screen saver
+xset s off
+
+# dpms settings
+#         standby  suspend  off
+xset dpms 0        600      900
+
+# cursor speed
+xset r rate 400 44
+
+# keyboard settings - default
+setxkbmap -option -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll -layout us,ua -variant dvp,
+
+# keyboard settings - Ergodox EZ
+ergodox_id=$(xinput list --id-only '???' 2>/dev/null)
+[[ -z "$ergodox_id" ]] || setxkbmap -device "$ergodox_id" -option -layout us
+
+# start wm
+exec dbus-launch --exit-with-session i3
+#wmid=$!
+
+# lockscreen
+#xss-lock -l -- lock & # TODO: make service
+
+#wait $wmpid
+

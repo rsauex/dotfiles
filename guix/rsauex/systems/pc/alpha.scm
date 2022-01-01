@@ -39,12 +39,4 @@
     (packages (cons*
                (@ (nongnu packages steam-client) steam)
 
-               ((@ (rsauex packages xorg) my-xorg)
-                (xorg-configuration
-                 (modules
-                  (list (@ (gnu packages xorg) xf86-input-libinput)
-                        (@ (gnu packages xorg) xf86-video-intel)
-                        (@ (gnu packages xorg) xf86-video-amdgpu)))
-                 ))
-
                (operating-system-packages %my-base-desktop-system)))))

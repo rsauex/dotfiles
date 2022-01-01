@@ -12,7 +12,8 @@ help:
 	@echo "    tmux             - Terminal multiplexer"
 	@echo " - X specific:"
 	@echo "    x-environment    - all X stuff together"
-	@echo "    x-init           - automatic X and i3 startup"
+	@echo "    x-init-startx    - automatic X and i3 startup using startx"
+	@echo "    x-init-sx        - automatic X and i3 startup using sx"
 	@echo "    compton          - Composition manager"
 	@echo "    dunst            - Notification manager"
 	@echo "    i3               - Tiling window manager"
@@ -31,15 +32,21 @@ help:
 
 ## X specific       ######
 
-x-environment:       x-init    compton    dunst    xresources    gtk    i3    rofi    zathura
-un-x-environment: un-x-init un-compton un-dunst un-xresources un-gtk un-i3 un-rofi un-zathura
+x-environment:       x-init-startx    compton    dunst    xresources    gtk    i3    rofi    zathura
+un-x-environment: un-x-init-startx un-compton un-dunst un-xresources un-gtk un-i3 un-rofi un-zathura
 .PHONY: x-environment un-x-environment
 
-x-init:
+x-init-startx:
 	stow    init-X
-un-x-init:
+un-x-init-startx:
 	stow -D init-X
-.PHONY: x-init un-x-init
+.PHONY: x-init-startx un-x-init-startx
+
+x-init-sx:
+	stow    init-X-sx
+un-x-init-sx:
+	stow -D init-X-sx
+.PHONY: x-init-sx un-x-init-sx
 
 compton:
 	stow    compton
