@@ -3,6 +3,14 @@ function Test-LoginShell() {
 }
 
 # ------------------------------------------------------------------------------
+# ----- ReadLine options -------------------------------------------------------
+
+Set-PSReadLineOption -Colors @{
+  Parameter = [System.ConsoleColor]::DarkMagenta
+  Operator  = [System.ConsoleColor]::DarkMagenta
+}
+
+# ------------------------------------------------------------------------------
 # ----- Path Alias -------------------------------------------------------------
 
 [hashtable]$PWSH_PATH_ALIASES = @{ }
