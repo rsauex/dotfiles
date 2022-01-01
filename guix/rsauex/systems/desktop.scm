@@ -1,17 +1,40 @@
 (define-module (rsauex systems desktop)
   #:use-module (gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu services security-token)
-  #:use-module (gnu services networking)
-  #:use-module (gnu services desktop)
-  #:use-module (gnu services xorg)
+  #:use-module ((gnu packages cups)               #:prefix cups:)
+  #:use-module ((gnu packages dunst)              #:prefix dunst:)
+  #:use-module ((gnu packages fonts)              #:prefix fonts:)
+  #:use-module ((gnu packages glib)               #:prefix glib:)
+  #:use-module ((gnu packages gnome)              #:prefix gnome:)
+  #:use-module ((gnu packages libreoffice)        #:prefix libreoffice:)
+  #:use-module ((gnu packages m4)                 #:prefix m4:)
+  #:use-module ((gnu packages package-management) #:prefix package-management:)
+  #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
+  #:use-module ((gnu packages polkit)             #:prefix polkit:)
+  #:use-module ((gnu packages pulseaudio)         #:prefix pulseaudio:)
+  #:use-module ((gnu packages security-token)     #:prefix security-token:)
+  #:use-module ((gnu packages syncthing)          #:prefix syncthing:)
+  #:use-module ((gnu packages telegram)           #:prefix telegram:)
+  #:use-module ((gnu packages terminals)          #:prefix terms:)
+  #:use-module ((gnu packages version-control)    #:prefix vc:)
+  #:use-module ((gnu packages wine)               #:prefix wine:)
+  #:use-module ((gnu packages wm)                 #:prefix wm:)
+  #:use-module ((gnu packages xdisorg)            #:prefix xdisorg:)
+  #:use-module ((gnu packages xorg)               #:prefix xorg:)
   #:use-module (gnu services cups)
   #:use-module (gnu services dbus)
+  #:use-module (gnu services desktop)
+  #:use-module (gnu services networking)
+  #:use-module (gnu services security-token)
+  #:use-module (gnu services xorg)
   #:use-module (gnu system pam)
-  #:use-module (rsauex systems base)
-  #:use-module (rsauex systems minimal)
+  #:use-module ((nongnu packages mozilla) #:prefix mozilla:)
+  #:use-module ((rsauex packages gigolo)  #:prefix gigolo:)
+  #:use-module ((rsauex packages the-dot) #:prefix the-dot:)
   #:use-module (rsauex services pam-u2f)
   #:use-module (rsauex services yubikey-session)
+  #:use-module (rsauex systems base)
+  #:use-module (rsauex systems minimal)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -57,60 +80,57 @@
   (operating-system
     (inherit %my-base-minimal-system)
 
-    (packages (cons* (@ (gnu packages fonts) font-iosevka)
-                     (@ (gnu packages fonts) font-google-roboto)
-                     (@ (gnu packages fonts) font-google-noto)
-                     (@ (gnu packages fonts) font-adobe-source-sans-pro)
-                     (@ (gnu packages fonts) font-adobe-source-serif-pro)
-                     (@ (gnu packages fonts) font-adobe-source-han-sans)
+    (packages (cons* fonts:font-iosevka
+                     fonts:font-google-roboto
+                     fonts:font-google-noto
+                     fonts:font-adobe-source-sans-pro
+                     fonts:font-adobe-source-serif-pro
+                     fonts:font-adobe-source-han-sans
 
-                     (@ (gnu packages gnome) gnome-themes-standard)
-                     (@ (gnu packages gnome) gnome-themes-extra)
-                     (@ (gnu packages gnome) hicolor-icon-theme)
-                     (@ (gnu packages gnome) adwaita-icon-theme)
-                     (@ (rsauex packages the-dot) the-dot-cursor-theme)
+                     gnome:gnome-themes-standard
+                     gnome:gnome-themes-extra
+                     gnome:hicolor-icon-theme
+                     gnome:adwaita-icon-theme
+                     the-dot:the-dot-cursor-theme
 
-                     (@ (gnu packages xorg) xrdb)
-                     (@ (gnu packages xorg) xset)
-                     (@ (gnu packages xorg) xinput)
-                     (@ (gnu packages xorg) setxkbmap)
+                     xorg:xrdb
+                     xorg:xset
+                     xorg:xinput
+                     xorg:setxkbmap
 
-                     (@ (gnu packages m4) m4)
-                     (@ (gnu packages wm) i3-wm)
-                     (@ (gnu packages wm) i3status)
-                     (@ (gnu packages wm) i3blocks)
+                     m4:m4
+                     wm:i3-wm
+                     wm:i3status
+                     wm:i3blocks
 
-                     (@ (gnu packages gnome) dconf)
-                     (@ (gnu packages gnome) dconf-editor)
-                     (@ (gnu packages gnome) gsettings-desktop-schemas)
-                     (@ (gnu packages gnome) gvfs)
-                     (@ (gnu packages gnome) system-config-printer)
-                     (@ (gnu packages polkit) polkit-gnome)
+                     gnome:dconf
+                     gnome:dconf-editor
+                     gnome:gsettings-desktop-schemas
+                     gnome:gvfs
+                     gnome:system-config-printer
+                     polkit:polkit-gnome
 
-                     (list (@ (gnu packages glib) glib) "bin")
+                     (list glib:glib "bin")
 
-                     (@ (gnu packages dunst) dunst)
-                     (@ (gnu packages xdisorg) rofi)
-                     (@ (gnu packages xdisorg) xss-lock)
+                     dunst:dunst
+                     xdisorg:rofi
+                     xdisorg:xss-lock
 
-                     (@ (gnu packages terminals) alacritty)
-                     (@ (nongnu packages mozilla) firefox)
-                     ;; (@ (gnu packages gnuzilla) icecat)
-                     (@ (gnu packages gnome) evince)
-                     (@ (gnu packages password-utils) keepassxc)
-                     (@ (gnu packages syncthing) syncthing-gtk)
-                     (@ (gnu packages pulseaudio) pavucontrol)
-                     (@ (gnu packages wine) wine)
-                     (@ (rsauex packages gigolo) gigolo)
-                     (@ (gnu packages libreoffice) libreoffice)
-                     (list (@ (gnu packages version-control) git) "gui")
-                     (@ (gnu packages package-management) flatpak)
-                     (@ (gnu packages telegram) telegram-desktop)
+                     terms:alacritty
+                     mozilla:firefox
+                     gnome:evince
+                     passwd-utils:keepassxc
+                     syncthing:syncthing-gtk
+                     pulseaudio:pavucontrol
+                     wine:wine
+                     gigolo:gigolo
+                     libreoffice:libreoffice
+                     (list vc:git "gui")
+                     package-management:flatpak
+                     telegram:telegram-desktop
 
-                     (@ (gnu packages security-token) yubikey-personalization)
-                     (@ (gnu packages security-token) python-yubikey-manager)
-
-                     (@ (rsauex packages websigner) aval-websigner)
+                     security-token:yubikey-personalization
+                     security-token:python-yubikey-manager
 
                      (operating-system-packages %my-base-minimal-system)))
 
@@ -118,14 +138,14 @@
                (list (service cups-service-type
                               (cups-configuration
                                (extensions
-                                (list (@ (gnu packages cups) cups-filters)))
+                                (list cups:cups-filters))
                                (default-paper-size "A4")))
                      (simple-service 'gvfs-polkit
                                      polkit-service-type
-                                     (list (@ (gnu packages gnome) gvfs)))
-                     (udev-rules-service 'yubikey (@ (gnu packages security-token) yubikey-personalization))
+                                     (list gnome:gvfs))
+                     (udev-rules-service 'yubikey security-token:yubikey-personalization)
                      (my-pam-u2f-auth-service)
-                     (screen-locker-service (@ (gnu packages wm) i3lock) "i3lock"))
+                     (screen-locker-service wm:i3lock "i3lock"))
 
                %my-base-services
 

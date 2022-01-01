@@ -1,16 +1,21 @@
 (define-module (rsauex systems minimal)
   #:use-module (gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu services security-token)
-  #:use-module (gnu services networking)
-  #:use-module (gnu services desktop)
-  #:use-module (gnu services xorg)
-  #:use-module (gnu system pam)
+  #:use-module ((gnu packages admin)              #:prefix admin:)
+  #:use-module ((gnu packages certs)              #:prefix certs:)
+  #:use-module ((gnu packages compression)        #:prefix compression:)
+  #:use-module ((gnu packages emacs)              #:prefix emacs:)
+  #:use-module ((gnu packages fonts)              #:prefix fonts:)
+  #:use-module ((gnu packages package-management) #:prefix package-management:)
+  #:use-module ((gnu packages security-token)     #:prefix security-token:)
+  #:use-module ((gnu packages ssh)                #:prefix ssh:)
+  #:use-module ((gnu packages tmux)               #:prefix tmux:)
+  #:use-module ((gnu packages version-control)    #:prefix vc:)
+  #:use-module ((gnu packages web)                #:prefix web:)
+  #:use-module ((rsauex packages powershell)      #:prefix powershell:)
   #:use-module (rsauex systems base)
-  #:use-module (rsauex services pam-u2f)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match)
   #:export (%my-base-minimal-system))
 
 (define %my-base-minimal-system
@@ -29,25 +34,25 @@
 
     (packages (append
                (list
-                (@ (gnu packages certs) nss-certs)
-                (@ (gnu packages emacs) emacs)
-                (@ (gnu packages version-control) git)
-                (@ (gnu packages ssh) openssh)
+                certs:nss-certs
+                vc:git
+                ssh:openssh
 
-                (@ (gnu packages compression) zip)
-                (@ (gnu packages compression) unzip)
-                (@ (gnu packages compression) p7zip)
+                compression:zip
+                compression:unzip
+                compression:p7zip
 
-                (@ (gnu packages fonts) font-terminus)
+                fonts:font-terminus
 
-                (@ (gnu packages admin) htop)
-                (@ (gnu packages tmux) tmux)
-                (@ (gnu packages package-management) stow)
-                (@ (rsauex packages powershell) powershell)
-                (@ (gnu packages web) jq)
+                admin:htop
+                tmux:tmux
+                emacs:emacs
+                package-management:stow
+                powershell:powershell
+                web:jq
 
-                (@ (gnu packages security-token) yubikey-personalization)
-                (@ (gnu packages security-token) pam-u2f))
+                security-token:yubikey-personalization
+                security-token:pam-u2f)
 
                %base-packages-disk-utilities
                %base-packages))

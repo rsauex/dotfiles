@@ -1,6 +1,7 @@
 (define-module (rsauex systems base)
   #:use-module (gnu)
   #:use-module (gnu packages)
+  #:use-module ((gnu packages fonts) #:prefix fonts:)
   #:use-module (gnu services security-token)
   #:use-module (gnu services networking)
   #:use-module (gnu services desktop)
@@ -51,6 +52,6 @@
      config =>
      (map (match-lambda
             ((tty . font)
-             `(,tty . ,(file-append (@ (gnu packages fonts) font-terminus)
+             `(,tty . ,(file-append fonts:font-terminus
                                     "/share/consolefonts/ter-v16n.psf.gz"))))
           config))))
