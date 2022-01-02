@@ -1,13 +1,20 @@
 (define-module (rsauex systems pc beta)
   #:use-module (gnu)
   #:use-module (gnu packages)
+  #:use-module ((gnu packages xorg) #:prefix xorg:)
+  #:use-module (gnu services dbus)
   #:use-module (gnu services xorg)
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
   #:use-module (rsauex systems base)
   #:use-module (rsauex systems desktop)
-  #:use-module (rsauex packages xorg)
   #:export (%os))
+
+(define intel-backlight-service
+  ;; Solution to make intel backlight work for non-root users...
+  (simple-service 'intel-backlight
+                  polkit-service-type
+                  (list xorg:xf86-video-intel)))
 
 (define xorg-enable-dri3
   "Section \"Device\"

@@ -6,7 +6,6 @@
   #:use-module (nongnu packages linux)
   #:use-module (rsauex systems base)
   #:use-module (rsauex systems desktop)
-  #:use-module (rsauex packages xorg)
   #:export (%os))
 
 (define %os
