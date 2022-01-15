@@ -8,6 +8,7 @@
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages libreoffice)        #:prefix libreoffice:)
   #:use-module ((gnu packages m4)                 #:prefix m4:)
+  #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
   #:use-module ((gnu packages polkit)             #:prefix polkit:)
@@ -109,6 +110,7 @@
                      gnome:gvfs
                      gnome:system-config-printer
                      polkit:polkit-gnome
+                     networking:blueman
 
                      (list glib:glib "bin")
 
@@ -147,7 +149,11 @@
                      (udev-rules-service 'yubikey security-token:yubikey-personalization)
                      (my-pam-u2f-auth-service)
                      (screen-locker-service wm:i3lock "i3lock")
-                     (service xorg-server-service-type))
+                     (service xorg-server-service-type)
+                     (bluetooth-service #:auto-enable? #t)
+                     (simple-service 'blueman
+                                     dbus-root-service-type
+                                     (list networking:blueman)))
 
                %my-base-services
 
