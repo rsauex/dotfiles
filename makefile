@@ -28,6 +28,7 @@ help:
 	@echo "    gtk              - GTK2 and GTK3 settings"
 	@echo "    xresources       - Xresources (rxvt, emacs, x3270, rofi, etc.)"
 	@echo "    rofi             - Pop-up menus"
+	@echo "    xdg-dirs         - XDG dirs (Desktop, Download, etc.)"
 .PHONY: help
 
 ## X specific       ######
@@ -186,3 +187,9 @@ tmux:
 un-tmux:
 	stow -D tmux
 .PHONY: tmux un-tmux
+
+xdg-dirs:
+	stow    xdg-dirs
+un-xdg-dirs:
+	stow -D xdg-dirs
+.PHONY: xdg-dirs un-xdg-dirs
