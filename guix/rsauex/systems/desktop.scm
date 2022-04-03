@@ -32,6 +32,7 @@
   #:use-module ((nongnu packages mozilla) #:prefix mozilla:)
   #:use-module ((rsauex packages gigolo)  #:prefix gigolo:)
   #:use-module ((rsauex packages the-dot) #:prefix the-dot:)
+  #:use-module ((rsauex packages nm-forti) #:prefix nm-forti:)
   #:use-module (rsauex services pam-u2f)
   #:use-module (rsauex services yubikey-session)
   #:use-module (rsauex systems base)
@@ -47,7 +48,9 @@
      config =>
      (network-manager-configuration
       (inherit config)
-      (dns "dnsmasq")))))
+      (dns "dnsmasq")
+      (vpn-plugins
+       (list nm-forti:network-manager-openfortivpn))))))
 
 (define (my-pam-u2f-auth-service)
   (define (my-pam-u2f-auth-extension pam)
