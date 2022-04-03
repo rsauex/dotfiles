@@ -121,6 +121,10 @@
                      xdisorg:sx
                      xdisorg:rofi
                      xdisorg:xss-lock
+                     xdisorg:maim
+                     xdisorg:xclip
+                     xdisorg:xdotool
+                     xdisorg:arandr
 
                      terms:alacritty
                      mozilla:firefox
