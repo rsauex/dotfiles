@@ -9,6 +9,7 @@
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages libreoffice)        #:prefix libreoffice:)
   #:use-module ((gnu packages m4)                 #:prefix m4:)
+  #:use-module ((gnu packages music)              #:prefix music:)
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
@@ -127,6 +128,7 @@
                      xdisorg:xclip
                      xdisorg:xdotool
                      xdisorg:arandr
+                     music:playerctl
 
                      terms:alacritty
                      mozilla:firefox
