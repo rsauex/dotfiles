@@ -133,6 +133,8 @@
                      terms:alacritty
                      mozilla:firefox
                      gnome:evince
+                     gnome:evolution
+                     gnome:evolution-data-server
                      passwd-utils:keepassxc
                      syncthing:syncthing-gtk
                      pulseaudio:pavucontrol
@@ -167,6 +169,9 @@
                      (simple-service 'blueman
                                      dbus-root-service-type
                                      (list networking:blueman))
+                     (simple-service 'evolution
+                                     dbus-root-service-type
+                                     (list gnome:evolution-data-server))
                      (service docker-service-type))
 
                %my-base-services
