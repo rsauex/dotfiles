@@ -10,6 +10,12 @@ Set-PSReadLineOption -Colors @{
   Operator  = [System.ConsoleColor]::DarkMagenta
 }
 
+# Don't save commands starting with a semicolon into history
+Set-PSReadLineOption -AddToHistoryHandler {
+    param([string]$line)
+    return $line.Length -gt 3 -and $line[0] -ne ';'
+}
+
 # ------------------------------------------------------------------------------
 # ----- Path Alias -------------------------------------------------------------
 
