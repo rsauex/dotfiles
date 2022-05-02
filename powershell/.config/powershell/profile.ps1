@@ -177,6 +177,46 @@ function Edit-Content() {
     | Set-Content -LiteralPath $Path
 }
 
+<#
+.Synopsis
+Select N first elements from the stream.
+.Description
+Same as `Select-Object -First $Count`.
+.Parameter Count
+Number of elements to select.
+#>
+function Select-First() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$Count,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [object[]]$InputObject
+    )
+    $input | Select-Object -First $Count
+}
+
+<#
+.Synopsis
+Select N last elements from the stream.
+.Description
+Same as `Select-Object -Last $Count`.
+.Parameter Count
+Number of elements to select.
+#>
+function Select-Last() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$Count,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [object[]]$InputObject
+    )
+    $input | Select-Object -Last $Count
+}
+
 # ------------------------------------------------------------------------------
 # ----- PathContext ------------------------------------------------------------
 
