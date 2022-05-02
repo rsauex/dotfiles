@@ -2,6 +2,7 @@
   #:use-module (gnu)
   #:use-module (gnu packages)
   #:use-module ((gnu packages cups)               #:prefix cups:)
+  #:use-module ((gnu packages docker)             #:prefix docker:)
   #:use-module ((gnu packages dunst)              #:prefix dunst:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages glib)               #:prefix glib:)
@@ -25,6 +26,7 @@
   #:use-module (gnu services cups)
   #:use-module (gnu services dbus)
   #:use-module (gnu services desktop)
+  #:use-module (gnu services docker)
   #:use-module (gnu services networking)
   #:use-module (gnu services security-token)
   #:use-module (gnu services xorg)
@@ -142,6 +144,8 @@
                      security-token:yubikey-personalization
                      security-token:python-yubikey-manager
 
+                     docker:docker-compose
+
                      (operating-system-packages %my-base-minimal-system)))
 
     (services (append
@@ -160,7 +164,8 @@
                      (bluetooth-service #:auto-enable? #t)
                      (simple-service 'blueman
                                      dbus-root-service-type
-                                     (list networking:blueman)))
+                                     (list networking:blueman))
+                     (service docker-service-type))
 
                %my-base-services
 

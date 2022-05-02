@@ -75,5 +75,6 @@
                                            "dialout"
                                            "disk"
                                            "lpadmin"
-                                           "lp")))
+                                           "lp"
+                                           "docker")))
                   %base-user-accounts))))
