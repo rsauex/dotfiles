@@ -13,80 +13,54 @@
 # (exit code 33) is set if there is less that 5% remaining.
 #
 # Modified by Raphael. Ribeiro <raphaelpr01@gmail.com>
+
 use strict;
 use warnings;
 use utf8;
-my $status;
-my $percent;
-my $full_text;
-my $short_text;
-my $which;
-##my $bat_number = $ENV{BLOCK_INSTANCE} || 0;
-my $bat_ext = 1;
-my $bat_int = 0;
+
+my $battery_name = $ENV{'battery_name'};
+my $battery_number = $ENV{'battery_number'};
 
 # read the first line of the "acpi" command output
-open (I_ACPI, "acpi -b | grep 'Battery $bat_int' |") or die "Can't exec acpi: $!\n";
-my $int_acpi = <I_ACPI>;
-close(I_ACPI);
+open (ACPI, "/gnu/store/l20khwgf1n4fjd8i26bw16zhjc9ffhn7-acpi-1.7/bin/acpi -b | grep 'Battery $battery_number' |") or die "Can't exec acpi: $!\n";
+my $acpi = <ACPI>;
+close(ACPI);
+
 # fail on unexpected output
-if ($int_acpi !~ /: (\w+), (\d+)%/) {
+if ($acpi !~ /: (Not charging|Discharging|Full|Unknown|Charging|Full), (\d+)%/) {
     exit 0;
-    #die "$int_acpi\n";
+    # die "$acpi\n";
 }
-my $int_status = $1;
-my $int_percent = $2;
-my $int_full_text = "$int_percent%";
+my $status = $1;
+my $percent = $2;
+my $full_text = "$percent%";
 
-# read the first line of the "acpi" command output
-open (E_ACPI, "acpi -b | grep 'Battery $bat_ext' |") or die "Can't exec acpi: $!\n";
-my $ext_acpi = <E_ACPI>;
-close(E_ACPI);
-# fail on unexpected output
-if ($ext_acpi !~ /: (\w+), (\d+)%/) {
-    exit 0;
-    # die "$ext_acpi\n";
-}
-my $ext_status = $1;
-my $ext_percent = $2;
-my $ext_full_text = "$ext_percent%";
-
-if ($int_status eq 'Charging' || $int_status eq 'Discharging') {
-    $status = $int_status;
-    $percent = $int_percent;
-    $full_text = 'I ' . $int_full_text;
-} else {
-    $status = $ext_status;
-    $percent = $ext_percent;
-    $full_text = 'E ' . $ext_full_text;
-}
-
-if ($status eq 'Discharging') {
+if ($status eq 'Discharging' || $status eq 'Unknown' || $status eq 'Not charging') {
     if ($percent < 10) {
-        $full_text = '  ' . $full_text ;
+        $full_text = ' ' . $full_text ;
     } elsif ($percent < 25) {
-        $full_text = '  ' . $full_text ;
+        $full_text = ' ' . $full_text ;
     } elsif ($percent < 50) {
-        $full_text = '  ' . $full_text ;
+        $full_text = ' ' . $full_text ;
     } elsif ($percent < 75) {
-        $full_text = '  ' . $full_text ;
+        $full_text = ' ' . $full_text ;
     } elsif ($percent <= 100) {
-        $full_text = '  ' . $full_text ;
+        $full_text = ' ' . $full_text ;
     }
 } elsif ($status eq 'Charging') {
-    $full_text = '  ' . $full_text ;
-} elsif ($status eq 'Full' || $status eq 'Unknown') {
-    $full_text = '  ' . $full_text ;
+    $full_text = ' ' . $full_text ;
+} elsif ($status eq 'Full') {
+    $full_text = ' ' . $full_text ;
+} else {
+    die "$status";
 }
-$short_text = $full_text;
-#if ($acpi =~ /(\d\d:\d\d):/) {
-#    $full_text .= " ($1)";
-#}
+
 # print text
-print "$full_text\n";
-print "$short_text\n";
-# consider color and urgent flag only on discharge
-if ($status eq 'Discharging') {
+print "$battery_name $full_text\n";
+print "$battery_name $full_text\n";
+
+# consider color only on discharge
+if ($status ne 'Charging' && $status ne 'Full') {
     if ($percent < 10) {
         print "#FF0000\n";
     } elsif ($percent < 40) {
@@ -96,8 +70,11 @@ if ($status eq 'Discharging') {
     } elsif ($percent <= 100) {
         # print "#A8FF00\n";
     }
-    if ($percent < 5) {
-        exit(33);
-    }
 }
-exit(0);
+
+# urgent if less then 10 and discharging
+if ($percent < 10 && $status eq 'Discharging') {
+    exit(33);
+} else {
+    exit(0);
+}
