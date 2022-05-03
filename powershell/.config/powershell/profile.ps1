@@ -96,6 +96,9 @@ function Prompt {
     if (Test-Path Env:/IN_NIX_SHELL) {
         $indicator = "(NIX)"
     }
+    if (Test-Path Env:/GUIX_ENVIRONMENT) {
+        $indicator = "(GUIX)"
+    }
     Write-Host -NoNewline                           -Object "PS${indicator}> "
     Write-Host -NoNewline -ForegroundColor Cyan     -Object ("{0:HH:mm}" -f (Get-Date))
     Write-Host -NoNewline                           -Object " ["
