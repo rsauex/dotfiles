@@ -23,7 +23,6 @@ help:
 	@echo "    sway-init        - automatic Sway startup"
 	@echo "    mako             - Notification manager"
 	@echo "    sway             - Tiling window manager"
-	@echo "    termite          - Termite terminal emulator"
 	@echo " - Environment independent:"
 	@echo "    gtk              - GTK2 and GTK3 settings"
 	@echo "    xresources       - Xresources (rxvt, emacs, x3270, rofi, etc.)"
@@ -78,8 +77,8 @@ un-zathura:
 
 ### Sway specific   ######
 
-sway-environment:       sway-init    mako    rofi    sway    termite
-un-sway-environment: un-sway-init un-mako un-rofi un-sway un-termite
+sway-environment:       sway-init    mako    rofi    sway
+un-sway-environment: un-sway-init un-mako un-rofi un-sway
 .PHONY: sway-environment un-sway-environment
 
 sway-init:
@@ -99,12 +98,6 @@ mako:
 un-mako:
 	stow -D mako
 .PHONY: mako un-mako
-
-termite:
-	stow    termite
-un-termite:
-	stow -D termite
-.PHONY: termite un-termite
 
 ### Env independent ######
 
