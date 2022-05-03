@@ -57,7 +57,7 @@
 
                      (@ (gnu packages clojure) clojure)
                      (@ (nongnu packages clojure) leiningen)
-                     (@ (gnu packages java) openjdk11)
+                     (list (@ (gnu packages java) openjdk11) "jdk")
 
                      (operating-system-packages %my-base-desktop-system)))
 
