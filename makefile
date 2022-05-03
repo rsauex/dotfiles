@@ -27,6 +27,7 @@ help:
 	@echo "    gtk              - GTK2 and GTK3 settings"
 	@echo "    xresources       - Xresources (rxvt, emacs, x3270, rofi, etc.)"
 	@echo "    rofi             - Pop-up menus"
+	@echo "    alacritty        - Terminal emulator"
 	@echo "    xdg-dirs         - XDG dirs (Desktop, Download, etc.)"
 .PHONY: help
 
@@ -118,6 +119,12 @@ rofi:
 un-rofi:
 	stow -D rofi
 .PHONY: rofi un-rofi
+
+alacritty:
+	stow    alacritty
+un-alacritty:
+	stow -D alacritty
+.PHONY: alacritty un-alacritty
 
 ### Common          ######
 
