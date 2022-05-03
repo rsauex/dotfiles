@@ -14,3 +14,10 @@ function global:Build-GuixSystem() {
 }
 
 $global:PSDefaultParameterValues["Build-GuixSystem:Machine"] = { [Environment]::MachineName }
+
+function global:Build-GuixHome() {
+    [CmdletBinding()]
+    param()
+    Write-Host "Building home"
+    guix home reconfigure "$GUIX_CONFIG_HOME/rsauex/home.scm"
+}
