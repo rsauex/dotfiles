@@ -6,9 +6,6 @@ help:
 	@echo "    bin              - some utilites"
 	@echo "    fontconfig       - Fonts settings"
 	@echo "    git              - Git settings"
-	@echo "    syncthing        - Syncthing systemd unit + enable"
-	@echo "    nm-applet        - Network manager applet systemd unit + enable"
-	@echo "    blueman-applet   - Blueman applet systemd unit + enable"
 	@echo "    tmux             - Terminal multiplexer"
 	@echo " - X specific:"
 	@echo "    x-environment    - all X stuff together"
@@ -157,30 +154,6 @@ git:
 un-git:
 	stow -D git
 .PHONY: git un-git 
-
-syncthing:
-	stow    syncthing
-	systemctl --user enable syncthing.service
-un-syncthing:
-	systemctl --user disable syncthing.service
-	stow -D syncthing
-.PHONY: syncthing un-syncthing
-
-nm-applet:
-	stow    nm-applet
-	systemctl --user enable nm-applet.service
-un-nm-applet:
-	systemctl --user disable nm-applet.service
-	stow -D nm-applet
-.PHONY: nm-applet un-nm-applet
-
-blueman-applet:
-	stow    blueman-applet
-	systemctl --user enable blueman-applet.service
-un-blueman-applet:
-	systemctl --user disable blueman-applet.service
-	stow -D blueman-applet
-.PHONY: blueman-applet un-blueman-applet
 
 tmux:
 	stow    tmux
