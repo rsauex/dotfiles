@@ -17,7 +17,7 @@ xset r rate 400 44
 setxkbmap -option -option ctrl:nocaps,grp:win_space_toggle,gep_led:scroll -layout us,ua -variant dvp,
 
 # keyboard settings - Ergodox EZ
-ergodox_id=$(xinput list --id-only '???' 2>/dev/null)
+ergodox_id=$(xinput list --id-only 'keyboard:ZSA Technology Labs Inc ErgoDox EZ' 2>/dev/null)
 [[ -z "$ergodox_id" ]] || setxkbmap -device "$ergodox_id" -option -layout us
 
 # start wm
