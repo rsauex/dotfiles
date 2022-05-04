@@ -74,6 +74,7 @@
                                            "wheel"
                                            "dialout"
                                            "disk"
+                                           "kvm"
                                            "lpadmin"
                                            "lp")))
                   %base-user-accounts))))
