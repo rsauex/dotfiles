@@ -13,6 +13,7 @@
   #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
   #:use-module ((gnu packages polkit)             #:prefix polkit:)
   #:use-module ((gnu packages pulseaudio)         #:prefix pulseaudio:)
+  #:use-module ((gnu packages scanner)            #:prefix scanner:)
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
   #:use-module ((gnu packages syncthing)          #:prefix syncthing:)
   #:use-module ((gnu packages telegram)           #:prefix telegram:)
@@ -131,6 +132,7 @@
                      (list vc:git "gui")
                      package-management:flatpak
                      telegram:telegram-desktop
+                     scanner:xsane
 
                      security-token:yubikey-personalization
                      security-token:python-yubikey-manager
