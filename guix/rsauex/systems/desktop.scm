@@ -8,11 +8,13 @@
   #:use-module ((gnu packages glib)               #:prefix glib:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages libreoffice)        #:prefix libreoffice:)
+  #:use-module ((gnu packages linux)              #:prefix linux:)
   #:use-module ((gnu packages m4)                 #:prefix m4:)
   #:use-module ((gnu packages music)              #:prefix music:)
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
+  #:use-module ((gnu packages perl)               #:prefix perl:)
   #:use-module ((gnu packages polkit)             #:prefix polkit:)
   #:use-module ((gnu packages pulseaudio)         #:prefix pulseaudio:)
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
@@ -111,6 +113,10 @@
                      wm:i3-wm
                      wm:i3status
                      wm:i3blocks
+
+                     ;; For battery indicator in i3blocks
+                     linux:acpi
+                     perl:perl
 
                      gnome:dconf
                      gnome:dconf-editor

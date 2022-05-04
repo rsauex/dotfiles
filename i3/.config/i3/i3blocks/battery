@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright 2014 Pierre Mavro <deimos@deimos.fr>
 # Copyright 2014 Vivien Didelot <vivien@didelot.org>
@@ -22,7 +22,7 @@ my $battery_name = $ENV{'battery_name'};
 my $battery_number = $ENV{'battery_number'};
 
 # read the first line of the "acpi" command output
-open (ACPI, "/gnu/store/l20khwgf1n4fjd8i26bw16zhjc9ffhn7-acpi-1.7/bin/acpi -b | grep 'Battery $battery_number' |") or die "Can't exec acpi: $!\n";
+open (ACPI, "acpi -b | grep 'Battery $battery_number' |") or die "Can't exec acpi: $!\n";
 my $acpi = <ACPI>;
 close(ACPI);
 
