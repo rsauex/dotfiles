@@ -56,7 +56,8 @@
       (inherit config)
       (dns "dnsmasq")
       (vpn-plugins
-       (list nm-forti:network-manager-openfortivpn))))))
+       (cons* nm-forti:network-manager-openfortivpn
+              (network-manager-configuration-vpn-plugins config)))))))
 
 (define (my-pam-u2f-auth-service)
   (define (my-pam-u2f-auth-extension pam)
