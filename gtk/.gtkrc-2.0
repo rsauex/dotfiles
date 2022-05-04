@@ -1,7 +1,7 @@
-gtk-theme-name="Adwaita-dark"
+gtk-theme-name="Nordic-Darker"
 gtk-icon-theme-name="Adwaita"
 gtk-font-name="UI-Sans-Serif, 11"
-gtk-cursor-theme-name="Adwaita"
+gtk-cursor-theme-name="Dot-Light"
 gtk-cursor-theme-size=0
 gtk-toolbar-style=GTK_TOOLBAR_BOTH
 gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR

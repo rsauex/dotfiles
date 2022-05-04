@@ -76,5 +76,6 @@
                                            "disk"
                                            "kvm"
                                            "lpadmin"
-                                           "lp")))
+                                           "lp"
+                                           "docker")))
                   %base-user-accounts))))

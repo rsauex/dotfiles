@@ -113,21 +113,3 @@ Editres*font: -*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*
 
 ! XFontSel -------------------------------------------------------------------
 Xfontsel*font: -*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*
-
-! Rofi -----------------------------------------------------------------------
-!! rofi.theme:  base16-tomorrow-night
-Rofi.font:   Iosevka Term 12
-
-! Enable the extended coloring options
-Rofi.color-enabled: true
-
-! Property Name     BG       Border   Separator
-Rofi.color-window:  #282a2e, #282a2e, #1d1f21
-
-! Property Name     BG       FG       BG-alt   Head-BG  Head-FG
-Rofi.color-normal:  #282a2e, #c5c8c6, #2d2f33, #005f5f, #ffffff
-Rofi.color-active:  #282a2e, #81a2be, #2d2f33, #005f5f, #81a2be
-Rofi.color-urgent:  #282a2e, #cc6666, #2d2f33, #005f5f, #cc6666
-
-! Set the desired separator style
-Rofi.separator-style: solid

@@ -10,6 +10,12 @@ Set-PSReadLineOption -Colors @{
   Operator  = [System.ConsoleColor]::DarkMagenta
 }
 
+# Don't save commands starting with a semicolon into history
+Set-PSReadLineOption -AddToHistoryHandler {
+    param([string]$line)
+    return $line.Length -gt 3 -and $line[0] -ne ';'
+}
+
 # ------------------------------------------------------------------------------
 # ----- Path Alias -------------------------------------------------------------
 
@@ -89,6 +95,9 @@ function Prompt {
     # First line
     if (Test-Path Env:/IN_NIX_SHELL) {
         $indicator = "(NIX)"
+    }
+    if (Test-Path Env:/GUIX_ENVIRONMENT) {
+        $indicator = "(GUIX)"
     }
     Write-Host -NoNewline                           -Object "PS${indicator}> "
     Write-Host -NoNewline -ForegroundColor Cyan     -Object ("{0:HH:mm}" -f (Get-Date))
@@ -175,6 +184,46 @@ function Edit-Content() {
     Get-Content -Raw:$Raw -LiteralPath $Path
     | Foreach-Object { Invoke-Command -ScriptBlock $ScriptBlock }
     | Set-Content -LiteralPath $Path
+}
+
+<#
+.Synopsis
+Select N first elements from the stream.
+.Description
+Same as `Select-Object -First $Count`.
+.Parameter Count
+Number of elements to select.
+#>
+function Select-First() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$Count,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [object[]]$InputObject
+    )
+    $input | Select-Object -First $Count
+}
+
+<#
+.Synopsis
+Select N last elements from the stream.
+.Description
+Same as `Select-Object -Last $Count`.
+.Parameter Count
+Number of elements to select.
+#>
+function Select-Last() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$Count,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [object[]]$InputObject
+    )
+    $input | Select-Object -Last $Count
 }
 
 # ------------------------------------------------------------------------------

@@ -2,6 +2,8 @@ env:
   TERM: xterm-256color
 window:
   dynamic_padding: true
+font:
+  size: 12.0
 colors:
   primary:
     background:     '#2e3440'
@@ -33,8 +35,6 @@ colors:
     cyan:    '#88c0d0'
     white:   '#e5e9f0'
   bright:
-font:
-  size: 12.0
     black:   '#4c566a'
     red:     '#bf616a'
     green:   '#a3be8c'

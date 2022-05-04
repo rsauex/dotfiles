@@ -57,7 +57,10 @@
 
                      (@ (gnu packages clojure) clojure)
                      (@ (nongnu packages clojure) leiningen)
-                     (@ (gnu packages java) openjdk11)
+                     (list (@ (gnu packages java) openjdk11) "jdk")
+
+                     (@ (gnu packages video) vlc)
+                     (@ (gnu packages video) intel-vaapi-driver)
 
                      (operating-system-packages %my-base-desktop-system)))
 

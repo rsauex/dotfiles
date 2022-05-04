@@ -2,15 +2,19 @@
   #:use-module (gnu)
   #:use-module (gnu packages)
   #:use-module ((gnu packages cups)               #:prefix cups:)
+  #:use-module ((gnu packages docker)             #:prefix docker:)
   #:use-module ((gnu packages dunst)              #:prefix dunst:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages glib)               #:prefix glib:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages libreoffice)        #:prefix libreoffice:)
+  #:use-module ((gnu packages linux)              #:prefix linux:)
   #:use-module ((gnu packages m4)                 #:prefix m4:)
+  #:use-module ((gnu packages music)              #:prefix music:)
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
+  #:use-module ((gnu packages perl)               #:prefix perl:)
   #:use-module ((gnu packages polkit)             #:prefix polkit:)
   #:use-module ((gnu packages pulseaudio)         #:prefix pulseaudio:)
   #:use-module ((gnu packages scanner)            #:prefix scanner:)
@@ -26,13 +30,16 @@
   #:use-module (gnu services cups)
   #:use-module (gnu services dbus)
   #:use-module (gnu services desktop)
+  #:use-module (gnu services docker)
   #:use-module (gnu services networking)
   #:use-module (gnu services security-token)
   #:use-module (gnu services xorg)
   #:use-module (gnu system pam)
-  #:use-module ((nongnu packages mozilla) #:prefix mozilla:)
-  #:use-module ((rsauex packages gigolo)  #:prefix gigolo:)
-  #:use-module ((rsauex packages the-dot) #:prefix the-dot:)
+  #:use-module ((nongnu packages mozilla)      #:prefix mozilla:)
+  #:use-module ((rsauex packages gigolo)       #:prefix gigolo:)
+  #:use-module ((rsauex packages the-dot)      #:prefix the-dot:)
+  #:use-module ((rsauex packages nm-forti)     #:prefix nm-forti:)
+  #:use-module ((rsauex packages nordic-theme) #:prefix nordic:)
   #:use-module (rsauex services pam-u2f)
   #:use-module (rsauex services yubikey-session)
   #:use-module (rsauex systems base)
@@ -48,7 +55,10 @@
      config =>
      (network-manager-configuration
       (inherit config)
-      (dns "dnsmasq")))))
+      (dns "dnsmasq")
+      (vpn-plugins
+       (cons* nm-forti:network-manager-openfortivpn
+              (network-manager-configuration-vpn-plugins config)))))))
 
 (define (my-pam-u2f-auth-service)
   (define (my-pam-u2f-auth-extension pam)
@@ -94,6 +104,7 @@
                      gnome:hicolor-icon-theme
                      gnome:adwaita-icon-theme
                      the-dot:the-dot-cursor-theme
+                     nordic:nordic-darker-theme
 
                      xorg:xrdb
                      xorg:xset
@@ -104,6 +115,10 @@
                      wm:i3-wm
                      wm:i3status
                      wm:i3blocks
+
+                     ;; For battery indicator in i3blocks
+                     linux:acpi
+                     perl:perl
 
                      gnome:dconf
                      gnome:dconf-editor
@@ -119,10 +134,17 @@
                      xdisorg:sx
                      xdisorg:rofi
                      xdisorg:xss-lock
+                     xdisorg:maim
+                     xdisorg:xclip
+                     xdisorg:xdotool
+                     xdisorg:arandr
+                     music:playerctl
 
                      terms:alacritty
                      mozilla:firefox
                      gnome:evince
+                     gnome:evolution
+                     gnome:evolution-data-server
                      passwd-utils:keepassxc
                      syncthing:syncthing-gtk
                      pulseaudio:pavucontrol
@@ -136,6 +158,8 @@
 
                      security-token:yubikey-personalization
                      security-token:python-yubikey-manager
+
+                     docker:docker-compose
 
                      (operating-system-packages %my-base-minimal-system)))
 
@@ -155,7 +179,11 @@
                      (bluetooth-service #:auto-enable? #t)
                      (simple-service 'blueman
                                      dbus-root-service-type
-                                     (list networking:blueman)))
+                                     (list networking:blueman))
+                     (simple-service 'evolution
+                                     dbus-root-service-type
+                                     (list gnome:evolution-data-server))
+                     (service docker-service-type))
 
                %my-base-services
 
