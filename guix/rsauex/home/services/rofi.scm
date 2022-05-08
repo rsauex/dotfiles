@@ -65,7 +65,7 @@
    rofi-serialize-theme))
 
 (define (add-rofi-configuration config)
-  `(("config/rofi/config.rasi"
+  `(("rofi/config.rasi"
      ,(mixed-text-file
        "config_rasi"
        (rofi-serialize-config 'config (rofi-configuration-config config))
@@ -78,7 +78,7 @@
   (service-type (name 'rofi)
                 (extensions
                  (list (service-extension
-                        home-files-service-type
+                        home-xdg-configuration-files-service-type
                         add-rofi-configuration)
                        (service-extension
                         home-profile-service-type
