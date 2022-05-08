@@ -22,9 +22,6 @@
 
             rofi-service-type))
 
-(define (file-like-opt? val)
-  (or (eq? val #f) (file-like? val)))
-
 (define (rofi-serialize-config field-name val)
   (with-imported-modules '((ice-9 string-fun))
     #~(begin
@@ -47,9 +44,11 @@
 
 (define (rofi-serialize-theme field-name val)
   #~(let ((val #$val))
-      (if val
-          (string-append "@theme \"" #$val "\"\n")
-          "")))
+      (if (eq? 'disabled val)
+          ""
+          (string-append "@theme \"" #$val "\"\n"))))
+
+(define-maybe file-like)
 
 (define-configuration rofi-configuration
   (package
@@ -60,7 +59,7 @@
    "Association list of configuration options."
    rofi-serialize-config)
   (theme
-   (file-like-opt #f)
+   (maybe-file-like 'disabled)
    "File-like with theme."
    rofi-serialize-theme))
 
