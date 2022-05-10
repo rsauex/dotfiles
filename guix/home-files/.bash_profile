@@ -18,8 +18,8 @@ fi
 # fi
 
 # Start WM if we are in the first virtual console
-if command -v start-wm &> /dev/null && [ "1" = "$(fgconsole 2>/dev/null)" ]; then
-    exec start-wm &> /dev/null
+if command -v sx &> /dev/null && [ "1" = "$(fgconsole 2>/dev/null)" ]; then
+    exec sx &> /dev/null
 fi
 
 exec bash
