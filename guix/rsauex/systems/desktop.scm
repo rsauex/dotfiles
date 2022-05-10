@@ -103,11 +103,6 @@
                      gnome:adwaita-icon-theme
                      nordic:nordic-darker-theme
 
-                     xorg:xrdb
-                     xorg:xset
-                     xorg:xinput
-                     xorg:setxkbmap
-
                      m4:m4
                      wm:i3-wm
                      wm:i3status
