@@ -36,7 +36,6 @@
   #:use-module (gnu system pam)
   #:use-module ((nongnu packages mozilla)      #:prefix mozilla:)
   #:use-module ((rsauex packages gigolo)       #:prefix gigolo:)
-  #:use-module ((rsauex packages the-dot)      #:prefix the-dot:)
   #:use-module ((rsauex packages nm-forti)     #:prefix nm-forti:)
   #:use-module ((rsauex packages nordic-theme) #:prefix nordic:)
   #:use-module (rsauex services pam-u2f)
@@ -102,7 +101,6 @@
                      gnome:gnome-themes-extra
                      gnome:hicolor-icon-theme
                      gnome:adwaita-icon-theme
-                     the-dot:the-dot-cursor-theme
                      nordic:nordic-darker-theme
 
                      xorg:xrdb
