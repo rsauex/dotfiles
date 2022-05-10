@@ -15,7 +15,6 @@
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
   #:use-module ((gnu packages perl)               #:prefix perl:)
-  #:use-module ((gnu packages polkit)             #:prefix polkit:)
   #:use-module ((gnu packages pulseaudio)         #:prefix pulseaudio:)
   #:use-module ((gnu packages scanner)            #:prefix scanner:)
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
@@ -125,7 +124,6 @@
                      gnome:gsettings-desktop-schemas
                      gnome:gvfs
                      gnome:system-config-printer
-                     polkit:polkit-gnome
                      networking:blueman
 
                      (list glib:glib "bin")
