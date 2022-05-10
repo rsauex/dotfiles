@@ -51,15 +51,15 @@
          (home-bash-configuration
           (bash-profile
            (list (local-file
-                  "/home/rsauex/dotfiles/guix/home-files/.bash_profile"
+                  "/home/rsauex/dotfiles/home-files/.bash_profile"
                   "bash_profile")))
           (bashrc
            (list (local-file
-                  "/home/rsauex/dotfiles/guix/home-files/.bashrc"
+                  "/home/rsauex/dotfiles/home-files/.bashrc"
                   "bashrc")))
           (bash-logout
            (list (local-file
-                  "/home/rsauex/dotfiles/guix/home-files/.bash_logout"
+                  "/home/rsauex/dotfiles/home-files/.bash_logout"
                   "bash_logout")))))
         (service rofi:rofi-service-type
                  (rofi:rofi-configuration
@@ -74,7 +74,7 @@
                          (cons "QT_QPA_PLATFORMTHEME" "gtk2")
                          (cons "QT_STYLE_OVERRIDE" "gtk2")
                          ;; Local bin
-                         (cons "PATH" "\"$HOME/.bin:$HOME/dotfiles/guix/home-files/bin:$HOME/.local/bin:$PATH\"")
+                         (cons "PATH" "\"$HOME/.bin:$HOME/dotfiles/home-files/bin:$HOME/.local/bin:$PATH\"")
                          ;; Temp fix for Evolution to see installed plugins
                          ;; TODO: Replace with a service or a wrapper
                          (cons "EDS_EXTRA_PREFIXES" "/run/current-system/profile/")
@@ -104,7 +104,7 @@
                          ;; Load Xresources
                          (invoke #$(file-append xorg:xrdb "/bin/xrdb")
                                  "-merge" (string-append "-I" (getenv "HOME"))
-                                 #$(local-file "/home/rsauex/dotfiles/guix/home-files/.Xresources" "Xresources"))
+                                 #$(local-file "/home/rsauex/dotfiles/home-files/.Xresources" "Xresources"))
                          ;; Disable screen saver
                          (xset "s" "off")
                          ;; DPMS settings
@@ -141,7 +141,7 @@
         (simple-service 'tmux
                         home-files-service-type
                         `((".tmux.conf"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/.tmux.conf" "tmux.conf"))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/.tmux.conf" "tmux.conf"))))
         (service cursor-theme:cursor-theme-service-type
                  (cursor-theme:cursor-theme-configuration
                   (theme-package the-dot:the-dot-cursor-theme)
@@ -149,59 +149,59 @@
         (simple-service 'dunst
                         home-xdg-configuration-files-service-type
                         `(("dunst/dunstrc"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/dunstrc" "dunstrc"))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/dunstrc" "dunstrc"))))
         (simple-service 'font-config
                         home-xdg-configuration-files-service-type
                         `(("fontconfig/fonts.conf"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/fonts.conf" "fonts.conf"))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/fonts.conf" "fonts.conf"))))
         (simple-service 'alacritty
                         home-xdg-configuration-files-service-type
                         `(("alacritty/alacritty.yml"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/alacritty.yml" "alacritty.yml"))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/alacritty.yml" "alacritty.yml"))))
         (simple-service 'gtk2
                         home-files-service-type
                         `((".gtkrc-2.0"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/.gtkrc-2.0" "gtkrc-2.0"))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/.gtkrc-2.0" "gtkrc-2.0"))))
         (simple-service 'gtk3
                         home-xdg-configuration-files-service-type
                         `(("gtk-3.0/settings.ini"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/gtk-3.0-settings.ini" "gtk-3.0-settings.ini"))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/gtk-3.0-settings.ini" "gtk-3.0-settings.ini"))))
         (simple-service 'x-resources
                         home-files-service-type
                         `((".Xresources"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/.Xresources" "Xresources"))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/.Xresources" "Xresources"))
                           (".x3270pro"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/.x3270pro" "x3270pro"))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/.x3270pro" "x3270pro"))))
         (simple-service 'terminal-x-resources
                         home-xdg-configuration-files-service-type
                         `(("urxvt"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/urxvt" "urxvt" #:recursive? #t))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/urxvt" "urxvt" #:recursive? #t))))
         (simple-service 'git-common
                         home-files-service-type
                         `((".gitcommonconfig"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/.gitcommonconfig" "gitcommonconfig"))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/.gitcommonconfig" "gitcommonconfig"))))
         (simple-service 'powershell
                         home-xdg-configuration-files-service-type
                         `(("powershell"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/powershell" "powershell-config" #:recursive? #t))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/powershell" "powershell-config" #:recursive? #t))))
         (simple-service 'i3blocks
                         home-xdg-configuration-files-service-type
                         `(("i3/i3blocks.conf"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/i3blocks.conf" "i3blocks.conf"))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/i3blocks.conf" "i3blocks.conf"))
                           ("i3/i3blocks"
-                           ,(local-file "/home/rsauex/dotfiles/guix/home-files/i3blocks" "i3blocks-libexec" #:recursive? #t))))
+                           ,(local-file "/home/rsauex/dotfiles/home-files/i3blocks" "i3blocks-libexec" #:recursive? #t))))
         (simple-service 'i3
                         home-xdg-configuration-files-service-type
                         `(("i3/config"
                            ,(computed-file
                              "i3-config"
-                             (let ((files (list (local-file "/home/rsauex/dotfiles/guix/home-files/i3/00_base.conf" "i3-00_base.conf")
-                                                (local-file "/home/rsauex/dotfiles/guix/home-files/i3/05_colors.conf" "i3-05_colors.conf")
-                                                (local-file "/home/rsauex/dotfiles/guix/home-files/i3/10_keys.conf" "i3-10_keys.conf")
-                                                (local-file "/home/rsauex/dotfiles/guix/home-files/i3/15_keys.wm.conf" "i3-15_keys.wm.conf")
-                                                (local-file "/home/rsauex/dotfiles/guix/home-files/i3/20_menus.conf" "i3-20_menus.conf")
-                                                (local-file "/home/rsauex/dotfiles/guix/home-files/i3/30_bar.conf" "i3-30_bar.conf")
-                                                (local-file "/home/rsauex/dotfiles/guix/home-files/i3/40_client.conf" "i3-40_client.conf")))
+                             (let ((files (list (local-file "/home/rsauex/dotfiles/home-files/i3/00_base.conf" "i3-00_base.conf")
+                                                (local-file "/home/rsauex/dotfiles/home-files/i3/05_colors.conf" "i3-05_colors.conf")
+                                                (local-file "/home/rsauex/dotfiles/home-files/i3/10_keys.conf" "i3-10_keys.conf")
+                                                (local-file "/home/rsauex/dotfiles/home-files/i3/15_keys.wm.conf" "i3-15_keys.wm.conf")
+                                                (local-file "/home/rsauex/dotfiles/home-files/i3/20_menus.conf" "i3-20_menus.conf")
+                                                (local-file "/home/rsauex/dotfiles/home-files/i3/30_bar.conf" "i3-30_bar.conf")
+                                                (local-file "/home/rsauex/dotfiles/home-files/i3/40_client.conf" "i3-40_client.conf")))
                                    (m4 (file-append m4:m4 "/bin/m4"))
                                    (cassis-type (call-with-input-file "/sys/class/dmi/id/chassis_type"
                                                   (lambda (port)
