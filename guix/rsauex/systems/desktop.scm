@@ -115,9 +115,11 @@
                      wm:i3status
                      wm:i3blocks
 
-                     ;; For battery indicator in i3blocks
+                     ;; For scripts in i3blocks
                      linux:acpi
+                     linux:sysstat
                      perl:perl
+                     xorg:xset
 
                      gnome:dconf
                      gnome:dconf-editor
