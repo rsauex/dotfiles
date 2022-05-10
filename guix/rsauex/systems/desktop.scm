@@ -146,7 +146,7 @@
                      libreoffice:libreoffice
                      (list vc:git "gui")
                      package-management:flatpak
-                     telegram:telegram-desktop
+                     ;; telegram:telegram-desktop
                      scanner:xsane
 
                      security-token:yubikey-personalization
