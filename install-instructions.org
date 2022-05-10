@@ -96,6 +96,6 @@ mkswap /swapfile
 
 * Key file for initrd
 #+BEGIN_SRC shell-script
-dd bs=512 count=4 if=/dev/urandom of=rsauex-private-files/keyfile iflag=fullblock
-sudo cryptosetup luksAddKey /dev/sda2 rsauex-private-files/keyfile
+dd bs=512 count=4 if=/dev/urandom of=private-files/keyfile iflag=fullblock
+sudo cryptosetup luksAddKey /dev/sda2 private-files/keyfile
 #+END_SRC

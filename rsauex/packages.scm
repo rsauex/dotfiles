@@ -24,7 +24,7 @@
 
 (define %rsauex-private-files-path
   (make-parameter
-   (map (cut string-append <> "/rsauex-private-files")
+   (map (cut string-append <> "/private-files")
         %load-path)))
 
 (define* (search-rsauex-private-file file-name #:key (no-error? #f))
