@@ -29,4 +29,5 @@
                 (extensions
                  (list (service-extension udev-service-type
                                           yubikey-session-udev-rule-extension)))
-                (default-value #f)))
+                (default-value #f)
+                (description "Locking session on yubikey detachnig.")))
