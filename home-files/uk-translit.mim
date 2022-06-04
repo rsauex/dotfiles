@@ -1,0 +1,75 @@
+;; ua-translit.mim -- Input method for Ukrainian similar to latin transliteration.
+
+(input-method uk translit)
+
+(description
+ "Ukrainian input method similar to latin transliteration.
+Doesn't remap any additional keys except for letters.")
+
+(title "JUA")
+
+(map
+ (consonant
+  ("p"   ?п) ("P"   ?П)
+  ("b"   ?б) ("B"   ?Б)
+  ("t"   ?т) ("T"   ?Т)
+  ("d"   ?д) ("D"   ?Д)
+  ("k"   ?к) ("K"   ?К)
+  ("g"   ?г) ("G"   ?Г)
+  ("gg"  ?ґ) ("gg"  ?Ґ)                 ; TODO: Better key
+  ("h"   ?х) ("H"   ?Х)
+  ("f"   ?ф) ("F"   ?Ф)
+  ("v"   ?в) ("V"   ?В)
+  ("s"   ?с) ("S"   ?С)
+  ("z"   ?з) ("Z"   ?З)
+  ("sh"  ?ш) ("Sh"  ?Ш) ("SH"  ?Ш)
+  ("zh"  ?ж) ("Zh"  ?Ж) ("ZH"  ?Ж)
+  ("j"   ?й) ("J"   ?Й)
+  ("l"   ?л) ("L"   ?Л)
+  ("m"   ?м) ("M"   ?М)
+  ("n"   ?н) ("N"   ?Н)
+  ("r"   ?р) ("R"   ?Р)
+  ("c"   ?ц) ("C"   ?Ц)
+  ("ch"  ?ч) ("Ch"  ?Ч) ("CH"  ?Ч)
+  ("sch" ?щ) ("Sch" ?Щ) ("SCh" ?Щ) ("SCH" ?Щ)
+  ("q"   ?ь) ("Q"   ?Ь))
+ (vowel
+  ("a"   ?а) ("A"   ?А)
+  ("o"   ?о) ("O"   ?О)
+  ("u"   ?у) ("U"   ?У)
+  ("i"   ?і) ("I"   ?І)
+  ("i'"  ?і) ("I'"  ?І)
+  ("y"   ?и) ("Y"   ?И)
+  ("e"   ?е) ("E"   ?Е)
+  ("ia"  ?я) ("Ia"  ?Я) ("IA"  ?Я)
+  ("iu"  ?ю) ("Iu"  ?Ю) ("IU"  ?Ю)
+  ("ie"  ?є) ("Ie"  ?Є) ("IE"  ?Є))
+ (vowel_j_consonant_pressed
+  ("ja"  "'я") ("Ja"  "'Я") ("JA"  "'Я")
+  ("ju"  "'ю") ("Ju"  "'Ю") ("JU"  "'Ю")
+  ("ji"  "'ї") ("Ji"  "'Ї") ("JI"  "'Ї")
+  ("je"  "'є") ("Je"  "'Є") ("JE"  "'Є"))
+ (vowel_j
+  ("ja"  ?я) ("Ja"  ?Я) ("JA"  ?Я)
+  ("ju"  ?ю) ("Ju"  ?Ю) ("JU"  ?Ю)
+  ("ji"  ?ї) ("Ji"  ?Ї) ("JI"  ?Ї)
+  ("je"  ?є) ("Je"  ?Є) ("JE"  ?Є))
+ (backspace
+  ((BackSpace) (undo))))
+
+(state
+ (state_init
+  (consonant (shift state_consonant_pressed))
+  (vowel)
+  (vowel_j)
+  (backspace))
+ (state_consonant_pressed
+  (consonant)
+  (vowel (shift state_init))
+  (vowel_j_consonant_pressed (shift state_init))
+  (backspace)))
+
+;; Local Variables:
+;; coding: utf-8
+;; mode: lisp
+;; End:

@@ -189,6 +189,10 @@
                         home-xdg-configuration-files-service-type
                         `(("powershell"
                            ,(rsauex-home-file "powershell" "powershell-config" #:recursive? #t))))
+        (simple-service 'ukrainian-layout
+                        home-files-service-type
+                        `((".m17n.d/uk-translit.mim"
+                           ,(rsauex-home-file "uk-translit.mim" "uk-translit.mim"))))
         (simple-service 'i3blocks
                         home-xdg-configuration-files-service-type
                         `(("i3/i3blocks.conf"
