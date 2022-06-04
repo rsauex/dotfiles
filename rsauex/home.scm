@@ -74,7 +74,17 @@
                          ;; TODO: Replace with a service or a wrapper
                          (cons "EDS_EXTRA_PREFIXES" "/run/current-system/profile/")
                          ;; Fix scaling issues in Alacritty
-                         (cons "WINIT_X11_SCALE_FACTOR" "1")))
+                         (cons "WINIT_X11_SCALE_FACTOR" "1")
+                         ;; Input method
+                         (cons "GTK_IM_MODULE" "fcitx")
+                         (cons "QT_IM_MODULE" "fcitx")
+                         (cons "XMODIFIERS" "@im=fcitx")
+                         ;; (cons "GTK_IM_MODULE" "ibus")
+                         ;; (cons "QT_IM_MODULE" "ibus")
+                         ;; (cons "XMODIFIERS" "@im=ibus")
+                         ;; Respect immodule cache (TODO: This shouldn't be necessary...)
+                         (cons "GUIX_GTK2_IM_MODULE_FILE" "/run/current-system/profile/lib/gtk-2.0/2.10.0/immodules-gtk2.cache")
+                         (cons "GUIX_GTK3_IM_MODULE_FILE" "/run/current-system/profile/lib/gtk-3.0/3.0.0/immodules-gtk3.cache")))
         (service sx:sx-service-type
                  (sx:sx-configuration
                   (sxrc
@@ -108,9 +118,9 @@
                          (xset "r" "rate" "400" "44")
                          ;; Keyboard settings (default)
                          (setxkbmap "-option"
-                                    "-option" "ctrl:nocaps,grp:win_space_toggle,gep_led:scroll"
-                                    "-layout" "us,ua"
-                                    "-variant" "dvp,")
+                                    "-option" "ctrl:nocaps"
+                                    "-layout" "us"
+                                    "-variant" "dvp")
                          ;; Keyboard settings (Ergodox EZ)
                          (let ((device (invoke/capture-stdout #$(file-append xorg:xinput "/bin/xinput")
                                                               "list"

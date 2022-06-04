@@ -4,6 +4,7 @@
   #:use-module ((gnu packages cups)               #:prefix cups:)
   #:use-module ((gnu packages docker)             #:prefix docker:)
   #:use-module ((gnu packages dunst)              #:prefix dunst:)
+  #:use-module ((gnu packages fcitx5)             #:prefix fcitx5:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages glib)               #:prefix glib:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
@@ -35,6 +36,7 @@
   #:use-module (gnu services xorg)
   #:use-module (gnu system pam)
   #:use-module ((nongnu packages mozilla)      #:prefix mozilla:)
+  #:use-module ((rsauex packages fcitx5)       #:prefix my-fcitx5:)
   #:use-module ((rsauex packages gigolo)       #:prefix gigolo:)
   #:use-module ((rsauex packages nm-forti)     #:prefix nm-forti:)
   #:use-module ((rsauex packages nordic-theme) #:prefix nordic:)
@@ -153,6 +155,13 @@
                      security-token:python-yubikey-manager
 
                      docker:docker-compose
+
+                     fcitx5:fcitx5
+                     fcitx5:fcitx5-configtool
+                     fcitx5:fcitx5-qt
+                     (list fcitx5:fcitx5-gtk "gtk2")
+                     (list fcitx5:fcitx5-gtk "gtk3")
+                     my-fcitx5:fcitx5-m17n
 
                      (operating-system-packages %my-base-minimal-system)))
 
