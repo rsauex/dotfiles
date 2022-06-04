@@ -59,12 +59,12 @@ Doesn't remap any additional keys except for letters.")
 
 (state
  (state_init
-  (consonant (shift state_consonant_pressed))
+  (consonant (commit) (shift state_consonant_pressed))
   (vowel)
   (vowel_j)
   (backspace))
  (state_consonant_pressed
-  (consonant)
+  (consonant (commit))
   (vowel (shift state_init))
   (vowel_j_consonant_pressed (shift state_init))
   (backspace)))
