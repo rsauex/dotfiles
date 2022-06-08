@@ -65,9 +65,9 @@
         (simple-service 'my-environment
                         home-environment-variables-service-type
                         (list
-                         ;; Better QT5
-                         (cons "QT_QPA_PLATFORMTHEME" "gtk2")
-                         (cons "QT_STYLE_OVERRIDE" "gtk2")
+                         ;; Better QT
+                         (cons "QT_QPA_PLATFORMTHEME" "kvantum")
+                         (cons "QT_STYLE_OVERRIDE" "kvantum")
                          ;; Local bin
                          (cons "PATH" "\"$HOME/.bin:$HOME/dotfiles/home-files/bin:$HOME/.local/bin:$PATH\"")
                          ;; Temp fix for Evolution to see installed plugins
@@ -84,7 +84,9 @@
                          ;; (cons "XMODIFIERS" "@im=ibus")
                          ;; Respect immodule cache (TODO: This shouldn't be necessary...)
                          (cons "GUIX_GTK2_IM_MODULE_FILE" "/run/current-system/profile/lib/gtk-2.0/2.10.0/immodules-gtk2.cache")
-                         (cons "GUIX_GTK3_IM_MODULE_FILE" "/run/current-system/profile/lib/gtk-3.0/3.0.0/immodules-gtk3.cache")))
+                         (cons "GUIX_GTK3_IM_MODULE_FILE" "/run/current-system/profile/lib/gtk-3.0/3.0.0/immodules-gtk3.cache")
+                         ;; Respect QT Plugins (TODO: This shouldn't be necessary...)
+                         (cons "QT_PLUGIN_PATH" "/run/current-system/profile/lib/qt5/plugins")))
         (service sx:sx-service-type
                  (sx:sx-configuration
                   (sxrc
@@ -151,6 +153,12 @@
                  (cursor-theme:cursor-theme-configuration
                   (theme-package the-dot:the-dot-cursor-theme)
                   (theme-name "Dot-Light")))
+        (simple-service 'kvantum-theme
+                        home-xdg-configuration-files-service-type
+                        `(("Kvantum/kvantum.kvconfig"
+                           ,(plain-file
+                             "kvantum.kvconfig"
+                             "theme=Nordic-Darker\n"))))
         (simple-service 'dunst
                         home-xdg-configuration-files-service-type
                         `(("dunst/dunstrc"

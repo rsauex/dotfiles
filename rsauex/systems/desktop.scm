@@ -38,6 +38,7 @@
   #:use-module ((nongnu packages mozilla)      #:prefix mozilla:)
   #:use-module ((rsauex packages fcitx5)       #:prefix my-fcitx5:)
   #:use-module ((rsauex packages gigolo)       #:prefix gigolo:)
+  #:use-module ((rsauex packages kvantum)      #:prefix kvantum:)
   #:use-module ((rsauex packages nm-forti)     #:prefix nm-forti:)
   #:use-module ((rsauex packages nordic-theme) #:prefix nordic:)
   #:use-module (rsauex services pam-u2f)
@@ -104,6 +105,8 @@
                      gnome:hicolor-icon-theme
                      gnome:adwaita-icon-theme
                      nordic:nordic-darker-theme
+                     nordic:nordic-darker-kvantum-theme
+                     kvantum:kvantum
 
                      m4:m4
                      wm:i3-wm

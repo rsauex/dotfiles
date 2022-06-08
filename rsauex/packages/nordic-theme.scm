@@ -33,3 +33,29 @@
    (description "Nordic is a Gtk3.20+ theme created using the Nord color
 palette.")
    (license license:gpl3))))
+
+(define-public nordic-darker-kvantum-theme
+  (let ((commit "07d764c5ebd5706e73d2e573f1a983e37b318915")
+	(revision "0"))
+    (package
+      (name "nordic-darker-kvantum-theme")
+      (version (git-version "1.9.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/EliverLara/Nordic")
+               (commit commit)))
+         (sha256
+          (base32
+           "0y2s9d6h1b195s6afp1gb5rb1plfslkpbw2brd30a9d66wfvsqk0"))
+         (file-name (git-file-name name version))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         `(("./kde/kvantum/Nordic-Darker" "share/Kvantum/Nordic-Darker"))))
+      (home-page "https://github.com/EliverLara/Nordic")
+      (synopsis "Dark Gtk3.20+ theme using the Nord color palette")
+      (description "Nordic is a Gtk3.20+ theme created using the Nord color
+palette.")
+      (license license:gpl3))))
