@@ -144,6 +144,7 @@
                      gnome:evolution
                      gnome:evolution-data-server
                      passwd-utils:keepassxc
+                     syncthing:syncthing
                      syncthing:syncthing-gtk
                      pulseaudio:pavucontrol
                      wine:wine
