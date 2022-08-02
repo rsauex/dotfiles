@@ -189,10 +189,10 @@
                         home-xdg-configuration-files-service-type
                         `(("urxvt"
                            ,(rsauex-home-file "urxvt" "urxvt" #:recursive? #t))))
-        (simple-service 'git-common
+        (simple-service 'git-conf
                         home-files-service-type
-                        `((".gitcommonconfig"
-                           ,(rsauex-home-file ".gitcommonconfig" "gitcommonconfig"))))
+                        `((".gitconfig"
+                           ,(rsauex-home-file ".gitconfig" "gitconfig"))))
         (simple-service 'powershell
                         home-xdg-configuration-files-service-type
                         `(("powershell"
