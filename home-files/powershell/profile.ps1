@@ -95,6 +95,13 @@ function Prompt {
     # Invoke hooks
     Invoke-PromptHooks
 
+    ## Maybe output last exit code
+    if ($null -ne $LastExitCode -and $LastExitCode -ne 0) {
+        Write-Host -ForegroundColor Green ("Exit code: {0}" -f $LastExitCode)
+        # TODO: Any better way?
+        $global:LastExitCode = $null
+    }
+
     ## Output actual prompt
     # First line
     $indicators = ""

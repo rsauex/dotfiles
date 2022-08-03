@@ -69,7 +69,7 @@
                          (cons "QT_QPA_PLATFORMTHEME" "kvantum")
                          (cons "QT_STYLE_OVERRIDE" "kvantum")
                          ;; Local bin
-                         (cons "PATH" "\"$HOME/.bin:$HOME/dotfiles/home-files/bin:$HOME/.local/bin:$PATH\"")
+                         (cons "PATH" "$HOME/.bin:$HOME/dotfiles/home-files/bin:$HOME/.local/bin:$PATH")
                          ;; Temp fix for Evolution to see installed plugins
                          ;; TODO: Replace with a service or a wrapper
                          (cons "EDS_EXTRA_PREFIXES" "/run/current-system/profile/")
@@ -189,10 +189,10 @@
                         home-xdg-configuration-files-service-type
                         `(("urxvt"
                            ,(rsauex-home-file "urxvt" "urxvt" #:recursive? #t))))
-        (simple-service 'git-common
+        (simple-service 'git-conf
                         home-files-service-type
-                        `((".gitcommonconfig"
-                           ,(rsauex-home-file ".gitcommonconfig" "gitcommonconfig"))))
+                        `((".gitconfig"
+                           ,(rsauex-home-file ".gitconfig" "gitconfig"))))
         (simple-service 'powershell
                         home-xdg-configuration-files-service-type
                         `(("powershell"

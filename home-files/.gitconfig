@@ -1,43 +1,47 @@
-# -*- mode: conf -*-
+# -*- mode: conf-unix -*-
+
+## Include private part
+[include]
+  path = ~/.gitconfig_private
 
 ## Main idea:
 # - every important command has a one-character alias (OCA)
 # - undo'ing a command is 'un-<command>' and 'u<OCA>'
 
 [alias]
-  
+
   ## -- Add --------------------------------------------------------------------
-  
+
   a  = "add"                    # Add
   ap = "add --patch"            # Add by path
   au = "add --update"           # Add just the files that are updated
   ai = "add --interactive"      # Add interactively (do I need this?)
-  
+
   un-add = "reset HEAD --"      # Undo add
   ua     = "reset HEAD --"      # Undo add
-  
+
   ## -- Commit -----------------------------------------------------------------
-  
+
   c  = "commit"                 # Commit
   cm = "commit -m"              # Commit with message
   ca = "commit --amend"         # Commit amend
   #  ca! = "commit --amend --no-edit"  # ! is not allowed
-  
+
   un-commit = "reset --soft 'HEAD^'" # Undo last commit
   uc        = "reset --soft 'HEAD^'" # Undo last commit
 
   ## -- Checkout ---------------------------------------------------------------
-  
+
   o  = "checkout"
   ob = "checkout -b"
 
   ## -- Branch -----------------------------------------------------------------
-  
+
   b  = "branch"
   bm = "branch -m"
 
   ## -- Pull -------------------------------------------------------------------
-  
+
   p  = "pull"
   pf = "pull --ff-only"
   pm = "pull origin master"
@@ -50,18 +54,18 @@
   d  = "diff"
 
   ## -- Log --------------------------------------------------------------------
-  
+
   last = "log -1 HEAD"
   l  = "!sh -c 'git log --pretty=oneline --abbrev-commit ${1:-master}..HEAD' -"
   lg = "log --graph --decorate --pretty=oneline --abbrev-commit --all"
 
   ## -- Status -----------------------------------------------------------------
-  
+
   s  = "status"
   sm = "status -unormal -s"
 
   ## -- Misc -------------------------------------------------------------------
-  
+
   k  = "!gitk &"
   exec = "!exec "
   run-ci = "!exec ./run-ci-for-current-branch"
@@ -73,7 +77,7 @@
   tool = kdiff3
   # no fast forward
   ff = false
-  
+
 [push]
   default = simple
 

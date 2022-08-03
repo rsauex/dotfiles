@@ -19,15 +19,15 @@
 
 (define-configuration cursor-theme-configuration
   (theme-package
-   (maybe-package 'disabled)
+   (maybe-package)
    "The cursor theme package.")
   (theme-name
-   (maybe-string 'disabled)
+   (maybe-string)
    "The cursor theme name."))
 
 (define (add-cursor-theme-configuration config)
-  (if (or (eq? 'disabled (cursor-theme-configuration-theme-package config))
-          (eq? 'disabled (cursor-theme-configuration-theme-name config)))
+  (if (or (unspecified? (cursor-theme-configuration-theme-package config))
+          (unspecified? (cursor-theme-configuration-theme-name config)))
       `()
       `((".icons/default"
          ,(file-append (cursor-theme-configuration-theme-package config)

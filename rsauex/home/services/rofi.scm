@@ -44,7 +44,7 @@
 
 (define (rofi-serialize-theme field-name val)
   #~(let ((val #$val))
-      (if (eq? 'disabled val)
+      (if (unspecified? val)
           ""
           (string-append "@theme \"" #$val "\"\n"))))
 
@@ -59,7 +59,7 @@
    "Association list of configuration options."
    rofi-serialize-config)
   (theme
-   (maybe-file-like 'disabled)
+   (maybe-file-like)
    "File-like with theme."
    rofi-serialize-theme))
 
