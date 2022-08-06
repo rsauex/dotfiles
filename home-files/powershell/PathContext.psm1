@@ -472,9 +472,9 @@ function Update-PathContextStack() {
     }
 }
 
-Add-PromptHook {
-    Update-PathContextStack
-}
+# Add-PromptHook {
+#     Update-PathContextStack
+# }
 
 # Add-PathContextHook {
 #     Write-Host $args[0]

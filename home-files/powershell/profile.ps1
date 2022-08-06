@@ -236,7 +236,11 @@ function Select-Last() {
 # ------------------------------------------------------------------------------
 # ----- PathContext ------------------------------------------------------------
 
-. (Join-Path (Split-Path -Parent $PROFILE) "PathContext.ps1")
+Import-Module -Name (Join-Path (Split-Path -Parent $PROFILE) "PathContext.psm1")
+
+Add-PromptHook {
+    Update-PathContextStack
+}
 
 # ------------------------------------------------------------------------------
 # ----- Aliases ----------------------------------------------------------------
@@ -287,5 +291,5 @@ $global:PSDefaultParameterValues["Watch-Command:Seconds"] = 1
 #         [string]$Path
 #     )
 
-    
+
 # }
