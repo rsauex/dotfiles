@@ -1,160 +1,314 @@
+# TODO: PathContextHook -> PathContextEnterHook
+# TODO: Create PathContextExitHook (+ run in oposite order for proper nesting)
+
+# ----- Header -----
+
+# TODO: Proper exports
+# TODO: Split into different files by logical parts
+
+Set-StrictMode -Verbose -Version Latest
+
+# ----- Stored value -----
+
+# TODO: Ideally, providers should be used instead
+
+class StoredEnvVariable {
+    [String]$Name
+    [Object]$Value
+
+    StoredEnvVariable([String]$Name) {
+        $this.Name = $Name
+        $this.Value = $this.GetCurrentValue()
+    }
+
+    [Object]GetCurrentValue() {
+        return [Environment]::GetEnvironmentVariable($this.Name)
+    }
+
+    [Void]SetCurrentValue($Value) {
+        [Environment]::SetEnvironmentVariable($this.Name, $Value)
+    }
+
+    [Object]GetValue() {
+        return $this.Value
+    }
+
+    [Void]Restore() {
+        $this.SetCurrentValue($this.Value)
+    }
+
+    [Void]Remove() {
+        $this.SetCurrentValue($null)
+    }
+
+    [Void]Checkpoint() {
+        # Do Nothing
+    }
+}
+
+class StoredPwshVariable {
+    static [Hashtable]$IGNORED_VARS = @{
+        'PWD' = $true
+        '^' = $true
+        '$' = $true
+        'args' = $true
+        'input' = $true
+        'null' = $true
+        'LASTEXITCODE' = $true
+        'MyInvocation' = $true
+        'NestedPromptLevel' = $true
+        'StackTrace' = $true
+    }
+
+    [String]$Scope
+    [String]$Name
+    [Object]$Value
+
+    StoredPwshVariable([String]$Scope, [String]$Name) {
+        $this.Scope = $Scope
+        $this.Name = $Name
+        $this.Value = $this.GetCurrentValue()
+    }
+
+    [Object]GetCurrentValue() {
+        return (Get-Variable -Scope $this.Scope -Name $this.Name).Value
+    }
+
+    [Void]SetCurrentValue($Value) {
+        Set-Variable -Scope $this.Scope -Name $this.Name -Value $Value
+    }
+
+    [Object]GetValue() {
+        return $this.Value
+    }
+
+    [Void]Restore() {
+        $this.SetCurrentValue($this.Value)
+    }
+
+    [Void]Remove() {
+        Remove-Variable -Scope $this.Scope -Name $this.Name
+    }
+
+    [Void]Checkpoint() {
+        if ($this.Value -is [ICloneable]) {
+            $this.SetCurrentValue($this.Value.Clone())
+        }
+    }
+}
+
+class StoredAlias {
+    [String]$Scope
+    [String]$Name
+    [Object]$Value
+
+    StoredAlias([String]$Scope, [String]$Name) {
+        $this.Scope = $Scope
+        $this.Name = $Name
+        $this.Value = $this.GetCurrentValue()
+    }
+
+    [Object]GetCurrentValue() {
+        return (Get-Alias -Scope $this.Scope -Name $this.Name).Definition
+    }
+
+    [Void]SetCurrentValue($Value) {
+        Set-Alias -Scope $this.Scope -Name $this.Name -Value $Value
+    }
+
+    [Object]GetValue() {
+        return $this.Value
+    }
+
+    [Void]Restore() {
+        $this.SetCurrentValue($this.Value)
+    }
+
+    [Void]Remove() {
+        Remove-Alias -Scope $this.Scope -Name $this.name
+    }
+
+    [Void]Checkpoint() {
+        # Do Nothing
+    }
+}
+
+class StoredFunction {
+    [String]$PSPath
+    [Object]$Value
+
+    StoredFunction([String]$Scope, [String]$Name) {
+        $this.PSPath = "Microsoft.PowerShell.Core\Function::" + $Name
+        $this.Value = $this.GetCurrentValue()
+    }
+
+    [Object]GetCurrentValue() {
+        return (Get-Content -LiteralPath $this.PSPath)
+    }
+
+    [Void]SetCurrentValue($Value) {
+        Set-Content -LiteralPath $this.PSPath -Value $Value
+    }
+
+    [Object]GetValue() {
+        return $this.Value
+    }
+
+    [Void]Restore() {
+        $this.SetCurrentValue($this.Value)
+    }
+
+    [Void]Remove() {
+        Remove-Item -LiteralPath $this.PSPath
+    }
+
+    [Void]Checkpoint() {
+        # Do Nothing
+    }
+}
+
+function Get-Environment() {
+    $Vars = @{}
+    [Environment]::GetEnvironmentVariables().Keys | ForEach-Object {
+        $Vars["Env Var: " + $_] = [StoredEnvVariable]::new($_)
+    }
+    Get-Variable -Scope Global | ForEach-Object {
+        if ($_.Options -notlike '*Constant*' -and
+            $_.Options -notlike '*AllScope*' -and
+            -not [StoredPwshVariable]::IGNORED_VARS.Contains($_.Name)) {
+            $Vars["Global Var: " + $_.Name] = [StoredPwshVariable]::new('Global', $_.name)
+        }
+    }
+    Get-Alias -Scope Global | ForEach-Object {
+        if ($_.Options -notlike '*AllScope*') {
+            $Vars["Global Alias: " + $_.Name] = [StoredAlias]::new('Global', $_.Name)
+        }
+    }
+    Get-ChildItem -Path Function: | ForEach-Object {
+        $Vars["Global Function: " + $_.Name] = [StoredFunction]::new('Global', $_.Name)
+    }
+    return $Vars
+}
+
+function Checkpoint-Environment() {
+    $Env = (Get-Environment)
+    $Env.Values | ForEach-Object {
+        $_.Checkpoint()
+    }
+    return $Env
+}
+
 # ----- Path Context Diff -----
 
-class PathContextAddition {
-    [string]$Path
-    $NewValue
+class EnvironmentAddition {
+    [String]$Path
+    [Object]$NewEntity
 
-    PathContextAddition($Path, $NewValue) {
+    EnvironmentAddition([String]$Path, [Object]$NewEntity) {
         $this.Path = $Path
-        $this.NewValue = $NewValue
+        $this.NewEntity = $NewEntity
         $this.LogOnApply()
     }
 
-    [void] Revert() {
-        Remove-Item $this.Path
+    [Void]Revert() {
+        $this.NewEntity.Remove()
         $this.LogOnRevert()
     }
 
-    [void] LogOnApply() {
-        Write-Host ("[PathContext:IN] {0} = {1}" -f $this.Path, $this.NewValue)
+    [Void]LogOnApply() {
+        Write-Host ("[PathContext:IN] {0} = {1}" -f $this.Path, $this.NewEntity.GetValue())
     }
 
-    [void] LogOnRevert() {
+    [Void]LogOnRevert() {
         Write-Host ("[PathContext:OUT] {0} removed" -f $this.Path)
     }
 }
 
-class PathContextRemoval {
-    [string]$Path
-    $OldValue
+class EnvironmentRemoval {
+    [String]$Path
+    [Object]$OldEntity
 
-    PathContextRemoval($Path, $OldValue) {
+    EnvironmentRemoval([String]$Path, [Object]$OldEntity) {
         $this.Path = $Path
-        $this.OldValue = $OldValue
+        $this.OldEntity = $OldEntity
         $this.LogOnApply()
     }
 
-    [void] Revert() {
-        Set-Item $this.Path $this.OldValue
+    [Void]Revert() {
+        $this.OldEntity.Restore()
         $this.LogOnRevert()
     }
 
-    [void] LogOnApply() {
+    [Void]LogOnApply() {
         Write-Host ("[PathContext:IN] {0} removed" -f $this.Path)
     }
 
-    [void] LogOnRevert() {
-        Write-Host ("[PathContext:OUT] {0} = {1}" -f $this.Path, $this.OldValue)
+    [Void]LogOnRevert() {
+        Write-Host ("[PathContext:OUT] {0} = {1}" -f $this.Path, $this.OldEntity.GetValue())
     }
 }
 
-class PathContextChange {
-    [string]$Path
-    $OldValue
-    $NewValue
+class EnvironmentChange {
+    [String]$Path
+    [Object]$OldEntity
+    [Object]$NewEntity
 
-    PathContextChange($Path, $OldValue, $NewValue) {
+    EnvironmentChange([String]$Path, [Object]$OldEntity, [Object]$NewEntity) {
         $this.Path = $Path
-        $this.OldValue = $OldValue
-        $this.NewValue = $NewValue
+        $this.OldEntity = $OldEntity
+        $this.NewEntity = $NewEntity
         $this.LogOnApply()
     }
 
-    [void] Revert() {
-        Set-Item $this.Path $this.OldValue
+    [Void]Revert() {
+        $this.OldEntity.Restore()
         $this.LogOnRevert()
     }
 
-    [void] LogOnApply() {
-        Write-Host ("[PathContext:IN] {0} = {1}" -f $this.Path, $this.NewValue)
+    [Void]LogOnApply() {
+        Write-Host ("[PathContext:IN] {0} = {1}" -f $this.Path, $this.NewEntity.GetValue())
     }
 
-    [void] LogOnRevert() {
-        Write-Host ("[PathContext:OUT] {0} = {1}" -f $this.Path, $this.OldValue)
+    [Void]LogOnRevert() {
+        Write-Host ("[PathContext:OUT] {0} = {1}" -f $this.Path, $this.OldEntity.GetValue())
     }
 }
 
-class PathContextDiff {
-    $Changes
+class EnvironmentDiff {
+    [Object[]]$Changes
 
-    PathContextDiff([hashtable]$old, [hashtable]$new) {
+    EnvironmentDiff([Hashtable]$old, [Hashtable]$new) {
         $this.Changes = @( )
         $old.GetEnumerator() | ForEach-Object {
             if (-not $new.ContainsKey($_.Key)) {
-                $this.Changes += [PathContextRemoval]::new($_.Key, $_.Value)
-            } elseif (-not $_.Value.Equals($new[$_.Key])) {
-                $this.Changes += [PathContextChange]::new($_.Key, $_.Value, $new[$_.Key])
+                $this.Changes += [EnvironmentRemoval]::new($_.Key, $_.Value)
+            } elseif ($_.Value.GetValue() -ne $new[$_.Key].GetValue() -and
+                      ($null -eq $_.Value.GetValue() -or
+                       $null -eq $new[$_.Key].GetValue() -or
+                       -not $_.Value.GetValue().Equals($new[$_.Key].GetValue()))) {
+                $this.Changes += [EnvironmentChange]::new($_.Key, $_.Value, $new[$_.Key])
             }
         }
         $new.GetEnumerator() | ForEach-Object {
             if (-not $old.ContainsKey($_.Key)) {
-                $this.Changes += [PathContextAddition]::new($_.Key, $_.Value)
+                $this.Changes += [EnvironmentAddition]::new($_.Key, $_.Value)
             }
         }
     }
 
-    [void] Revert() {
+    [Void]Revert() {
         foreach ($Change in $this.Changes) {
             $Change.Revert()
         }
     }
 }
 
-function Get-EnvironmentDump() {
-    [hashtable]$Dump = @{ }
-    Get-Variable -Scope 'global' | ForEach-Object {
-        if ($null -ne $_.PSPath -and ($_.Options -notlike '*Constant*')) {
-            $Dump[$_.PSPath] = (Get-Content -LiteralPath $_.PSPath)
-        }
-    }
-    Get-ChildItem -Path Env: | ForEach-Object {
-        $Dump[$_.PSPath] = (Get-Content -LiteralPath $_.PSPath)
-    }
-    Get-ChildItem -Path Function: | ForEach-Object {
-        $Dump[$_.PSPath] = (Get-Content -LiteralPath $_.PSPath)
-    }
-    Get-ChildItem -Path Alias: | ForEach-Object {
-        $Dump[$_.PSPath] = (Get-Content -LiteralPath $_.PSPath)
-    }
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::$")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::?")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::^")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::_")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::args")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::CurrentlyExecutingCommand")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::Event")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::EventArgs")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::EventSubscriber")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::foreach")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::input")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::LastExitCode")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::Matches")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::MyInvocation")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::NestedPromptLevel")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::null")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSBoundParameters")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSCmdlet")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSCommandPath")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSCulture")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSDebugContext")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSItem")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSScriptRoot")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSSenderInfo")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PSUICulture")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::PWD")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::Sender")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::StackTrace")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::switch")
-    $Dump.Remove("Microsoft.PowerShell.Core\Variable::this")
-    return $Dump
-}
-
-function Invoke-WithPathContextDiff([ScriptBlock[]]$Blocks) {
-    $Old = (Get-EnvironmentDump)
+function Invoke-WithEnvironmentDiff([ScriptBlock[]]$Blocks) {
+    $Old = (Checkpoint-Environment)
     foreach ($Block in $Blocks) {
         Invoke-Command -ScriptBlock $Block
     }
-    return [PathContextDiff]::new($Old, (Get-EnvironmentDump))
+    return [EnvironmentDiff]::new($Old, (Get-Environment))
 }
 
 # ----- Utils -----
@@ -175,14 +329,14 @@ function Invoke-Using() {
 }
 
 class TemporaryEnvironment {
-    [hashtable]$Old
+    [Hashtable]$Old
 
     TemporaryEnvironment() {
-        $this.Old = (Get-EnvironmentDump)
+        $this.Old = (Checkpoint-Environment)
     }
 
-    [void] Dispose() {
-        [PathContextDiff]::new($this.Old, (Get-EnvironmentDump)).Revert()
+    [Void]Dispose() {
+        [EnvironmentDiff]::new($this.Old, (Get-Environment)).Revert()
     }
 }
 
@@ -198,13 +352,13 @@ function Invoke-InTempEnv() {
 }
 
 class TemporaryPath {
-    [String] $Old
+    [String]$Old
 
     TemporaryPath() {
         $this.Old = $PWD
     }
 
-    [void] Dispose() {
+    [Void]Dispose() {
         Set-Location $this.Old
     }
 }
@@ -225,7 +379,7 @@ function Invoke-InPath() {
 
 # ----- Context Path Hooks -----
 
-[ScriptBlock[]]$PWSH_PATH_CONTEXT_HOOKS = @( )
+[ScriptBlock[]]$script:PWSH_PATH_CONTEXT_HOOKS = @( )
 
 function Add-PathContextHook() {
     [CmdletBinding()]
@@ -233,7 +387,7 @@ function Add-PathContextHook() {
         [Parameter(Mandatory=$true)]
         [ScriptBlock]$Hook
     )
-    $global:PWSH_PATH_CONTEXT_HOOKS += $Hook
+    $script:PWSH_PATH_CONTEXT_HOOKS += $Hook
 }
 
 function Invoke-PathContextHooks() {
@@ -244,7 +398,7 @@ function Invoke-PathContextHooks() {
     )
     Push-Location
     try {
-        foreach ($hook in $PWSH_PATH_CONTEXT_HOOKS) {
+        foreach ($hook in $script:PWSH_PATH_CONTEXT_HOOKS) {
             try {
                 Set-Location $Path
                 Invoke-Command -ScriptBlock $hook | Where-Object { $null -ne $_ } `
@@ -262,17 +416,17 @@ function Invoke-PathContextHooks() {
 
 # ----- Path Context Stack -----
 
-$PWSH_PATH_CONTEXT_STACK = New-Object -TypeName 'Collections.Generic.LinkedList[PSCustomObject]'
+$script:PWSH_PATH_CONTEXT_STACK = New-Object -TypeName 'Collections.Generic.LinkedList[PSCustomObject]'
 
 function Pop-PathContext() {
-    if ($null -ne $PWSH_PATH_CONTEXT_STACK.Last.Value.Diff) {
-        $PWSH_PATH_CONTEXT_STACK.Last.Value.Diff.Revert()
+    if ($null -ne $script:PWSH_PATH_CONTEXT_STACK.Last.Value.Diff) {
+        $script:PWSH_PATH_CONTEXT_STACK.Last.Value.Diff.Revert()
     }
-    $PWSH_PATH_CONTEXT_STACK.RemoveLast()
+    $script:PWSH_PATH_CONTEXT_STACK.RemoveLast()
 }
 
 function Push-PathContext($PathPart, $Diff) {
-    $PWSH_PATH_CONTEXT_STACK.AddLast([PSCustomObject]@{ Part = $PathPart; Diff = $Diff }) | Out-Null
+    $script:PWSH_PATH_CONTEXT_STACK.AddLast([PSCustomObject]@{ Part = $PathPart; Diff = $Diff }) | Out-Null
 }
 
 function Get-PathContext() {
@@ -288,18 +442,18 @@ function Update-PathContextStack() {
     $PathContext = (Get-PathContext)
     # Find first index where path has changed
     $EndIndex = 0
-    foreach ($location in $PWSH_PATH_CONTEXT_STACK.GetEnumerator()) {
-        if ($location.Part -ne $PathContext[$EndIndex]) {
+    foreach ($location in $script:PWSH_PATH_CONTEXT_STACK.GetEnumerator()) {
+        if ($PathContext.Count -eq $EndIndex -or $location.Part -ne $PathContext[$EndIndex]) {
             break
         }
         $EndIndex++
     }
     # Skip everything else if nothing changed
-    if ($PWSH_PATH_CONTEXT_STACK.Count -eq $EndIndex -and $PathContext.Count -eq $EndIndex) {
+    if ($script:PWSH_PATH_CONTEXT_STACK.Count -eq $EndIndex -and $PathContext.Count -eq $EndIndex) {
         return
     }
     # Remove the changed part from PathContext stack
-    while ($PWSH_PATH_CONTEXT_STACK.Count -gt $EndIndex) {
+    while ($script:PWSH_PATH_CONTEXT_STACK.Count -gt $EndIndex) {
         Pop-PathContext
     }
     # Bulid common part of the path
@@ -313,8 +467,8 @@ function Update-PathContextStack() {
         if ($i -ne 0) {
             $Path = Join-Path $Path $PathContext[$i]
         }
-        $Blocks = (Invoke-PathContextHooks $Path | Where-Object { $null -ne $_ })
-        Push-PathContext $PathContext[$i] ($Blocks.Count -ne 0 ? (Invoke-WithPathContextDiff $Blocks) : $null)
+        $Blocks = @(Invoke-PathContextHooks $Path | Where-Object { $null -ne $_ })
+        Push-PathContext $PathContext[$i] ($Blocks.Count -ne 0 ? (Invoke-WithEnvironmentDiff $Blocks) : $null)
     }
 }
 
@@ -336,7 +490,7 @@ Add-PromptHook {
 
 # ----- Path Context File -----
 
-Set-Variable PathContextFileName -Option Constant -Value ".envrc.ps1"
+Set-Variable -Scope Script -Name PathContextFileName -Option Constant -Value ".envrc.ps1"
 
 # TODO: Use other way to auth files!
 
@@ -372,6 +526,7 @@ $PSDefaultParameterValues.Add("Disable-PathContextFile:Path", ".")
 
 Function Test-PathContextFile() {
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [String[]]$Path
