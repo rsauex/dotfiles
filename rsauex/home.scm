@@ -13,6 +13,7 @@
  ((gnu packages xdisorg)            #:prefix xdisorg:)
  ((gnu packages xorg)               #:prefix xorg:)
  ((gnu packages m4)                 #:prefix m4:)
+ ((gnu packages text-editors)       #:prefix text-editors:)
  (gnu packages)
  (gnu services configuration)
  (gnu services)
@@ -36,9 +37,7 @@
    ((@@ (gnu home) home-environment-default-essential-services) he)))
 
 (home-environment
- (packages (list
-            ;; the-dot:the-dot-cursor-theme
-            ))
+ (packages (list text-editors:texmacs))
  (essential-services
   (my-essential-services this-home-environment))
  (services
