@@ -23,24 +23,23 @@
             rofi-service-type))
 
 (define (rofi-serialize-config field-name val)
-  (with-imported-modules '((ice-9 string-fun))
-    #~(begin
-        (use-modules (ice-9 string-fun))
+  #~(begin
+      (use-modules (ice-9 string-fun))
 
-        (let ((serialize-value
-               (lambda (value)
-                 (cond
-                  ((string? value)
-                   (string-append "\"" (string-replace-substring value "\"" "\\\"") "\""))
-                  (#t
-                   (raise "Only string values are supported currently"))))))
-          (string-append
-           "configuration {\n"
-           #$@(map (match-lambda
-                     ((key . value)
-                      #~(string-append #$key ": " (serialize-value #$value) ";\n")))
-                   val)
-           "}\n")))))
+      (let ((serialize-value
+             (lambda (value)
+               (cond
+                ((string? value)
+                 (string-append "\"" (string-replace-substring value "\"" "\\\"") "\""))
+                (#t
+                 (raise "Only string values are supported currently"))))))
+        (string-append
+         "configuration {\n"
+         #$@(map (match-lambda
+                   ((key . value)
+                    #~(string-append #$key ": " (serialize-value #$value) ";\n")))
+                 val)
+         "}\n"))))
 
 (define (rofi-serialize-theme field-name val)
   #~(let ((val #$val))
