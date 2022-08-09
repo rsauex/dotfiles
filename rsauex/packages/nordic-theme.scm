@@ -59,3 +59,27 @@ palette.")
       (description "Nordic is a Gtk3.20+ theme created using the Nord color
 palette.")
       (license license:gpl3))))
+
+(define-public rofi-nord-theme
+  (let ((commit "71c76dcf31e38b426519198276cf6b5ba626e61c"))
+    (package
+      (name "rofi-nord-theme")
+      (version (git-version "1.0" "0" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/amayer5125/nord-rofi/")
+               (commit commit)))
+         (sha256
+          (base32
+           "18kflmsr8351y7jljwdw07ncwni2q0hfq5c772zdhcir1bzpi6al"))
+         (file-name (git-file-name name version))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         `(("./nord.rasi" "share/rofi/themes/"))))
+      (home-page "https://github.com/amayer5125/nord-rofi/")
+      (synopsis "A Rofi theme based on Nord theme by Arctic Ice Studio.")
+      (description "A Rofi theme based on Nord theme by Arctic Ice Studio.")
+      (license license:expat))))

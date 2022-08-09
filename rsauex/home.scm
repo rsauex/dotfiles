@@ -23,6 +23,7 @@
  (ice-9 textual-ports)
  (rsauex packages)
  ((rsauex packages the-dot)             #:prefix the-dot:)
+ ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
  ((rsauex home services rofi)           #:prefix rofi:)
  ((rsauex home services sx)             #:prefix sx:)
  ((rsauex home services cursor-theme)   #:prefix cursor-theme:)
@@ -33,12 +34,6 @@
   ((compose
     (cut remove (compose (cut eq? home-fontconfig-service-type <>) service-kind) <>))
    ((@@ (gnu home) home-environment-default-essential-services) he)))
-
-(define rofi-nord-theme
-  (file-append (git-checkout
-                (url "https://github.com/amayer5125/nord-rofi/")
-                (commit "71c76dcf31e38b426519198276cf6b5ba626e61c"))
-               "/nord.rasi"))
 
 (home-environment
  (packages (list
@@ -60,7 +55,9 @@
                  (rofi:rofi-configuration
                   (config
                    '(("font" . "Monospace 12")))
-                  (theme rofi-nord-theme)))
+                  (theme
+                   (file-append nordic-theme:rofi-nord-theme
+                                "/share/rofi/themes/nord.rasi"))))
         (service xdg:home-xdg-user-directories-service-type)
         (simple-service 'my-environment
                         home-environment-variables-service-type
