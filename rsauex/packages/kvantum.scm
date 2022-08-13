@@ -56,7 +56,7 @@
        ,qttools))
     (inputs
      `(,qtbase-5
-       ,qtsvg
+       ,qtsvg-5
        ,qtx11extras
        ,libx11
        ,libxext
