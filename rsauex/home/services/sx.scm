@@ -67,3 +67,15 @@
                 (extend sx-extensions)
                 (default-value (sx-configuration))
                 (description "Install and configure sx.")))
+
+;;; Example:
+
+;; (service sx:sx-service-type
+;;          (sx:sx-configuration
+;;           (sxrc
+;;            #~(execl #$(file-append glib:dbus "/bin/dbus-launch")
+;;                     #$(file-append glib:dbus "/bin/dbus-launch")
+;;                     "--exit-with-session"
+;;                     "--"
+;;                     #$shepherd-launch
+;;                     #$(file-append wm:i3-wm "/bin/i3")))))

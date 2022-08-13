@@ -2,6 +2,10 @@ function Test-LoginShell() {
     (ps -p $PID -o cmd=) -match "^-pwsh"
 }
 
+function Test-InDockerContainer() {
+    return Test-Path "/.dockerenv"
+}
+
 # ------------------------------------------------------------------------------
 # ----- ReadLine options -------------------------------------------------------
 
@@ -100,13 +104,17 @@ function Prompt {
 
     ## Output actual prompt
     # First line
+    $indicators = ""
+    if (Test-InDockerContainer) {
+        $indicators += "(DOCKER)"
+    }
     if (Test-Path Env:/IN_NIX_SHELL) {
-        $indicator = "(NIX)"
+        $indicators += "(NIX)"
     }
     if (Test-Path Env:/GUIX_ENVIRONMENT) {
-        $indicator = "(GUIX)"
+        $indicators += "(GUIX)"
     }
-    Write-Host -NoNewline                           -Object "PS${indicator}> "
+    Write-Host -NoNewline                           -Object "PS${indicators}> "
     Write-Host -NoNewline -ForegroundColor Cyan     -Object ("{0:HH:mm}" -f (Get-Date))
     Write-Host -NoNewline                           -Object " ["
     Write-Host -NoNewline -ForegroundColor Blue     -Object ("{0}@{1}" -f [System.Environment]::UserName, [System.Environment]::MachineName)
