@@ -93,7 +93,9 @@
    ;; preceding symbol is one of these.
    (eval . (modify-syntax-entry ?~ "'"))
    (eval . (modify-syntax-entry ?$ "'"))
-   (eval . (modify-syntax-entry ?+ "'"))))
+   (eval . (modify-syntax-entry ?+ "'"))
+
+   (eval . (put 'anon-service 'scheme-indent-function 1))
  (emacs-lisp-mode . ((indent-tabs-mode . nil)))
  (texinfo-mode    . ((indent-tabs-mode . nil)
                      (fill-column . 72))))
