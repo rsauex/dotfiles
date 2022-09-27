@@ -1,5 +1,8 @@
 # -*- mode: conf-unix -*-
 
+[core]
+  hooksPath = ~/.config/git/hooks
+
 ## Include private part
 [include]
   path = ~/.gitconfig_private
@@ -44,7 +47,7 @@
 
   p  = "pull"
   pf = "pull --ff-only"
-  pm = "pull origin master"
+  pm = "pull --no-rebase"
   pr = "pull --rebase"
 
   r  = "remote -v"
@@ -80,6 +83,9 @@
 
 [push]
   default = simple
+
+[pull]
+  ff = only
 
 [diff]
   guitool = kdiff3
