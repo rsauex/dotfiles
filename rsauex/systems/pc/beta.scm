@@ -55,10 +55,6 @@
 
     (packages (cons* (@ (gnu packages xorg) xbacklight)
 
-                     (@ (gnu packages clojure) clojure)
-                     (@ (nongnu packages clojure) leiningen)
-                     (list (@ (gnu packages java) openjdk11) "jdk")
-
                      (@ (gnu packages video) vlc)
                      (@ (gnu packages video) intel-vaapi-driver)
 

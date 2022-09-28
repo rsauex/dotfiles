@@ -17,10 +17,13 @@
  ((gnu packages xdisorg)            #:prefix xdisorg:)
  ((gnu packages xorg)               #:prefix xorg:)
  ((gnu services))
+ ((guix modules))
  ((guix gexp))
  ((guix git))
+ ((ice-9 match))
  ((ice-9 textual-ports))
  ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
+ ((rsauex home services git)            #:prefix my-git:)
  ((rsauex home services gui-startup)    #:prefix my-gui-startup:)
  ((rsauex home services rofi)           #:prefix my-rofi:)
  ((rsauex home services shepherd)       #:prefix my-shepherd:)
@@ -31,6 +34,24 @@
  ((rsauex services))
  ((srfi srfi-1))
  ((srfi srfi-26)))
+
+(define (rsauex-module-name? name)
+  (match name
+    (('rsauex _ ...) #t)
+    (_ #f)))
+
+(define (program-fn-file module fn)
+  (program-file
+   (string-join (map symbol->string (append module (list fn))) "-")
+   (with-imported-modules
+       (append (list module)
+               (source-module-closure
+                (list module)
+                #:select? rsauex-module-name?))
+     #~(apply (@ #$module #$fn) (cdr (program-arguments))))))
+
+(define (git-prevent-push-to-important-branches)
+  (cons #:pre-push (program-fn-file '(rsauex home services git hooks ask-on-push-to-master) 'check)))
 
 (define (my-essential-services he)
   ((compose
@@ -215,6 +236,10 @@
           (home-xdg-configuration-files-service-type
            `(("dunst/dunstrc"
               ,(rsauex-home-file "dunstrc" "dunstrc")))))
+        ;; Git settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (service my-git:git-service-type
+                 (my-git:git-configuration
+                  (hooks (list (git-prevent-push-to-important-branches)))))
         ;; Other settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (simple-service 'tmux
                         home-files-service-type
