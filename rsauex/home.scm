@@ -7,9 +7,11 @@
  ((gnu packages dunst)              #:prefix dunst:)
  ((gnu packages fcitx5)             #:prefix fcitx5:)
  ((gnu packages gnome)              #:prefix gnome:)
+ ((gnu packages linux)              #:prefix linux:)
  ((gnu packages m4)                 #:prefix m4:)
  ((gnu packages networking)         #:prefix networking:)
  ((gnu packages password-utils)     #:prefix passwd-utils:)
+ ((gnu packages perl)               #:prefix perl:)
  ((gnu packages polkit)             #:prefix polkit:)
  ((gnu packages syncthing)          #:prefix syncthing:)
  ((gnu packages text-editors)       #:prefix text-editors:)
@@ -61,6 +63,50 @@
     (cut remove (compose (cut eq? fontutils:home-fontconfig-service-type <>) service-kind) <>))
    ((@@ (gnu home) home-environment-default-essential-services) he)))
 
+(define (i3-config-service)
+  (anon-service i3blocks-config
+    (home-profile-service-type
+     (list wm:i3-wm
+           wm:i3status
+           wm:i3blocks
+           ;; TODO: Remove
+           ;; For scripts in i3blocks
+           linux:acpi
+           linux:sysstat
+           perl:perl
+           xorg:xset
+           xdisorg:xdotool
+           ;; Called from config
+           xdisorg:maim
+           xdisorg:xclip
+           music:playerctl))
+    (home-xdg-configuration-files-service-type
+     `(("i3/i3blocks.conf"
+        ,(rsauex-home-file "i3blocks.conf" "i3blocks.conf"))
+       ("i3/i3blocks"
+        ,(rsauex-home-file "i3blocks" "i3blocks-libexec" #:recursive? #t))
+       ("i3/config"
+        ,(computed-file
+          "i3-config"
+          (let ((files (list (rsauex-home-file "i3/00_base.conf" "i3-00_base.conf")
+                             (rsauex-home-file "i3/05_colors.conf" "i3-05_colors.conf")
+                             (rsauex-home-file "i3/10_keys.conf" "i3-10_keys.conf")
+                             (rsauex-home-file "i3/15_keys.wm.conf" "i3-15_keys.wm.conf")
+                             (rsauex-home-file "i3/20_menus.conf" "i3-20_menus.conf")
+                             (rsauex-home-file "i3/30_bar.conf" "i3-30_bar.conf")
+                             (rsauex-home-file "i3/40_client.conf" "i3-40_client.conf")))
+                (m4 (file-append m4:m4 "/bin/m4"))
+                (cassis-type (call-with-input-file "/sys/class/dmi/id/chassis_type"
+                               (lambda (port)
+                                 (get-line port)))))
+            #~(begin
+                (use-modules (ice-9 popen)
+                             (ice-9 textual-ports))
+                (with-fluids ((%default-port-encoding "UTF-8"))
+                  (call-with-output-file #$output
+                    (lambda (port)
+                      (put-string port (get-string-all (open-pipe* OPEN_READ #$m4 (string-append "-DPC_TYPE=" #$cassis-type) #$@files))))))))))))))
+
 (home-environment
  (packages (list text-editors:texmacs))
  (essential-services
@@ -105,6 +151,7 @@
         (service my-gui-startup:gui-startup-service-type
                  (my-gui-startup:gui-startup-configuration
                   (program (file-append wm:i3-wm "/bin/i3"))))
+        (i3-config-service)
         ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-ssh-service:ssh-agent-service-type)
         (anon-service load-xresources
@@ -296,33 +343,4 @@
         (simple-service 'ukrainian-layout
                         home-files-service-type
                         `((".m17n.d/uk-translit.mim"
-                           ,(rsauex-home-file "uk-translit.mim" "uk-translit.mim"))))
-        (simple-service 'i3blocks
-                        home-xdg-configuration-files-service-type
-                        `(("i3/i3blocks.conf"
-                           ,(rsauex-home-file "i3blocks.conf" "i3blocks.conf"))
-                          ("i3/i3blocks"
-                           ,(rsauex-home-file "i3blocks" "i3blocks-libexec" #:recursive? #t))))
-        (simple-service 'i3
-                        home-xdg-configuration-files-service-type
-                        `(("i3/config"
-                           ,(computed-file
-                             "i3-config"
-                             (let ((files (list (rsauex-home-file "i3/00_base.conf" "i3-00_base.conf")
-                                                (rsauex-home-file "i3/05_colors.conf" "i3-05_colors.conf")
-                                                (rsauex-home-file "i3/10_keys.conf" "i3-10_keys.conf")
-                                                (rsauex-home-file "i3/15_keys.wm.conf" "i3-15_keys.wm.conf")
-                                                (rsauex-home-file "i3/20_menus.conf" "i3-20_menus.conf")
-                                                (rsauex-home-file "i3/30_bar.conf" "i3-30_bar.conf")
-                                                (rsauex-home-file "i3/40_client.conf" "i3-40_client.conf")))
-                                   (m4 (file-append m4:m4 "/bin/m4"))
-                                   (cassis-type (call-with-input-file "/sys/class/dmi/id/chassis_type"
-                                                  (lambda (port)
-                                                    (get-line port)))))
-                               #~(begin
-                                   (use-modules (ice-9 popen)
-                                                (ice-9 textual-ports))
-                                   (with-fluids ((%default-port-encoding "UTF-8"))
-                                     (call-with-output-file #$output
-                                       (lambda (port)
-                                         (put-string port (get-string-all (open-pipe* OPEN_READ #$m4 (string-append "-DPC_TYPE=" #$cassis-type) #$@files)))))))))))))))
+                           ,(rsauex-home-file "uk-translit.mim" "uk-translit.mim")))))))

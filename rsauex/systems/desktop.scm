@@ -9,13 +9,10 @@
   #:use-module ((gnu packages glib)               #:prefix glib:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages libreoffice)        #:prefix libreoffice:)
-  #:use-module ((gnu packages linux)              #:prefix linux:)
-  #:use-module ((gnu packages m4)                 #:prefix m4:)
   #:use-module ((gnu packages music)              #:prefix music:)
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
-  #:use-module ((gnu packages perl)               #:prefix perl:)
   #:use-module ((gnu packages pulseaudio)         #:prefix pulseaudio:)
   #:use-module ((gnu packages scanner)            #:prefix scanner:)
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
@@ -26,7 +23,6 @@
   #:use-module ((gnu packages wine)               #:prefix wine:)
   #:use-module ((gnu packages wm)                 #:prefix wm:)
   #:use-module ((gnu packages xdisorg)            #:prefix xdisorg:)
-  #:use-module ((gnu packages xorg)               #:prefix xorg:)
   #:use-module (gnu services cups)
   #:use-module (gnu services dbus)
   #:use-module (gnu services desktop)
@@ -108,17 +104,6 @@
                      nordic:nordic-darker-kvantum-theme
                      kvantum:kvantum
 
-                     m4:m4
-                     wm:i3-wm
-                     wm:i3status
-                     wm:i3blocks
-
-                     ;; For scripts in i3blocks
-                     linux:acpi
-                     linux:sysstat
-                     perl:perl
-                     xorg:xset
-
                      gnome:dconf
                      gnome:dconf-editor
                      gnome:gsettings-desktop-schemas
@@ -132,11 +117,7 @@
                      xdisorg:sx
                      xdisorg:rofi
                      xdisorg:xss-lock
-                     xdisorg:maim
-                     xdisorg:xclip
-                     xdisorg:xdotool
                      xdisorg:arandr
-                     music:playerctl
 
                      terms:alacritty
                      mozilla:firefox
