@@ -112,7 +112,6 @@
 
                      (list glib:glib "bin")
 
-                     xdisorg:sx
                      xdisorg:rofi
                      xdisorg:xss-lock
                      xdisorg:arandr
