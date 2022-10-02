@@ -3,7 +3,6 @@
   #:use-module (gnu packages)
   #:use-module ((gnu packages cups)               #:prefix cups:)
   #:use-module ((gnu packages docker)             #:prefix docker:)
-  #:use-module ((gnu packages dunst)              #:prefix dunst:)
   #:use-module ((gnu packages fcitx5)             #:prefix fcitx5:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages glib)               #:prefix glib:)
@@ -113,7 +112,6 @@
 
                      (list glib:glib "bin")
 
-                     dunst:dunst
                      xdisorg:sx
                      xdisorg:rofi
                      xdisorg:xss-lock

@@ -107,6 +107,21 @@
                     (lambda (port)
                       (put-string port (get-string-all (open-pipe* OPEN_READ #$m4 (string-append "-DPC_TYPE=" #$cassis-type) #$@files))))))))))))))
 
+(define (dunst-service)
+  (anon-service dunst-autostart
+    (home-profile-service-type
+     (list dunst:dunst))
+    (my-gui-startup:gui-startup-service-type
+     (my-gui-startup:gui-startup-extension
+      (services
+       (list (my-shepherd:simple-forkexec-shepherd-service
+              'dunst
+              "Run `dunst'"
+              #~`(#$(file-append dunst:dunst "/bin/dunst")))))))
+    (home-xdg-configuration-files-service-type
+     `(("dunst/dunstrc"
+        ,(rsauex-home-file "dunstrc" "dunstrc"))))))
+
 (home-environment
  (packages (list text-editors:texmacs))
  (essential-services
@@ -152,6 +167,7 @@
                  (my-gui-startup:gui-startup-configuration
                   (program (file-append wm:i3-wm "/bin/i3"))))
         (i3-config-service)
+        (dunst-service)
         ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-ssh-service:ssh-agent-service-type)
         (anon-service load-xresources
@@ -275,17 +291,6 @@
                     'keepassxc
                     "Run `keepassxc'"
                     #~`(#$(file-append passwd-utils:keepassxc "/bin/keepassxc"))))))))
-        (anon-service dunst-autostart
-          (my-gui-startup:gui-startup-service-type
-           (my-gui-startup:gui-startup-extension
-            (services
-             (list (my-shepherd:simple-forkexec-shepherd-service
-                    'dunst
-                    "Run `dunst'"
-                    #~`(#$(file-append dunst:dunst "/bin/dunst")))))))
-          (home-xdg-configuration-files-service-type
-           `(("dunst/dunstrc"
-              ,(rsauex-home-file "dunstrc" "dunstrc")))))
         ;; Git settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-git:git-service-type
                  (my-git:git-configuration
