@@ -53,6 +53,9 @@
 (define (git-prevent-push-to-important-branches)
   (cons #:pre-push (program-fn-file '(rsauex home services git hooks ask-on-push-to-master) 'check)))
 
+(define (git-dont-push-wip-commits)
+  (cons #:pre-push (program-fn-file '(rsauex home services git hooks dont-push-wip-commits) 'check)))
+
 (define (my-essential-services he)
   ((compose
     (cut remove (compose (cut eq? fontutils:home-fontconfig-service-type <>) service-kind) <>))
@@ -239,7 +242,8 @@
         ;; Git settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-git:git-service-type
                  (my-git:git-configuration
-                  (hooks (list (git-prevent-push-to-important-branches)))))
+                  (hooks (list (git-dont-push-wip-commits)
+                               (git-prevent-push-to-important-branches)))))
         ;; Other settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (simple-service 'tmux
                         home-files-service-type
