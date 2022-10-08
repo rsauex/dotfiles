@@ -163,6 +163,35 @@
               "Run `syncthing-gtk'"
               #~`(#$(file-append syncthing:syncthing-gtk "/bin/syncthing-gtk")))))))))
 
+(define (pipewire-service)
+  (anon-service pipewire
+    (home-profile-service-type
+     (list linux:pipewire-0.3 linux:wireplumber))
+    (my-gui-startup:gui-startup-service-type
+     (my-gui-startup:gui-startup-extension
+      (services
+       (list (my-shepherd:simple-forkexec-shepherd-service
+              'pipewire
+              "Run `pipewire'"
+              #~`(#$(file-append linux:pipewire-0.3 "/bin/pipewire")))
+             (my-shepherd:simple-forkexec-shepherd-service
+              'pipewire-pulse
+              "Run `pipewire-pulse'"
+              (let ((pipewire-pulse-wrapper
+                     (program-file
+                      "pipewire-pulse-wrapper"
+                      #~(let ((pulseaudio-bin #$(file-append pulseaudio:pulseaudio "/bin"))
+                              (pipewire-pulse #$(file-append linux:pipewire-0.3 "/bin/pipewire-pulse")))
+                          (setenv "PATH" (string-join (list (getenv "PATH") pulseaudio-bin) ":"))
+                          (execl pipewire-pulse pipewire-pulse)))))
+                #~`(#$pipewire-pulse-wrapper))
+              #:requirement '(pipewire))
+             (my-shepherd:simple-forkexec-shepherd-service
+              'wireplumber
+              "Run `wireplumber'"
+              #~`(#$(file-append linux:wireplumber "/bin/wireplumber"))
+              #:requirement '(pipewire))))))))
+
 (home-environment
  (packages (list fonts:font-iosevka
                  fonts:font-google-roboto
@@ -275,6 +304,7 @@
         (i3-config-service)
         (dunst-service)
         (syncthing-service)
+        (pipewire-service)
         ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-ssh-service:ssh-agent-service-type)
         (anon-service load-xresources

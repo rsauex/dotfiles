@@ -130,18 +130,26 @@ as shepherd package."
                 (default-value (home-shepherd-configuration))
                 (description "Configure and install userland Shepherd.")))
 
-(define* (simple-forkexec-shepherd-service name documentation command-gexp #:key (respawn? #t))
+(define* (simple-forkexec-shepherd-service name documentation command-gexp
+                                           #:key
+                                           (respawn? #t)
+                                           (requirement '()))
   (shepherd-service
    (documentation documentation)
    (provision (list name))
    (start #~(make-forkexec-constructor #$command-gexp))
    (stop #~(make-kill-destructor))
-   (respawn? respawn?)))
+   (respawn? respawn?)
+   (requirement requirement)))
 
-(define* (simple-one-shot-shepherd-service name documentation command-gexp #:key (auto-start? #t))
+(define* (simple-one-shot-shepherd-service name documentation command-gexp
+                                           #:key
+                                           (auto-start? #t)
+                                           (requirement '()))
   (shepherd-service
    (documentation documentation)
    (provision (list name))
    (start command-gexp)
    (one-shot? #t)
-   (auto-start? auto-start?)))
+   (auto-start? auto-start?)
+   (requirement requirement)))

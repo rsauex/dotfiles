@@ -5,6 +5,7 @@
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages wm)                 #:prefix wm:)
+  #:use-module ((gnu packages linux)              #:prefix linux:)
   #:use-module ((gnu services avahi)              #:prefix avahi-services:)
   #:use-module ((gnu services base)               #:prefix base-services:)
   #:use-module ((gnu services cups)               #:prefix cups-services:)
@@ -12,7 +13,6 @@
   #:use-module ((gnu services desktop)            #:prefix desktop-services:)
   #:use-module ((gnu services docker)             #:prefix docker-services:)
   #:use-module ((gnu services networking)         #:prefix networking-services:)
-  #:use-module ((gnu services sound)              #:prefix sound-services:)
   #:use-module ((gnu services xorg)               #:prefix xorg-services:)
   #:use-module ((gnu system pam)                  #:prefix pam:)
   #:use-module ((gnu))
@@ -137,9 +137,8 @@
             (desktop-services:upower-configuration))
    (desktop-services:geoclue-service)
 
-   ;; Sound
-   (service sound-services:pulseaudio-service-type)
-   (service sound-services:alsa-service-type)))
+   ;; Pipewire
+   (simple-service 'pipewire-udev base-services:udev-service-type (list linux:pipewire-0.3))))
 
 (define %my-base-desktop-system
   (operating-system
