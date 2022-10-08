@@ -1,71 +1,44 @@
 (define-module (rsauex systems desktop)
-  #:use-module (gnu)
-  #:use-module (gnu packages)
   #:use-module ((gnu packages cups)               #:prefix cups:)
-  #:use-module ((gnu packages docker)             #:prefix docker:)
-  #:use-module ((gnu packages fcitx5)             #:prefix fcitx5:)
-  #:use-module ((gnu packages fonts)              #:prefix fonts:)
-  #:use-module ((gnu packages glib)               #:prefix glib:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
-  #:use-module ((gnu packages libreoffice)        #:prefix libreoffice:)
-  #:use-module ((gnu packages music)              #:prefix music:)
+  #:use-module ((gnu packages libusb)             #:prefix libusb:)
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
-  #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
-  #:use-module ((gnu packages pulseaudio)         #:prefix pulseaudio:)
-  #:use-module ((gnu packages scanner)            #:prefix scanner:)
-  #:use-module ((gnu packages security-token)     #:prefix security-token:)
-  #:use-module ((gnu packages syncthing)          #:prefix syncthing:)
-  #:use-module ((gnu packages telegram)           #:prefix telegram:)
-  #:use-module ((gnu packages terminals)          #:prefix terms:)
-  #:use-module ((gnu packages version-control)    #:prefix vc:)
-  #:use-module ((gnu packages wine)               #:prefix wine:)
   #:use-module ((gnu packages wm)                 #:prefix wm:)
-  #:use-module ((gnu packages xdisorg)            #:prefix xdisorg:)
-  #:use-module (gnu services cups)
-  #:use-module (gnu services dbus)
-  #:use-module (gnu services desktop)
-  #:use-module (gnu services docker)
-  #:use-module (gnu services networking)
-  #:use-module (gnu services security-token)
-  #:use-module (gnu services xorg)
-  #:use-module (gnu system pam)
-  #:use-module ((nongnu packages mozilla)      #:prefix mozilla:)
-  #:use-module ((rsauex packages fcitx5)       #:prefix my-fcitx5:)
-  #:use-module ((rsauex packages gigolo)       #:prefix gigolo:)
-  #:use-module ((rsauex packages kvantum)      #:prefix kvantum:)
-  #:use-module ((rsauex packages nm-forti)     #:prefix nm-forti:)
-  #:use-module ((rsauex packages nordic-theme) #:prefix nordic:)
-  #:use-module (rsauex services pam-u2f)
-  #:use-module (rsauex services yubikey-session)
-  #:use-module (rsauex systems base)
-  #:use-module (rsauex systems minimal)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match)
-  #:export (%my-base-desktop-system))
+  #:use-module ((gnu services avahi)              #:prefix avahi-services:)
+  #:use-module ((gnu services base)               #:prefix base-services:)
+  #:use-module ((gnu services cups)               #:prefix cups-services:)
+  #:use-module ((gnu services dbus)               #:prefix dbus-services:)
+  #:use-module ((gnu services desktop)            #:prefix desktop-services:)
+  #:use-module ((gnu services docker)             #:prefix docker-services:)
+  #:use-module ((gnu services networking)         #:prefix networking-services:)
+  #:use-module ((gnu services sound)              #:prefix sound-services:)
+  #:use-module ((gnu services xorg)               #:prefix xorg-services:)
+  #:use-module ((gnu system pam)                  #:prefix pam:)
+  #:use-module ((gnu))
+  #:use-module ((rsauex packages nm-forti)        #:prefix my-nm-forti:)
+  #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
+  #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
+  #:use-module ((srfi srfi-1))
+  #:export (%my-desktop-packages
+            %my-desktop-services
+            %my-base-desktop-system))
 
-(define (my-network-manager-service-type services)
-  (modify-services services
-    (network-manager-service-type
-     config =>
-     (network-manager-configuration
-      (inherit config)
-      (dns "dnsmasq")
-      (vpn-plugins
-       (cons* nm-forti:network-manager-openfortivpn
-              (network-manager-configuration-vpn-plugins config)))))))
+(define %my-desktop-packages
+  (list package-management:flatpak
+        gnome:gvfs))
 
+;; TODO: Better name!
 (define (my-pam-u2f-auth-service)
   (define (my-pam-u2f-auth-extension pam)
-    (if (member (pam-service-name pam) '("login" "su" "sudo" "i3lock"))
-        (pam-service
+    (if (member (pam:pam-service-name pam) '("login" "su" "sudo" "i3lock"))
+        (pam:pam-service
          (inherit pam)
-         (auth (cons* (pam-u2f-entry "sufficient")
-                      (pam-service-auth pam))))
+         (auth (cons* (my-pam-u2f-services:pam-u2f-entry "sufficient")
+                      (pam:pam-service-auth pam))))
         pam))
 
-  (simple-service 'pam-u2f pam-root-service-type (list my-pam-u2f-auth-extension)))
+  (simple-service 'pam-u2f pam:pam-root-service-type (list my-pam-u2f-auth-extension)))
 
 (define (add-nonguix-substitute services)
   (modify-services services
@@ -84,101 +57,97 @@
                                     (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
                (guix-configuration-authorized-keys config)))))))
 
+(define %my-desktop-services
+  (list
+   ;; Gvfs
+   (simple-service 'gvfs-polkit
+                   dbus-services:polkit-service-type
+                   (list gnome:gvfs))
+
+   ;; Allow u2f for auth
+   (my-pam-u2f-auth-service)
+
+   ;; Xorg
+   desktop-services:x11-socket-directory-service
+   (service xorg-services:xorg-server-service-type)
+   (xorg-services:screen-locker-service wm:i3lock "i3lock")
+
+   ;; Bluetooth
+   (service desktop-services:bluetooth-service-type
+            (desktop-services:bluetooth-configuration
+             (auto-enable? #t)))
+   (simple-service 'blueman-dbus
+                   dbus-services:dbus-root-service-type
+                   (list networking:blueman))
+   (simple-service 'blueman-polkit
+                   dbus-services:polkit-service-type
+                   (list networking:blueman))
+
+   ;; Docker
+   (service docker-services:docker-service-type)
+
+   ;; Add udev rules for MTP devices so that non-root users can access
+   ;; them.
+   (simple-service 'mtp base-services:udev-service-type (list libusb:libmtp))
+
+   ;; CUPS
+   (service cups-services:cups-service-type
+            (cups-services:cups-configuration
+             (extensions
+              (list cups:cups-filters))
+             (default-paper-size "A4")))
+
+   ;; Add udev rules for scanners.
+   (service desktop-services:sane-service-type)
+
+   ;; Add polkit rules, so that non-root users in the wheel group can
+   ;; perform administrative tasks (similar to "sudo").
+   desktop-services:polkit-wheel-service
+
+   ;; The global fontconfig cache directory can sometimes contain
+   ;; stale entries, possibly referencing fonts that have been GC'd,
+   ;; so mount it read-only.
+   desktop-services:fontconfig-file-system-service
+
+   ;; Network manager
+   (service networking-services:network-manager-service-type
+            (networking-services:network-manager-configuration
+             (dns "dnsmasq")
+             (vpn-plugins
+              (list my-nm-forti:network-manager-openfortivpn))))
+   (service networking-services:wpa-supplicant-service-type)
+   (service networking-services:modem-manager-service-type)
+   (service networking-services:usb-modeswitch-service-type)
+   (simple-service 'network-manager-applet
+                   profile-service-type
+                   (list gnome:network-manager-applet))
+
+   ;; D-Bus services
+   (service dbus-services:dbus-root-service-type)
+   (service dbus-services:polkit-service-type)
+   (service desktop-services:elogind-service-type)
+   (service desktop-services:accountsservice-service-type)
+   (service desktop-services:colord-service-type)
+   (service desktop-services:cups-pk-helper-service-type)
+   (service avahi-services:avahi-service-type
+            (avahi-services:avahi-configuration))
+   (service desktop-services:udisks-service-type
+            (desktop-services:udisks-configuration))
+   (service desktop-services:upower-service-type
+            (desktop-services:upower-configuration))
+   (desktop-services:geoclue-service)
+
+   ;; Sound
+   (service sound-services:pulseaudio-service-type)
+   (service sound-services:alsa-service-type)))
+
 (define %my-base-desktop-system
   (operating-system
-    (inherit %my-base-minimal-system)
+    (inherit my-base-systems:%my-base-system)
 
-    (packages (cons* fonts:font-iosevka
-                     fonts:font-google-roboto
-                     fonts:font-google-noto
-                     fonts:font-adobe-source-sans-pro
-                     fonts:font-adobe-source-serif-pro
-                     fonts:font-adobe-source-han-sans
+    (packages (append %my-desktop-packages
+                      (operating-system-packages my-base-systems:%my-base-system)))
 
-                     gnome:gnome-themes-standard
-                     gnome:gnome-themes-extra
-                     gnome:hicolor-icon-theme
-                     gnome:adwaita-icon-theme
-                     nordic:nordic-darker-theme
-                     nordic:nordic-darker-kvantum-theme
-                     kvantum:kvantum
-
-                     gnome:dconf
-                     gnome:dconf-editor
-                     gnome:gsettings-desktop-schemas
-                     gnome:gvfs
-                     gnome:system-config-printer
-                     networking:blueman
-
-                     (list glib:glib "bin")
-
-                     xdisorg:rofi
-                     xdisorg:xss-lock
-                     xdisorg:arandr
-
-                     terms:alacritty
-                     mozilla:firefox
-                     gnome:evince
-                     gnome:evolution
-                     gnome:evolution-data-server
-                     passwd-utils:keepassxc
-                     syncthing:syncthing
-                     syncthing:syncthing-gtk
-                     pulseaudio:pavucontrol
-                     wine:wine
-                     gigolo:gigolo
-                     libreoffice:libreoffice
-                     (list vc:git "gui")
-                     package-management:flatpak
-                     ;; telegram:telegram-desktop
-                     scanner:xsane
-
-                     security-token:yubikey-personalization
-                     security-token:python-yubikey-manager
-
-                     docker:docker-compose
-
-                     fcitx5:fcitx5
-                     fcitx5:fcitx5-configtool
-                     fcitx5:fcitx5-qt
-                     (list fcitx5:fcitx5-gtk "gtk2")
-                     (list fcitx5:fcitx5-gtk "gtk3")
-                     my-fcitx5:fcitx5-m17n
-
-                     (operating-system-packages %my-base-minimal-system)))
-
-    (services (append
-               (list (service cups-service-type
-                              (cups-configuration
-                               (extensions
-                                (list cups:cups-filters))
-                               (default-paper-size "A4")))
-                     (simple-service 'gvfs-polkit
-                                     polkit-service-type
-                                     (list gnome:gvfs))
-                     (udev-rules-service 'yubikey security-token:yubikey-personalization)
-                     (my-pam-u2f-auth-service)
-                     (screen-locker-service wm:i3lock "i3lock")
-                     (service xorg-server-service-type)
-                     (bluetooth-service #:auto-enable? #t)
-                     (simple-service 'blueman
-                                     dbus-root-service-type
-                                     (list networking:blueman))
-                     (simple-service 'evolution
-                                     dbus-root-service-type
-                                     (list gnome:evolution-data-server))
-                     (service docker-service-type))
-
-               %my-base-services
-
-               ((compose
-                 my-console-font-service-type
-                 my-network-manager-service-type
-
-                 add-nonguix-substitute
-
-                 (cut remove (compose (cut eq? gdm-service-type <>) service-kind) <>)
-                 (cut remove (compose (cut eq? screen-locker-service-type <>) service-kind) <>)
-                 (cut remove (compose (cut eq? ntp-service-type <>) service-kind) <>))
-
-                %desktop-services)))))
+    (services (append %my-desktop-services
+                      ((compose add-nonguix-substitute)
+                       (operating-system-user-services my-base-systems:%my-base-system))))))

@@ -33,7 +33,7 @@
                            (type "ext4")
                            (flags '(no-atime))
                            (dependencies mapped-devices))
-                         %base-file-systems))
+                         (operating-system-file-systems %my-base-desktop-system)))
 
     (packages (cons*
                (@ (nongnu packages steam-client) steam)

@@ -1,57 +1,89 @@
 (define-module (rsauex systems base)
-  #:use-module (gnu)
-  #:use-module (gnu packages)
-  #:use-module ((gnu packages fonts) #:prefix fonts:)
-  #:use-module (gnu services security-token)
-  #:use-module (gnu services networking)
-  #:use-module (gnu services desktop)
-  #:use-module (gnu services xorg)
-  #:use-module (gnu system pam)
-  #:use-module (rsauex services pam-u2f)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match)
-  #:export (my-console-font-service-type
-            %my-base-services))
+  #:use-module ((gnu packages certs)              #:prefix certs:)
+  #:use-module ((gnu packages fonts)              #:prefix fonts:)
+  #:use-module ((gnu packages security-token)     #:prefix security-token:)
+  #:use-module ((gnu services networking)         #:prefix network-services:)
+  #:use-module ((gnu services security-token)     #:prefix security-token-services:)
+  #:use-module ((gnu))
+  #:use-module ((ice-9 match))
+  #:use-module ((srfi srfi-1))
+  #:export (%my-base-services
+            %my-base-packages
+            %my-base-system))
 
-(define hidraw-udev-rule
-  (udev-rule
-   "10-hidrow.rules"
-   (string-append "KERNEL==\"hidraw*\","
-                  "SUBSYSTEM==\"hidraw\","
-                  "MODE=\"0664\","
-                  "GROUP=\"users\","
-                  "ATTRS{idVendor}==\"1050\"")))
+(define %my-base-packages
+  (cons*
+   certs:nss-certs
+   (append %base-packages-disk-utilities
+           %base-packages)))
 
-(define %my-base-services
-  (list
-   ;; YubiKey
-   (service pcscd-service-type)
-   (udev-rules-service 'hidraw hidraw-udev-rule)
-
-   ;; NTP
-   (service ntp-service-type
-            (ntp-configuration
-             (allow-large-adjustment? #t)
-             (servers (list (ntp-server (type 'pool)
-                                        (address "0.europe.pool.ntp.org")
-                                        (options '("iburst")))
-                            (ntp-server (type 'pool)
-                                        (address "1.europe.pool.ntp.org")
-                                        (options '("iburst")))
-                            (ntp-server (type 'pool)
-                                        (address "2.europe.pool.ntp.org")
-                                        (options '("iburst")))
-                            (ntp-server (type 'pool)
-                                        (address "3.europe.pool.ntp.org")
-                                        (options '("iburst")))))))))
-
+;; TODO: Better name!
 (define (my-console-font-service-type services)
   (modify-services services
     (console-font-service-type
      config =>
-     (map (match-lambda
-            ((tty . font)
-             `(,tty . ,(file-append fonts:font-terminus
-                                    "/share/consolefonts/ter-v16n.psf.gz"))))
-          config))))
+     (let ((new-font (file-append fonts:font-terminus
+                                  "/share/consolefonts/ter-v16n.psf.gz")))
+       (map (match-lambda
+              ((tty . font)
+               `(,tty . ,new-font)))
+            config)))))
+
+(define %my-base-services
+  (cons*
+   ;; Enable PC/SC smart card daemon
+   (service security-token-services:pcscd-service-type)
+
+   ;; Let users access the Yubikey USB device node
+   (udev-rules-service 'yubikey-udev security-token:yubikey-personalization)
+
+   ;; NTP
+   (service network-services:ntp-service-type
+            (network-services:ntp-configuration
+             (allow-large-adjustment? #t)
+             (servers (map (lambda (address)
+                             (network-services:ntp-server
+                              (type 'pool)
+                              (address address)
+                              (options '("iburst"))))
+                           (list "0.europe.pool.ntp.org"
+                                 "1.europe.pool.ntp.org"
+                                 "2.europe.pool.ntp.org"
+                                 "3.europe.pool.ntp.org")))))
+
+   ((compose my-console-font-service-type)
+    %base-services)))
+
+(define %my-base-system
+  (operating-system
+    (host-name "")
+    (timezone "Europe/Kiev")
+    (locale "en_IE.UTF-8")
+
+    (bootloader (bootloader-configuration
+                 (bootloader grub-efi-bootloader)
+                 (targets (list "/boot/efi"))))
+
+    (file-systems %base-file-systems)
+
+    (issue "THIS COMPUTER IS PRIVATE PROPERTY.\n\n")
+
+    (packages %my-base-packages)
+
+    (services %my-base-services)
+
+    (users (cons* (user-account
+                   (name "rsauex")
+                   (uid 1000)
+                   (group "users")
+                   (supplementary-groups '("audio"
+                                           "video"
+                                           "input"
+                                           "wheel"
+                                           "dialout"
+                                           "disk"
+                                           "kvm"
+                                           "lpadmin"
+                                           "lp"
+                                           "docker")))
+                  %base-user-accounts))))

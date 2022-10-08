@@ -1,0 +1,15 @@
+## Global Options
+
+# Don't hash known hosts. If someone gets access to it, they will have
+# access to the host-specific settings anyway...
+HashKnownHosts no
+
+# Don't connect to unknown host or add them to known_hosts.
+StrictHostKeyChecking yes
+
+## Host specific options
+
+Include ~/.ssh/configs/*.conf
+
+## Default options
+Host *

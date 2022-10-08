@@ -42,14 +42,16 @@
                (("\\$\\$\\[QT_INSTALL_PLUGINS\\]")
                 (string-append (assoc-ref outputs "out") "/lib/qt5/plugins"))
                (("DATADIR =\\$\\$PREFIX/share")
-                "DATADIR =/run/current-system/profile/share"))
+                ;; "DATADIR =/run/current-system/profile/share"
+                "DATADIR =/home/rsauex/.guix-home/profile/share"))
              (substitute* `("style/CMakeLists.txt"
                             "kvantummanager/CMakeLists.txt"
                             "kvantumpreview/CMakeLists.txt")
                (("\\$\\{_Qt5_PLUGIN_INSTALL_DIR\\}")
                 (string-append (assoc-ref outputs "out") "/lib/qt5/plugins"))
                (("add_definitions\\(-DDATADIR=\"\\$\\{CMAKE_INSTALL_PREFIX\\}/share\"\\)")
-                "add_definitions(-DDATADIR=\"/run/current-system/profile/share\")"))
+                ;; "add_definitions(-DDATADIR=\"/run/current-system/profile/share\")"
+                "add_definitions(-DDATADIR=\"/home/rsauex/.guix-home/profile/share\")"))
              #f)))))
     (native-inputs
      `(,extra-cmake-modules

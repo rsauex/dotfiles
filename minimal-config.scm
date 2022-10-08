@@ -5,7 +5,7 @@
              (gnu services xorg)
              (nongnu system linux-initrd)
              (nongnu packages linux)
-             (rsauex system base-systems)
+             (rsauex system base)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match)
@@ -21,8 +21,8 @@
         result)))
 
 (operating-system
-  (inherit %my-base-minimal-system)
-  
+  (inherit %my-base-system)
+
   (host-name (read-line-non-empty "Enter host name: "))
 
   (bootloader (bootloader-configuration
