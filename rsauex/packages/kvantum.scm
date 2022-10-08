@@ -28,6 +28,9 @@
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f
+       #:configure-flags '("-DENABLE_QT5=ON"
+                           "-DENABLE_QT4=OFF"
+                           "-DCMAKE_BUILD_TYPE=Release")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-subdirectory
@@ -36,20 +39,17 @@
              #t))
          (add-after 'enter-subdirectory 'patch-install-dir
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* `("style/style.pro"
-                            "kvantummanager/kvantummanager.pro"
-                            "kvantumpreview/kvantumpreview.pro")
-               (("\\$\\$\\[QT_INSTALL_PLUGINS\\]")
-                (string-append (assoc-ref outputs "out") "/lib/qt5/plugins"))
-               (("DATADIR =\\$\\$PREFIX/share")
-                ;; "DATADIR =/run/current-system/profile/share"
-                "DATADIR =/home/rsauex/.guix-home/profile/share"))
-             (substitute* `("style/CMakeLists.txt"
-                            "kvantummanager/CMakeLists.txt"
-                            "kvantumpreview/CMakeLists.txt")
+             (with-output-to-file "CMakeLists.txt"
+               (lambda _
+                 (display "project(kvantum)\n")
+                 (display "cmake_minimum_required(VERSION 3.0)\n")
+                 (display "add_definitions (-Wall)\n")
+                 (display "add_subdirectory(style)\n")))
+             (substitute* `("style/CMakeLists.txt")
                (("\\$\\{_Qt5_PLUGIN_INSTALL_DIR\\}")
                 (string-append (assoc-ref outputs "out") "/lib/qt5/plugins"))
                (("add_definitions\\(-DDATADIR=\"\\$\\{CMAKE_INSTALL_PREFIX\\}/share\"\\)")
+                ;; TODO: Allow exprs in DATADIR (replace QLiteralString with QString)
                 ;; "add_definitions(-DDATADIR=\"/run/current-system/profile/share\")"
                 "add_definitions(-DDATADIR=\"/home/rsauex/.guix-home/profile/share\")"))
              #f)))))
