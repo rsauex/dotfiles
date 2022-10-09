@@ -60,7 +60,7 @@
 (define (read-scheme)
   (let ((expr-type (read-expr-type)))
     (lexeme! expr-type (read)))
-  (while (char=? (peek-char) #\Space)
+  (while (char-set-contains? char-set:whitespace (peek-char))
     (read-char))
   (let ((next-char (read-char)))
     (cond
