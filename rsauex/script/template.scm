@@ -55,7 +55,6 @@
   (case (read-char)
     ((#\#) #:expr-with-output)
     ((#\!) #:expr-sans-output)
-    ((#\$) #:ungexp)
     (else (error "Expected #, !, or $"))))
 
 (define (read-scheme)
@@ -98,22 +97,26 @@
     (lambda (port)
       (port->lexemes port))))
 
-(define (lexeme->code lexeme)
-  (match lexeme
-    (('#:char . char)
-     `(display ,char))
-    (('#:expr-with-output . expr)
-     `(display ,expr))
-    (('#:expr-sans-output . expr)
-     expr)
-    (('#:ungexp . expr)
-     `(ungexp ,expr))))
+(define (lexemes->code-aux lexemes display-body-collector)
+  (if (null? lexemes)
+      `(gexp (begin ,@(display-body-collector #nil)))
+      (match (car lexemes)
+        (('#:char . char)
+         (display-body-collector `(display ,char))
+         (lexemes->code-aux (cdr lexemes) display-body-collector))
+        (('#:expr-with-output . expr)
+         (let ((sym (gensym "value-")))
+           (display-body-collector `(display (ungexp ,sym)))
+           `(let ((,sym ,expr))
+              ,(lexemes->code-aux (cdr lexemes) display-body-collector))))
+        (('#:expr-sans-output . expr)
+         `(begin
+            ,expr
+            ,(lexemes->code-aux (cdr lexemes) display-body-collector))))))
 
 (define (lexemes->code lexemes)
   `((lambda ()
-      (gexp
-       (begin
-         ,@(map lexeme->code lexemes))))))
+      ,(lexemes->code-aux lexemes (make-list-collector)))))
 
 (define (template-file->gexp file)
   (let* ((lexemes (call-with-input-file (search-rsauex-home-file file)
