@@ -166,7 +166,11 @@
 (define (pipewire-service)
   (anon-service pipewire
     (home-profile-service-type
-     (list linux:pipewire-0.3 linux:wireplumber))
+     (list linux:pipewire-0.3
+           linux:wireplumber
+
+           ;; TODO: Should be used directly in 99-input-denoising.conf
+           pulseaudio:noise-suppression-for-voice))
     (my-gui-startup:gui-startup-service-type
      (my-gui-startup:gui-startup-extension
       (services
@@ -190,7 +194,11 @@
               'wireplumber
               "Run `wireplumber'"
               #~`(#$(file-append linux:wireplumber "/bin/wireplumber"))
-              #:requirement '(pipewire))))))))
+              #:requirement '(pipewire))))))
+    (home-xdg-configuration-files-service-type
+     `(("pipewire/pipewire.conf.d/99-input-denoising.conf"
+        ,(rsauex-home-file "pipewire/pipewire.conf.d/99-input-denoising.conf"
+                           "pipewire-99-input-denoising.conf"))))))
 
 (home-environment
  (packages (list fonts:font-iosevka
