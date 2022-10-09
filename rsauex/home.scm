@@ -62,6 +62,7 @@
  ((rsauex packages powershell)          #:prefix powershell:)
  ((rsauex packages the-dot)             #:prefix the-dot:)
  ((rsauex packages))
+ ((rsauex script template))
  ((rsauex services))
  ((srfi srfi-1))
  ((srfi srfi-26)))
@@ -103,11 +104,8 @@
            linux:sysstat
            perl:perl
            xorg:xset
-           ;; Called from config (TODO: Remove)
-           xdisorg:maim
            xdisorg:xclip
            music:playerctl
-           xorg:xbacklight
            ;; Called from i3 scripts (TODO: Remove)
            xdisorg:xdotool
            web:jq))
@@ -119,13 +117,13 @@
        ("i3/config"
         ,(computed-file
           "i3-config"
-          (let ((files (list (rsauex-home-file "i3/00_base.conf" "i3-00_base.conf")
-                             (rsauex-home-file "i3/05_colors.conf" "i3-05_colors.conf")
-                             (rsauex-home-file "i3/10_keys.conf" "i3-10_keys.conf")
-                             (rsauex-home-file "i3/15_keys.wm.conf" "i3-15_keys.wm.conf")
-                             (rsauex-home-file "i3/20_menus.conf" "i3-20_menus.conf")
-                             (rsauex-home-file "i3/30_bar.conf" "i3-30_bar.conf")
-                             (rsauex-home-file "i3/40_client.conf" "i3-40_client.conf")))
+          (let ((files (list (rsauex-home-template-file "i3/00_base.conf" "i3-00_base.conf")
+                             (rsauex-home-template-file "i3/05_colors.conf" "i3-05_colors.conf")
+                             (rsauex-home-template-file "i3/10_keys.conf" "i3-10_keys.conf")
+                             (rsauex-home-template-file "i3/15_keys.wm.conf" "i3-15_keys.wm.conf")
+                             (rsauex-home-template-file "i3/20_menus.conf" "i3-20_menus.conf")
+                             (rsauex-home-template-file "i3/30_bar.conf" "i3-30_bar.conf")
+                             (rsauex-home-template-file "i3/40_client.conf" "i3-40_client.conf")))
                 (m4 (file-append m4:m4 "/bin/m4"))
                 (cassis-type (call-with-input-file "/sys/class/dmi/id/chassis_type"
                                (lambda (port)
@@ -167,10 +165,7 @@
   (anon-service pipewire
     (home-profile-service-type
      (list linux:pipewire-0.3
-           linux:wireplumber
-
-           ;; TODO: Should be used directly in 99-input-denoising.conf
-           pulseaudio:noise-suppression-for-voice))
+           linux:wireplumber))
     (my-gui-startup:gui-startup-service-type
      (my-gui-startup:gui-startup-extension
       (services
@@ -197,8 +192,8 @@
               #:requirement '(pipewire))))))
     (home-xdg-configuration-files-service-type
      `(("pipewire/pipewire.conf.d/99-input-denoising.conf"
-        ,(rsauex-home-file "pipewire/pipewire.conf.d/99-input-denoising.conf"
-                           "pipewire-99-input-denoising.conf"))))))
+        ,(rsauex-home-template-file "pipewire/pipewire.conf.d/99-input-denoising.conf"
+                                    "pipewire-99-input-denoising.conf"))))))
 
 (home-environment
  (packages (list fonts:font-iosevka
