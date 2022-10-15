@@ -295,6 +295,29 @@ function Watch-Command() {
 $global:PSDefaultParameterValues["Watch-Command:Seconds"] = 1
 
 # ------------------------------------------------------------------------------
+# ----- Measure size -----------------------------------------------------------
+
+function Measure-Size() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [Object[]]$Path
+    )
+    PROCESS {
+        foreach ($P in $Path) {
+            if ($P -is [string]) {
+                $Item = Get-Item -Path $P
+            } else {
+                $Item = Get-Item -LiteralPath $P
+            }
+            $DeepSize = (Get-ChildItem -Recurse -Force -LiteralPath $Item | Measure-Object -Property Length -Sum).Sum
+            Add-Member -Force -InputObject $Item -NotePropertyName DeepSize -NotePropertyValue $DeepSize
+            Write-Output $Item
+        }
+    }
+}
+
+# ------------------------------------------------------------------------------
 # ----- Containers -------------------------------------------------------------
 
 # function Expand-Directory() {
