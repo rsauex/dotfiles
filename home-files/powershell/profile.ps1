@@ -7,6 +7,11 @@ function Test-InDockerContainer() {
 }
 
 # ------------------------------------------------------------------------------
+# ----- Custom formatters ------------------------------------------------------
+
+Update-FormatData -PrependPath (Join-Path (Split-Path -Parent $PROFILE) "formatters" "*.Format.ps1xml")
+
+# ------------------------------------------------------------------------------
 # ----- ReadLine options -------------------------------------------------------
 
 Set-PSReadLineOption -Colors @{
