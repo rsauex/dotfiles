@@ -22,10 +22,10 @@
 (define-public powershell
   (package
     (name "powershell")
-    (version "7.2.0")
+    (version "7.2.6")
     (source (origin (method url-fetch/tarbomb)
                     (uri (string-append "https://github.com/PowerShell/PowerShell/releases/download/v" version "/powershell-" version "-linux-x64.tar.gz"))
-                    (sha256 (base32 "1a0mm1301yfxpg387p8lhqaap130j0n4d8a1wl81m2frf42pvdhm"))))
+                    (sha256 (base32 "1lip3855jgn7m7i62srgi8vhvhcn4xkgxy1q943qddnb9g7zc9wr"))))
     (build-system trivial-build-system)
     (arguments (list #:modules '((guix build utils))
                      #:builder `(begin
