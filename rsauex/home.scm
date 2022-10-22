@@ -193,7 +193,7 @@
                                     "pipewire-99-input-denoising.conf"))))))
 
 (home-environment
- (packages (list fonts:font-iosevka
+ (packages (list fonts:font-iosevka-term
                  fonts:font-google-roboto
                  fonts:font-google-noto
                  fonts:font-adobe-source-sans-pro
