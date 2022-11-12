@@ -7,6 +7,11 @@ function Test-InDockerContainer() {
 }
 
 # ------------------------------------------------------------------------------
+# ----- Custom formatters ------------------------------------------------------
+
+Update-FormatData -PrependPath (Join-Path (Split-Path -Parent $PROFILE) "formatters" "*.Format.ps1xml")
+
+# ------------------------------------------------------------------------------
 # ----- ReadLine options -------------------------------------------------------
 
 Set-PSReadLineOption -Colors @{
@@ -290,14 +295,24 @@ function Watch-Command() {
 $global:PSDefaultParameterValues["Watch-Command:Seconds"] = 1
 
 # ------------------------------------------------------------------------------
-# ----- Containers -------------------------------------------------------------
+# ----- Measure size -----------------------------------------------------------
 
-# function Expand-Directory() {
-#     [CmdletBinding()]
-#     param(
-#         [Parameter()]
-#         [string]$Path
-#     )
-
-
-# }
+function Measure-Size() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [Object[]]$Path
+    )
+    PROCESS {
+        foreach ($P in $Path) {
+            if ($P -is [string]) {
+                $Item = Get-Item -Path $P
+            } else {
+                $Item = Get-Item -LiteralPath $P
+            }
+            $DeepSize = (Get-ChildItem -Recurse -Force -LiteralPath $Item | Measure-Object -Property Length -Sum).Sum
+            Add-Member -Force -InputObject $Item -NotePropertyName DeepSize -NotePropertyValue $DeepSize
+            Write-Output $Item
+        }
+    }
+}
