@@ -15,7 +15,7 @@
 (define-public kvantum
   (package
     (name "kvantum")
-    (version "1.0.0")
+    (version "1.0.5")
     (source
      (origin
        (method git-fetch)
@@ -24,7 +24,7 @@
              (commit (string-append "V" version))))
        (sha256
         (base32
-         "0yvxj7r9z890nfq5cadw7ys144c2mnvaplvx4v4ndv7238b741l8"))))
+         "0xdx4i0c27advkzc645ckyvgn323kamfnvgnibaiv256k4x5750c"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f
