@@ -21,12 +21,12 @@
     ;; (firmware (list non-linux:linux-firmware))
 
     (mapped-devices (list (mapped-device
-                           (source (uuid "52edef29-e6a6-457b-9853-350b8c2d2933"))
+                           (source (uuid "303dd691-56d1-40e9-8992-4cfd1627e0ec"))
                            (target "cryptroot")
                            (type luks-device-mapping))))
 
     (file-systems (cons* (file-system
-                           (device (uuid "4807-194D" 'fat))
+                           (device (uuid "8B75-092F" 'fat))
                            (mount-point "/boot/efi")
                            (type "vfat"))
                          (file-system
