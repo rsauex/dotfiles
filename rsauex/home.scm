@@ -61,6 +61,7 @@
  ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
  ((rsauex packages powershell)          #:prefix powershell:)
  ((rsauex packages the-dot)             #:prefix the-dot:)
+ ((rsauex packages gns3)                #:prefix gns3:)
  ((rsauex packages))
  ((rsauex script template))
  ((rsauex services))
@@ -254,7 +255,8 @@
                  gimp:gimp
                  image-viewers:viewnior
                  vc:git
-                 (list vc:git "gui")))
+                 (list vc:git "gui")
+                 gns3:gns3-gui))
  (essential-services
   (my-essential-services this-home-environment))
  (services
@@ -277,7 +279,10 @@
         (service xdg:home-xdg-user-directories-service-type)
         (simple-service 'my-environment
                         home-environment-variables-service-type
-                        (let ((qt-plugin-path (string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins"))
+                        (let ((qt-platform-plugin-path (string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins"))
+                              (qt-plugin-paths #~(list #$(string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins")
+                                                       "/run/current-system/profile/lib/qt5/plugins"
+                                                       #$(file-append qt:qtsvg-5 "/lib/qt5/plugins")))
                               (gtk-engine-paths #~(list #$(file-append gtk:murrine "/lib/gtk-2.0")
                                                         #$(file-append gnome:gnome-themes-extra "/lib/gtk-2.0"))))
                           (list
@@ -293,8 +298,8 @@
                            (cons "GUIX_GTK2_IM_MODULE_FILE" (string-append (getenv "HOME") "/.guix-home/profile/lib/gtk-2.0/2.10.0/immodules-gtk2.cache"))
                            (cons "GUIX_GTK3_IM_MODULE_FILE" (string-append (getenv "HOME") "/.guix-home/profile/lib/gtk-3.0/3.0.0/immodules-gtk3.cache"))
                            ;; Respect QT Plugins (TODO: This shouldn't be necessary...)
-                           (cons "QT_QPA_PLATFORM_PLUGIN_PATH" qt-plugin-path)
-                           (cons "QT_PLUGIN_PATH" qt-plugin-path)
+                           (cons "QT_QPA_PLATFORM_PLUGIN_PATH" qt-platform-plugin-path)
+                           (cons "QT_PLUGIN_PATH" #~(string-join #$qt-plugin-paths ":"))
                            ;; GTK2 engines (TODO: this should be search-paths from nordic-theme)
                            (cons "GUIX_GTK2_PATH" #~(string-join #$gtk-engine-paths ":")))))
         ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
