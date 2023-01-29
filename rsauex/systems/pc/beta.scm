@@ -2,6 +2,7 @@
   #:use-module ((gnu packages xorg)          #:prefix xorg:)
   #:use-module ((gnu services dbus)          #:prefix dbus-services:)
   #:use-module ((gnu services xorg)          #:prefix xorg-services:)
+  #:use-module ((gnu services pm)            #:prefix pm-services:)
   #:use-module ((gnu))
   #:use-module ((guix build-system trivial))
   #:use-module ((guix))
@@ -56,6 +57,40 @@
        Option      \"DRI\"  \"3\"
    EndSection")
 
+(define (tlp-service)
+  (let ((config (pm-services:tlp-configuration
+                 (tlp-enable? #t)
+                 (sound-power-save-on-ac 1)
+                 (sound-power-save-on-bat 1)
+                 (sound-power-save-controller? #t)
+                 (start-charge-thresh-bat0 75)
+                 (stop-charge-thresh-bat0 85)
+                 (start-charge-thresh-bat1 75)
+                 (stop-charge-thresh-bat1 85)
+                 (disks-devices '()) ;; it should be disk-devices not disks-devices
+                 (sata-linkpwr-on-ac "med_power_with_dipm")
+                 (sata-linkpwr-on-bat "med_power_with_dipm")
+                 (nmi-watchdog? #f)
+                 (wifi-pwr-on-ac? #f)
+                 (wifi-pwr-on-bat? #f)
+                 (wol-disable? #t)
+                 (cpu-scaling-governor-on-ac '("schedutil"))
+                 (cpu-scaling-governor-on-bat '("schedutil"))
+                 (cpu-min-perf-on-ac 27)
+                 (cpu-max-perf-on-ac 100)
+                 (cpu-min-perf-on-bat 27)
+                 (cpu-max-perf-on-bat 100)
+                 (cpu-boost-on-ac? #t)
+                 (cpu-boost-on-bat? #f)
+                 (sched-powersave-on-ac? #f)
+                 (sched-powersave-on-bat? #t)
+                 (runtime-pm-on-ac "on")
+                 (runtime-pm-on-bat "auto")
+                 (pcie-aspm-on-ac "default")
+                 (pcie-aspm-on-bat "default")
+                 (usb-autosuspend? #t))))
+    (service pm-services:tlp-service-type config)))
+
 (define %os
   (operating-system
     (inherit my-desktop-systems:%my-base-desktop-system)
@@ -90,6 +125,8 @@
                      (operating-system-packages my-desktop-systems:%my-base-desktop-system)))
 
     (services (cons* (intel-backlight-service)
+                     (tlp-service)
+                     (service pm-services:thermald-service-type)
                      (modify-services
                          (operating-system-user-services my-desktop-systems:%my-base-desktop-system)
                        (xorg-services:xorg-server-service-type
