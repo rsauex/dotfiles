@@ -200,6 +200,8 @@
                  fonts:font-adobe-source-sans-pro
                  fonts:font-adobe-source-serif-pro
                  fonts:font-adobe-source-han-sans
+                 fonts:font-awesome
+                 fonts:font-google-material-design-icons
 
                  gnome:gnome-themes-standard
                  gnome:gnome-themes-extra
