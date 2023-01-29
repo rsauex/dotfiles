@@ -4,8 +4,18 @@
   hooksPath = ~/.config/git/hooks
 
 ## Include private part
-[include]
+
+[includeIf "gitdir:**/home/rsauex/.emacs.d/"]
   path = ~/.gitconfig_private
+
+[includeIf "gitdir:**/home/rsauex/dotfiles/"]
+  path = ~/.gitconfig_private
+
+[includeIf "gitdir:**/home/rsauex/Projects/"]
+  path = ~/.gitconfig_private
+
+[includeIf "gitdir:**/home/rsauex/work/"]
+  path = ~/.gitconfig_work
 
 ## Main idea:
 # - every important command has a one-character alias (OCA)
