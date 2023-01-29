@@ -157,7 +157,8 @@
        (list (my-shepherd:simple-forkexec-shepherd-service
               'syncthing-applet
               "Run `syncthing-gtk'"
-              #~`(#$(file-append syncthing:syncthing-gtk "/bin/syncthing-gtk")))))))))
+              #~`(#$(file-append syncthing:syncthing-gtk "/bin/syncthing-gtk"))
+              #:data-packages (list syncthing:syncthing-gtk))))))))
 
 (define (pipewire-service)
   (anon-service pipewire
@@ -225,8 +226,6 @@
 
                  ;; TODO: should be specified only in syncthing-gtk's config
                  syncthing:syncthing
-                 ;; TODO: needed only due to missing icon in tray
-                 syncthing:syncthing-gtk
 
                  ;; TODO: needed for my emacs package
                  rsync:rsync

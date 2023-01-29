@@ -130,17 +130,38 @@ as shepherd package."
                 (default-value (home-shepherd-configuration))
                 (description "Configure and install userland Shepherd.")))
 
+(define (add-packages-to-xdg-data-dirs-gexp packages env-gexp)
+  #~(let* ((vars #$env-gexp)
+           (xdg-data-dirs? (cut string-prefix? "XDG_DATA_DIRS=" <>))
+           (data (find xdg-data-dirs? vars))
+           (vars (remove xdg-data-dirs? vars))
+           (data (cons* #$@(map (lambda (package)
+                                  (file-append package "/share"))
+                                packages)
+                        (if data (list (substring data 14)) (list)))))
+      (if (null? data)
+          vars
+          (cons (string-append "XDG_DATA_DIRS=" (string-join data ":")) vars))))
+
 (define* (simple-forkexec-shepherd-service name documentation command-gexp
                                            #:key
                                            (respawn? #t)
-                                           (requirement '()))
+                                           (requirement '())
+                                           (data-packages '()))
   (shepherd-service
    (documentation documentation)
    (provision (list name))
-   (start #~(make-forkexec-constructor #$command-gexp))
+   (start #~(make-forkexec-constructor
+             #$command-gexp
+             #:environment-variables #$(add-packages-to-xdg-data-dirs-gexp
+                                        data-packages
+                                        #~(default-environment-variables))))
    (stop #~(make-kill-destructor))
    (respawn? respawn?)
-   (requirement requirement)))
+   (requirement requirement)
+   (modules (cons* `(srfi srfi-1)
+                   `(srfi srfi-26)
+                   %default-modules))))
 
 (define* (simple-one-shot-shepherd-service name documentation command-gexp
                                            #:key
