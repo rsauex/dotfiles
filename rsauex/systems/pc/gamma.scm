@@ -5,10 +5,10 @@
   #:use-module ((gnu))
   #:use-module ((guix build-system trivial))
   #:use-module ((guix))
-  ;; #:use-module ((nongnu packages linux)      #:prefix non-linux:)
-  ;; #:use-module ((nongnu system linux-initrd) #:prefix non-linux-initrd:)
-  #:use-module ((rsauex systems desktop)     #:prefix my-desktop-systems:)
+  #:use-module ((nongnu packages linux)           #:prefix non-linux:)
+  #:use-module ((nongnu system linux-initrd)      #:prefix non-linux-initrd:)
   #:use-module ((rsauex services intel-backlight) #:prefix my-intel-backlight:)
+  #:use-module ((rsauex systems desktop)          #:prefix my-desktop-systems:)
   #:export (%os))
 
 (define %os
@@ -17,9 +17,10 @@
 
     (host-name "gamma")
 
-    ;; (kernel non-linux:linux)
-    ;; (initrd non-linux-initrd:microcode-initrd)
-    ;; (firmware (list non-linux:linux-firmware))
+    (kernel non-linux:linux)
+    (initrd non-linux-initrd:microcode-initrd)
+    (firmware (list non-linux:linux-firmware
+                    non-linux:sof-firmware))
 
     (mapped-devices (list (mapped-device
                            (source (uuid "303dd691-56d1-40e9-8992-4cfd1627e0ec"))
