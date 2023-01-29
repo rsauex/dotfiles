@@ -303,7 +303,9 @@
                            (cons "QT_QPA_PLATFORM_PLUGIN_PATH" qt-platform-plugin-path)
                            (cons "QT_PLUGIN_PATH" #~(string-join #$qt-plugin-paths ":"))
                            ;; GTK2 engines (TODO: this should be search-paths from nordic-theme)
-                           (cons "GUIX_GTK2_PATH" #~(string-join #$gtk-engine-paths ":")))))
+                           (cons "GUIX_GTK2_PATH" #~(string-join #$gtk-engine-paths ":"))
+                           ;; Enable video hardware acceleration (TODO: Send a patch to mozilla?)
+                           (cons "MOZ_DISABLE_RDD_SANDBOX" "1"))))
         ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-gui-startup:gui-startup-service-type
                  (my-gui-startup:gui-startup-configuration
