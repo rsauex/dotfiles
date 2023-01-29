@@ -162,7 +162,7 @@
 (define (pipewire-service)
   (anon-service pipewire
     (home-profile-service-type
-     (list linux:pipewire-0.3
+     (list linux:pipewire
            linux:wireplumber))
     (my-gui-startup:gui-startup-service-type
      (my-gui-startup:gui-startup-extension
@@ -170,7 +170,7 @@
        (list (my-shepherd:simple-forkexec-shepherd-service
               'pipewire
               "Run `pipewire'"
-              #~`(#$(file-append linux:pipewire-0.3 "/bin/pipewire")))
+              #~`(#$(file-append linux:pipewire "/bin/pipewire")))
              (my-shepherd:simple-forkexec-shepherd-service
               'pipewire-pulse
               "Run `pipewire-pulse'"
@@ -178,7 +178,7 @@
                      (program-file
                       "pipewire-pulse-wrapper"
                       #~(let ((pulseaudio-bin #$(file-append pulseaudio:pulseaudio "/bin"))
-                              (pipewire-pulse #$(file-append linux:pipewire-0.3 "/bin/pipewire-pulse")))
+                              (pipewire-pulse #$(file-append linux:pipewire "/bin/pipewire-pulse")))
                           (setenv "PATH" (string-join (list (getenv "PATH") pulseaudio-bin) ":"))
                           (execl pipewire-pulse pipewire-pulse)))))
                 #~`(#$pipewire-pulse-wrapper))

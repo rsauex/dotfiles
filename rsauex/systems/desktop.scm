@@ -138,7 +138,7 @@
    (desktop-services:geoclue-service)
 
    ;; Pipewire
-   (simple-service 'pipewire-udev base-services:udev-service-type (list linux:pipewire-0.3))))
+   (simple-service 'pipewire-udev base-services:udev-service-type (list linux:pipewire))))
 
 (define %my-base-desktop-system
   (operating-system
