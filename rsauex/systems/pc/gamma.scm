@@ -8,6 +8,7 @@
   ;; #:use-module ((nongnu packages linux)      #:prefix non-linux:)
   ;; #:use-module ((nongnu system linux-initrd) #:prefix non-linux-initrd:)
   #:use-module ((rsauex systems desktop)     #:prefix my-desktop-systems:)
+  #:use-module ((rsauex services intel-backlight) #:prefix my-intel-backlight:)
   #:export (%os))
 
 (define %os
@@ -42,4 +43,5 @@
 
     (packages (cons* (operating-system-packages my-desktop-systems:%my-base-desktop-system)))
 
-    (services (cons* (operating-system-user-services my-desktop-systems:%my-base-desktop-system)))))
+    (services (cons* (my-intel-backlight:intel-backlight-service)
+                     (operating-system-user-services my-desktop-systems:%my-base-desktop-system)))))
