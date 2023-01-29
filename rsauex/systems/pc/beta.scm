@@ -13,10 +13,16 @@
   #:export (%os))
 
 (define xorg-enable-dri3
-  "Section \"Device\"
+  "Section \"Monitor\"
+       Identifier  \"eDP1\"
+       # DisplaySize 276 155
+   EndSection
+
+   Section \"Device\"
        Identifier  \"Intel Graphics\"
        Driver      \"intel\"
        Option      \"DRI\"  \"3\"
+       Option      \"Monitor-eDP1\" \"eDP1\"
    EndSection")
 
 (define (tlp-service)
