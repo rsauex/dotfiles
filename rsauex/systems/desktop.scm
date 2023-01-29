@@ -75,7 +75,7 @@
    ;; Bluetooth
    (service desktop-services:bluetooth-service-type
             (desktop-services:bluetooth-configuration
-             (auto-enable? #t)))
+             (auto-enable? #f)))
    (simple-service 'blueman-dbus
                    dbus-services:dbus-root-service-type
                    (list networking:blueman))
