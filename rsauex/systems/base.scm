@@ -1,6 +1,10 @@
 (define-module (rsauex systems base)
   #:use-module ((gnu packages certs)              #:prefix certs:)
+  #:use-module ((gnu packages cryptsetup)         #:prefix cryptsetup:)
+  #:use-module ((gnu packages disk)               #:prefix disk:)
+  #:use-module ((gnu packages file-systems)       #:prefix file-systems:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
+  #:use-module ((gnu packages linux)              #:prefix linux:)
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
   #:use-module ((gnu services networking)         #:prefix network-services:)
   #:use-module ((gnu services security-token)     #:prefix security-token-services:)
@@ -14,7 +18,14 @@
 (define %my-base-packages
   (cons*
    certs:nss-certs
-   (append %base-packages-disk-utilities
+   (append (list disk:dosfstools
+                 linux:btrfs-progs
+                 linux:f2fs-tools
+                 file-systems:jfsutils
+                 linux:xfsprogs
+                 cryptsetup:cryptsetup
+                 file-systems:exfat-utils
+                 file-systems:exfatprogs)
            %base-packages)))
 
 ;; TODO: Better name!
