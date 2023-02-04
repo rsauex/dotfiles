@@ -93,9 +93,8 @@
   (cons #:pre-push (program-fn-file '(rsauex home services git hooks dont-push-wip-commits) 'check)))
 
 (define (my-essential-services he)
-  ((compose
-    (cut remove (compose (cut eq? fontutils:home-fontconfig-service-type <>) service-kind) <>))
-   ((@@ (gnu home) home-environment-default-essential-services) he)))
+  (modify-services ((@@ (gnu home) home-environment-default-essential-services) he)
+    (delete fontutils:home-fontconfig-service-type)))
 
 (define (i3-config-service)
   (anon-service i3blocks-config
