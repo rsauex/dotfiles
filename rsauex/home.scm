@@ -43,12 +43,15 @@
  ((gnu packages xdisorg)            #:prefix xdisorg:)
  ((gnu packages xorg)               #:prefix xorg:)
  ((gnu services))
+ ((guix channels)                   #:prefix channels:)
  ((guix gexp))
  ((guix git))
  ((guix modules))
  ((ice-9 match))
  ((ice-9 textual-ports))
  ((nongnu packages mozilla)             #:prefix mozilla:)
+ ((rsauex channels)                     #:prefix my-channels:)
+ ((rsauex home services channels)       #:prefix my-channels-service:)
  ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
  ((rsauex home services git)            #:prefix my-git:)
  ((rsauex home services gui-startup)    #:prefix my-gui-startup:)
@@ -270,6 +273,9 @@
            (list (rsauex-home-file ".bashrc" "bashrc")))
           (bash-logout
            (list (rsauex-home-file ".bash_logout" "bash_logout")))))
+        (service my-channels-service:channels-service-type
+                 (cons* my-channels:nonguix-channel
+                        channels:%default-channels))
         (service my-rofi:rofi-service-type
                  (my-rofi:rofi-configuration
                   (config
