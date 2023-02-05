@@ -246,7 +246,8 @@
         (service my-rofi:rofi-service-type
                  (my-rofi:rofi-configuration
                   (config
-                   '(("font" . "Monospace 12")))
+                   '(("font" . "Monospace 10")
+                     ("dpi"  . 1)))
                   (theme
                    (file-append nordic-theme:rofi-nord-theme
                                 "/share/rofi/themes/nord.rasi"))))

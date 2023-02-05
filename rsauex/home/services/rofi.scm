@@ -31,8 +31,10 @@
                (cond
                 ((string? value)
                  (string-append "\"" (string-replace-substring value "\"" "\\\"") "\""))
+                ((number? value)
+                 (number->string value))
                 (#t
-                 (raise "Only string values are supported currently"))))))
+                 (raise "Only string and number values are supported currently"))))))
         (string-append
          "configuration {\n"
          #$@(map (match-lambda
