@@ -3,14 +3,46 @@
   #:use-module ((gnu services dbus)          #:prefix dbus-services:)
   #:use-module ((gnu services pm)            #:prefix pm-services:)
   #:use-module ((gnu services xorg)          #:prefix xorg-services:)
+  #:use-module ((gnu system pam)             #:prefix system-pam:)
   #:use-module ((gnu))
-  #:use-module ((guix build-system trivial))
   #:use-module ((guix))
   #:use-module ((nongnu packages linux)           #:prefix non-linux:)
+  #:use-module ((nongnu packages video)           #:prefix non-video:)
   #:use-module ((nongnu system linux-initrd)      #:prefix non-linux-initrd:)
-  #:use-module ((rsauex services intel-backlight) #:prefix my-intel-backlight:)
   #:use-module ((rsauex systems desktop)          #:prefix my-desktop-systems:)
   #:export (%os))
+
+(define intel-config
+  "Section \"Monitor\"
+       Identifier  \"eDP-1\"
+       DisplaySize 410 231
+       # DisplaySize 344 194 # This is the correct one
+   EndSection
+
+   Section \"Device\"
+       Identifier  \"Intel Card\"
+       Driver      \"modesetting\"
+       BusID       \"PCI:0:2:0\"
+       Option      \"Monitor-eDP-1\" \"eDP-1\"
+   EndSection
+
+  Section \"Screen\"
+       Identifier \"Intel Screen\"
+       Device     \"Intel Card\"
+  EndSection
+
+  Section \"ServerLayout\"
+       Identifier \"Main Layout\"
+       Screen     0 \"Intel Screen\" 0 0
+  EndSection
+")
+
+(define kernel-args-disable-nvidia
+  (list "modprobe.blacklist=nouveau"
+        "nouveau.modeset=0"))
+
+(define kernel-args-intel-graphics
+  (list "i915.enable_guc=3"))
 
 (define (tlp-service)
   (let ((config (pm-services:tlp-configuration
@@ -51,6 +83,9 @@
     (host-name "gamma")
 
     (kernel non-linux:linux)
+    (kernel-arguments (append kernel-args-disable-nvidia
+                              kernel-args-intel-graphics
+                              (operating-system-user-kernel-arguments my-desktop-systems:%my-base-desktop-system)))
     (initrd non-linux-initrd:microcode-initrd)
     (firmware (list non-linux:linux-firmware
                     non-linux:sof-firmware))
@@ -78,5 +113,16 @@
     (packages (cons* (operating-system-packages my-desktop-systems:%my-base-desktop-system)))
 
     (services (cons* (tlp-service)
-                     (my-intel-backlight:intel-backlight-service)
-                     (operating-system-user-services my-desktop-systems:%my-base-desktop-system)))))
+                     (simple-service 'intel-media-driver-va
+                                     system-pam:session-environment-service-type
+                                     `(("LIBVA_DRIVERS_PATH"
+                                        . ,(file-append non-video:intel-media-driver "/lib/dri"))
+                                       ("LIBVA_DRIVER_NAME"
+                                        . "iHD")))
+                     (modify-services
+                         (operating-system-user-services my-desktop-systems:%my-base-desktop-system)
+                       (xorg-services:xorg-server-service-type
+                        config => (xorg-services:xorg-configuration
+                                   (extra-config
+                                    (cons* intel-config
+                                           (xorg-services:xorg-configuration-extra-config config))))))))))
