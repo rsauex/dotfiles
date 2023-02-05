@@ -58,6 +58,7 @@
  ((rsauex home services rofi)           #:prefix my-rofi:)
  ((rsauex home services shepherd)       #:prefix my-shepherd:)
  ((rsauex home services ssh)            #:prefix my-ssh-service:)
+ ((rsauex home services pipewire)       #:prefix my-pipewire-service:)
  ((rsauex packages fcitx5)              #:prefix my-fcitx5:)
  ((rsauex packages gigolo)              #:prefix gigolo:)
  ((rsauex packages kvantum)             #:prefix kvantum:)
@@ -161,40 +162,6 @@
               "Run `syncthing-gtk'"
               #~`(#$(file-append syncthing:syncthing-gtk "/bin/syncthing-gtk"))
               #:data-packages (list syncthing:syncthing-gtk))))))))
-
-(define (pipewire-service)
-  (anon-service pipewire
-    (home-profile-service-type
-     (list linux:pipewire
-           linux:wireplumber))
-    (my-gui-startup:gui-startup-service-type
-     (my-gui-startup:gui-startup-extension
-      (services
-       (list (my-shepherd:simple-forkexec-shepherd-service
-              'pipewire
-              "Run `pipewire'"
-              #~`(#$(file-append linux:pipewire "/bin/pipewire")))
-             (my-shepherd:simple-forkexec-shepherd-service
-              'pipewire-pulse
-              "Run `pipewire-pulse'"
-              (let ((pipewire-pulse-wrapper
-                     (program-file
-                      "pipewire-pulse-wrapper"
-                      #~(let ((pulseaudio-bin #$(file-append pulseaudio:pulseaudio "/bin"))
-                              (pipewire-pulse #$(file-append linux:pipewire "/bin/pipewire-pulse")))
-                          (setenv "PATH" (string-join (list (getenv "PATH") pulseaudio-bin) ":"))
-                          (execl pipewire-pulse pipewire-pulse)))))
-                #~`(#$pipewire-pulse-wrapper))
-              #:requirement '(pipewire))
-             (my-shepherd:simple-forkexec-shepherd-service
-              'wireplumber
-              "Run `wireplumber'"
-              #~`(#$(file-append linux:wireplumber "/bin/wireplumber"))
-              #:requirement '(pipewire))))))
-    (home-xdg-configuration-files-service-type
-     `(("pipewire/pipewire.conf.d/99-input-denoising.conf"
-        ,(rsauex-home-template-file "pipewire/pipewire.conf.d/99-input-denoising.conf"
-                                    "pipewire-99-input-denoising.conf"))))))
 
 (home-environment
  (packages (list fonts:font-iosevka-term
@@ -317,7 +284,7 @@
         (i3-config-service)
         (dunst-service)
         (syncthing-service)
-        (pipewire-service)
+        (service my-pipewire-service:pipewire-service-type)
         ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-ssh-service:ssh-agent-service-type)
         (anon-service load-xresources
