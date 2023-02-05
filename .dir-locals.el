@@ -4,11 +4,8 @@
   . ((fill-column . 78)
      (tab-width   .  8)
      (sentence-end-double-space . t)
-
-     ;; For use with 'bug-reference-prog-mode'.
-     (bug-reference-url-format . "https://gitlab.com/nonguix/nonguix/issues/%s")
-     (bug-reference-bug-regexp
-      . "#[0-9]+")))
+     ;; Guix for geiser
+     (geiser-guile-binary . ("guix" "repl"))))
  (c-mode          . ((c-file-style . "gnu")))
  (scheme-mode
   .
