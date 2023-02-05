@@ -6,6 +6,7 @@
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages wm)                 #:prefix wm:)
+  #:use-module ((gnu packages base)               #:prefix base:)
   #:use-module ((gnu services avahi)              #:prefix avahi-services:)
   #:use-module ((gnu services base)               #:prefix base-services:)
   #:use-module ((gnu services cups)               #:prefix cups-services:)
@@ -39,6 +40,16 @@
         pam))
 
   (simple-service 'pam-u2f pam:pam-root-service-type (list my-pam-u2f-auth-extension)))
+
+(define brightness-access-for-video-group
+  (file->udev-rule
+   "90-backlight.rules"
+   (mixed-text-file
+    "backlight.rules"
+    "SUBSYSTEM==\"backlight\","
+    "ACTION==\"add\","
+    "RUN+=\"" base:coreutils "/bin/chgrp video /sys/class/backlight/%k/brightness\","
+    "RUN+=\"" base:coreutils "/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
 
 (define (add-nonguix-substitute services)
   (modify-services services
@@ -136,6 +147,9 @@
    (service desktop-services:upower-service-type
             (desktop-services:upower-configuration))
    (desktop-services:geoclue-service)
+
+   ;; Brightenss access for ordinary users
+   (simple-service 'brightness-udev base-services:udev-service-type (list brightness-access-for-video-group))
 
    ;; Pipewire
    (simple-service 'pipewire-udev base-services:udev-service-type (list linux:pipewire))))
