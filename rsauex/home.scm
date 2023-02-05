@@ -58,6 +58,7 @@
  ((rsauex home services rofi)           #:prefix my-rofi:)
  ((rsauex home services shepherd)       #:prefix my-shepherd:)
  ((rsauex home services ssh)            #:prefix my-ssh-service:)
+ ((rsauex home services xdg-portal)     #:prefix my-xdg-portal-service:)
  ((rsauex home services pipewire)       #:prefix my-pipewire-service:)
  ((rsauex packages fcitx5)              #:prefix my-fcitx5:)
  ((rsauex packages gigolo)              #:prefix gigolo:)
@@ -285,6 +286,9 @@
         (dunst-service)
         (syncthing-service)
         (service my-pipewire-service:pipewire-service-type)
+        (service my-xdg-portal-service:xdg-desktop-portal-service-type
+                 (my-xdg-portal-service:xdg-desktop-portal-configuration
+                  (backends (list my-xdg-portal-service:xdg-desktop-portal-gtk-backend))))
         ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-ssh-service:ssh-agent-service-type)
         (anon-service load-xresources

@@ -1,6 +1,5 @@
 (define-module (rsauex systems desktop)
   #:use-module ((gnu packages cups)               #:prefix cups:)
-  #:use-module ((gnu packages freedesktop)        #:prefix freedesktop:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages libusb)             #:prefix libusb:)
   #:use-module ((gnu packages linux)              #:prefix linux:)
@@ -27,9 +26,7 @@
 
 (define %my-desktop-packages
   (list package-management:flatpak
-        gnome:gvfs
-        freedesktop:xdg-desktop-portal
-        freedesktop:xdg-desktop-portal-gtk))
+        gnome:gvfs))
 
 ;; TODO: Better name!
 (define (my-pam-u2f-auth-service)
