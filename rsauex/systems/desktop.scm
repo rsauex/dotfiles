@@ -152,7 +152,12 @@
    (simple-service 'brightness-udev base-services:udev-service-type (list brightness-access-for-video-group))
 
    ;; Pipewire
-   (simple-service 'pipewire-udev base-services:udev-service-type (list linux:pipewire))))
+   (simple-service 'pipewire-udev base-services:udev-service-type (list linux:pipewire))
+
+   ;; PAM
+   (base-services:pam-limits-service (list
+                                      ;; Increase max open files
+                                      (pam:pam-limits-entry "*" 'both 'nofile 65536)))))
 
 (define %my-base-desktop-system
   (operating-system
