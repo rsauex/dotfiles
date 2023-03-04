@@ -119,6 +119,10 @@
                                         . ,(file-append non-video:intel-media-driver "/lib/dri"))
                                        ("LIBVA_DRIVER_NAME"
                                         . "iHD")))
+                     (simple-service 'host-dpi-env-var
+                                     system-pam:session-environment-service-type
+                                     `(("HOST_DPI"
+                                        . "119")))
                      (modify-services
                          (operating-system-user-services my-desktop-systems:%my-base-desktop-system)
                        (xorg-services:xorg-server-service-type

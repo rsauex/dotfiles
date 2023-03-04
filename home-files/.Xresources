@@ -46,6 +46,7 @@ URxvt.matcher.button:	1
 Xft.hintstyle: hintslight
 Xft.lcdfilter: lcddefault
 Xft.rgba:      rgb
+Xft.dpi:       HOST_DPI
 
 ! Emacs ----------------------------------------------------------------------
 Emacs.cursorBlink: off

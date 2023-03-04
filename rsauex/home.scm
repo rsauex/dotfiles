@@ -267,8 +267,6 @@
                            (cons "QT_QPA_PLATFORMTHEME" "qt5ct")
                            ;; Local bin
                            (cons "PATH" "$HOME/.bin:$HOME/dotfiles/home-files/bin:$HOME/.local/bin:$PATH")
-                           ;; Fix scaling issues in Alacritty
-                           (cons "WINIT_X11_SCALE_FACTOR" "1")
                            ;; Respect immodule cache (TODO: This shouldn't be necessary...)
                            (cons "GUIX_GTK2_IM_MODULE_FILE" (string-append (getenv "HOME") "/.guix-home/profile/lib/gtk-2.0/2.10.0/immodules-gtk2.cache"))
                            (cons "GUIX_GTK3_IM_MODULE_FILE" (string-append (getenv "HOME") "/.guix-home/profile/lib/gtk-3.0/3.0.0/immodules-gtk3.cache"))
@@ -301,7 +299,9 @@
                     "Load XResources"
                     #~(lambda ()
                         (invoke #$(file-append xorg:xrdb "/bin/xrdb")
-                                "-merge" (string-append "-I" (getenv "HOME"))
+                                (string-append "-DHOST_DPI=" (or (getenv "HOST_DPI") "96"))
+                                "-merge"
+                                (string-append "-I" (getenv "HOME"))
                                 #$(rsauex-home-file ".Xresources" "Xresources"))
                         #t)))))))
         (anon-service xset-settings
