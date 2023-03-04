@@ -66,6 +66,9 @@
     (host-name "beta")
 
     (kernel non-linux:linux)
+    (kernel-arguments (cons* "resume=/dev/mapper/cryptroot"
+                             "resume_offset=3315712"
+                             (operating-system-user-kernel-arguments my-desktop-systems:%my-base-desktop-system)))
     (initrd non-linux-initrd:microcode-initrd)
     (firmware (list non-linux:linux-firmware))
 
