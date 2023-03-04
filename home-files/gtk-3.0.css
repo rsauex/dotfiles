@@ -1,0 +1,4 @@
+/* Never use rounded elements */
+* {
+    border-radius: 0;
+}

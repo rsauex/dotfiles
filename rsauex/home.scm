@@ -450,7 +450,9 @@
         (simple-service 'gtk3
                         home-xdg-configuration-files-service-type
                         `(("gtk-3.0/settings.ini"
-                           ,(rsauex-home-file "gtk-3.0-settings.ini" "gtk-3.0-settings.ini"))))
+                           ,(rsauex-home-file "gtk-3.0-settings.ini" "gtk-3.0-settings.ini"))
+                          ("gtk-3.0/gtk.css"
+                           ,(rsauex-home-file "gtk-3.0.css" "gtk-3.0.css"))))
         (simple-service 'x-resources
                         home-files-service-type
                         `((".Xresources"
