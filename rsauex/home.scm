@@ -9,7 +9,6 @@
  ((gnu packages compression)        #:prefix compression:)
  ((gnu packages docker)             #:prefix docker:)
  ((gnu packages emacs)              #:prefix emacs:)
- ((gnu packages fcitx5)             #:prefix fcitx5:)
  ((gnu packages fonts)              #:prefix fonts:)
  ((gnu packages gimp)               #:prefix gimp:)
  ((gnu packages gnome)              #:prefix gnome:)
@@ -53,6 +52,7 @@
  ((rsauex home services channels)       #:prefix my-channels-service:)
  ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
  ((rsauex home services dunst)          #:prefix my-dunst-service:)
+ ((rsauex home services fcitx5)         #:prefix my-fcitx5-service:)
  ((rsauex home services git)            #:prefix my-git:)
  ((rsauex home services gui-startup)    #:prefix my-gui-startup:)
  ((rsauex home services picom)          #:prefix my-picom-service:)
@@ -169,14 +169,6 @@
                  nordic-theme:nordic-darker-kvantum-theme
 
                  ;; TODO: make separate service
-                 fcitx5:fcitx5
-                 fcitx5:fcitx5-configtool
-                 fcitx5:fcitx5-qt
-                 (list fcitx5:fcitx5-gtk "gtk2")
-                 (list fcitx5:fcitx5-gtk "gtk3")
-                 my-fcitx5:fcitx5-m17n
-
-                 ;; TODO: make separate service
                  kvantum:kvantum
                  qt:qt5ct
 
@@ -279,6 +271,9 @@
         (service my-xdg-portal-service:xdg-desktop-portal-service-type
                  (my-xdg-portal-service:xdg-desktop-portal-configuration
                   (backends (list my-xdg-portal-service:xdg-desktop-portal-gtk-backend))))
+        (service my-fcitx5-service:fcitx5-service-type
+                 (my-fcitx5-service:fcitx5-configuration
+                  (addons (list my-fcitx5:fcitx5-m17n))))
         ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (service my-ssh-service:ssh-agent-service-type)
         (anon-service load-xresources
@@ -360,18 +355,6 @@
                     'blueman-applet
                     "Run `blueman-applet'"
                     #~`(#$(file-append networking:blueman "/bin/blueman-applet"))))))))
-        (anon-service fcitx5-autostart
-          (my-gui-startup:gui-startup-service-type
-           (my-gui-startup:gui-startup-extension
-            (services
-             (list (my-shepherd:simple-forkexec-shepherd-service
-                    'fcitx5
-                    "Run `fcixt5'"
-                    #~`(#$(file-append fcitx5:fcitx5 "/bin/fcitx5")))))
-            (environment
-             (list (cons "GTK_IM_MODULE" #~"fcitx")
-                   (cons "QT_IM_MODULE" #~"fcitx")
-                   (cons "XMODIFIERS" #~"@im=fcitx"))))))
         (anon-service polkit-authentication-agent-autostart
           (my-gui-startup:gui-startup-service-type
            (my-gui-startup:gui-startup-extension
