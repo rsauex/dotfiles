@@ -105,7 +105,9 @@
                           #$(my-shepherd:home-shepherd-session-launch-file shepherd-config)
                           #$(gui-startup-configuration-program config)))))
     `(("sx/sxrc"
-       ,(program-file "sxrc" sxrc)))))
+       ,(program-file "sxrc" sxrc))
+      ("shepherd/shepherd-gui.scm"
+       ,(my-shepherd:home-shepherd-configuration-file shepherd-config)))))
 
 (define gui-startup-service-type
   (service-type (name 'guix-startup)
