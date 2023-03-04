@@ -8,7 +8,6 @@
  ((gnu packages base)               #:prefix base-packages:)
  ((gnu packages compression)        #:prefix compression:)
  ((gnu packages docker)             #:prefix docker:)
- ((gnu packages dunst)              #:prefix dunst:)
  ((gnu packages emacs)              #:prefix emacs:)
  ((gnu packages fcitx5)             #:prefix fcitx5:)
  ((gnu packages fonts)              #:prefix fonts:)
@@ -53,6 +52,7 @@
  ((rsauex channels)                     #:prefix my-channels:)
  ((rsauex home services channels)       #:prefix my-channels-service:)
  ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
+ ((rsauex home services dunst)          #:prefix my-dunst-service:)
  ((rsauex home services git)            #:prefix my-git:)
  ((rsauex home services gui-startup)    #:prefix my-gui-startup:)
  ((rsauex home services picom)          #:prefix my-picom-service:)
@@ -138,21 +138,6 @@
                   (call-with-output-file #$output
                     (lambda (port)
                       (put-string port (get-string-all (open-pipe* OPEN_READ #$cat #$@files))))))))))))))
-
-(define (dunst-service)
-  (anon-service dunst-autostart
-    (home-profile-service-type
-     (list dunst:dunst))
-    (my-gui-startup:gui-startup-service-type
-     (my-gui-startup:gui-startup-extension
-      (services
-       (list (my-shepherd:simple-forkexec-shepherd-service
-              'dunst
-              "Run `dunst'"
-              #~`(#$(file-append dunst:dunst "/bin/dunst")))))))
-    (home-xdg-configuration-files-service-type
-     `(("dunst/dunstrc"
-        ,(rsauex-home-file "dunstrc" "dunstrc"))))))
 
 (define (syncthing-service)
   (anon-service syncthing-applet-autostart
@@ -283,7 +268,9 @@
                  (my-gui-startup:gui-startup-configuration
                   (program (file-append wm:i3-wm "/bin/i3"))))
         (i3-config-service)
-        (dunst-service)
+        (service my-dunst-service:dunst-service-type
+                 (my-dunst-service:dunst-configuration
+                  (config (rsauex-home-file "dunstrc" "dunstrc"))))
         (syncthing-service)
         (service my-picom-service:picom-service-type
                  (my-picom-service:picom-configuration
