@@ -7,32 +7,30 @@
   #:use-module ((guix licenses) #:prefix license:))
 
 (define-public nordic-darker-theme
-  (let ((commit "6d38d6af363528f42619f663e3ecd4c08dfd2411")
-	(revision "0"))
   (package
-   (name "nordic-theme")
-   (version (git-version "1.9.0" revision commit))
-   (source
+    (name "nordic-theme")
+    (version "2.2.0")
+    (source
      (origin
-      (method git-fetch)
-      (uri (git-reference
+       (method git-fetch)
+       (uri (git-reference
              (url "https://github.com/EliverLara/Nordic")
-             (commit commit)))
-     (sha256
-       (base32
-         "0m1jr05qb3pkxq5yf46i7r5jvrkp736azbwxrmnkjzdj9r46594d"))
-     (file-name (git-file-name name version))))
-   (build-system copy-build-system)
-   (arguments
-    `(#:install-plan
-      `(("." "share/themes/Nordic-Darker"
-         #:exclude ("README.md" "LICENSE" "Art/" "package.json"
-                    "package-lock.json" "Gulpfile.js")))))
-   (home-page "https://github.com/EliverLara/Nordic")
-   (synopsis "Dark Gtk3.20+ theme using the Nord color palette")
-   (description "Nordic is a Gtk3.20+ theme created using the Nord color
+             (commit "v2.2.0")))
+       (sha256
+        (base32
+         "02aa1dphzjfy1fi7ln4554di24fa0kcgz8baabm15m9zm9sqfdf1"))
+       (file-name (git-file-name name version))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       `(("." "share/themes/Nordic-Darker"
+          #:exclude ("README.md" "LICENSE" "Art/" "package.json"
+                     "package-lock.json" "Gulpfile.js")))))
+    (home-page "https://github.com/EliverLara/Nordic")
+    (synopsis "Dark Gtk3.20+ theme using the Nord color palette")
+    (description "Nordic is a Gtk3.20+ theme created using the Nord color
 palette.")
-   (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public nordic-darker-kvantum-theme
   (package
