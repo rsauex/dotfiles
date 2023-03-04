@@ -140,13 +140,13 @@
    (service desktop-services:accountsservice-service-type)
    (service desktop-services:colord-service-type)
    (service desktop-services:cups-pk-helper-service-type)
-   (service avahi-services:avahi-service-type
-            (avahi-services:avahi-configuration))
-   (service desktop-services:udisks-service-type
-            (desktop-services:udisks-configuration))
+   (service avahi-services:avahi-service-type)
+   (service desktop-services:udisks-service-type)
    (service desktop-services:upower-service-type
-            (desktop-services:upower-configuration))
-   (desktop-services:geoclue-service)
+            (desktop-services:upower-configuration
+             (percentage-critical 10)
+             (percentage-action 5)))
+   (service desktop-services:geoclue-service-type)
 
    ;; Brightenss access for ordinary users
    (simple-service 'brightness-udev base-services:udev-service-type (list brightness-access-for-video-group))
