@@ -27,7 +27,7 @@
       (list (my-shepherd:simple-forkexec-shepherd-service
              'picom
              "Run `picom' compositor"
-             #~`(#$(file-append compton:picom "/bin/picom"))))))))
+             #~`(#$(file-append picom "/bin/picom"))))))))
 
 (define (picom-home-xdg-configuration-files-service config)
   `(("picom/picom.conf"
