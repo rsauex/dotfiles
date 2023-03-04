@@ -349,7 +349,7 @@
                             ;; Keyboard settings (Ergodox EZ)
                             (let ((device (invoke/capture-stdout #$(file-append xorg:xinput "/bin/xinput")
                                                                  "list"
-                                                                 "--id-only" "keyboard:ZSA Technology Labs Inc ErgoDox EZ")))
+                                                                 "--id-only" "keyboard:ZSA Technology Labs ErgoDox EZ")))
                               (unless (string-null? device)
                                 (setxkbmap "-device" device
                                            "-option"
