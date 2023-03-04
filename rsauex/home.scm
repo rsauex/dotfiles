@@ -55,6 +55,7 @@
  ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
  ((rsauex home services git)            #:prefix my-git:)
  ((rsauex home services gui-startup)    #:prefix my-gui-startup:)
+ ((rsauex home services picom)          #:prefix my-picom-service:)
  ((rsauex home services rofi)           #:prefix my-rofi:)
  ((rsauex home services shepherd)       #:prefix my-shepherd:)
  ((rsauex home services ssh)            #:prefix my-ssh-service:)
@@ -284,6 +285,9 @@
         (i3-config-service)
         (dunst-service)
         (syncthing-service)
+        (service my-picom-service:picom-service-type
+                 (my-picom-service:picom-configuration
+                  (config (rsauex-home-file "picom.conf" "picom.conf"))))
         (service my-pipewire-service:pipewire-service-type)
         (service my-xdg-portal-service:xdg-desktop-portal-service-type
                  (my-xdg-portal-service:xdg-desktop-portal-configuration
