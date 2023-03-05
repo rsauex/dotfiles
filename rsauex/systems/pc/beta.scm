@@ -20,8 +20,7 @@
 
    Section \"Device\"
        Identifier  \"Intel Graphics\"
-       Driver      \"intel\"
-       Option      \"DRI\"  \"3\"
+       Driver      \"modesetting\"
        Option      \"Monitor-eDP1\" \"eDP1\"
    EndSection")
 
