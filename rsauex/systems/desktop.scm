@@ -79,9 +79,11 @@
    (my-pam-u2f-auth-service)
 
    ;; Xorg
-   desktop-services:x11-socket-directory-service
+   (service desktop-services:x11-socket-directory-service-type)
    (service xorg-services:xorg-server-service-type)
-   (xorg-services:screen-locker-service wm:i3lock "i3lock")
+   (service xorg-services:screen-locker-service-type
+            (xorg-services:screen-locker-configuration
+             "i3lock" (file-append wm:i3lock "/bin/i3lock") #f))
 
    ;; Bluetooth
    (service desktop-services:bluetooth-service-type
