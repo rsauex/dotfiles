@@ -1,8 +1,9 @@
 (define-module (rsauex systems pc beta)
   #:use-module ((gnu packages xorg)          #:prefix xorg:)
   #:use-module ((gnu services dbus)          #:prefix dbus-services:)
-  #:use-module ((gnu services xorg)          #:prefix xorg-services:)
   #:use-module ((gnu services pm)            #:prefix pm-services:)
+  #:use-module ((gnu services xorg)          #:prefix xorg-services:)
+  #:use-module ((gnu system linux-initrd)    #:prefix linux-initrd:)
   #:use-module ((gnu))
   #:use-module ((guix build-system trivial))
   #:use-module ((guix))
@@ -20,7 +21,10 @@
 
    Section \"Device\"
        Identifier  \"Intel Graphics\"
-       Driver      \"modesetting\"
+       Driver      \"intel\"
+       Option      \"AccelMethod\" \"sna\"
+       Option      \"DRI\"  \"3\"
+       Option      \"TearFree\" \"true\"
        Option      \"Monitor-eDP1\" \"eDP1\"
    EndSection")
 
@@ -69,6 +73,7 @@
                              "resume_offset=3315712"
                              (operating-system-user-kernel-arguments my-desktop-systems:%my-base-desktop-system)))
     (initrd non-linux-initrd:microcode-initrd)
+    (initrd-modules (cons "i915" linux-initrd:%base-initrd-modules))
     (firmware (list non-linux:linux-firmware))
 
     (mapped-devices (list (mapped-device
