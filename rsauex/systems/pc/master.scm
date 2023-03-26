@@ -1,27 +1,10 @@
 (define-module (rsauex systems pc master)
-  #:use-module (guix gexp)
-  #:use-module (guix store)
-  #:use-module (guix monads)
-  #:use-module (gnu)
-  #:use-module (gnu packages)
-  #:use-module (gnu bootloader)
-  #:use-module (gnu bootloader grub)
-  #:use-module (gnu system nss)
-  #:use-module (gnu system file-systems)
-  #:use-module (gnu system pam)
-  #:use-module (gnu system mapped-devices)
-  #:use-module (gnu system linux-initrd)
-  #:use-module (gnu services base)
-  #:use-module (gnu services security-token)
-  #:use-module (gnu services networking)
-  #:use-module (gnu services shepherd)
-  #:use-module (gnu services ssh)
-  #:use-module (gnu packages bash)
-  #:use-module (gnu packages linux)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match)
-  #:use-module (ice-9 format)
+  #:use-module ((gnu packages bash)            #:prefix bash:)
+  #:use-module ((gnu packages linux)           #:prefix linux:)
+  #:use-module ((gnu services base)            #:prefix base-services:)
+  #:use-module ((gnu services security-token)  #:prefix security-token-services:)
+  #:use-module ((gnu))
+  #:use-module ((guix))
   #:export (%os))
 
 (define %os
@@ -109,71 +92,73 @@
 
     (services (list
                ;; UTF8 terminals
-               (service virtual-terminal-service-type)
+               (service base-services:virtual-terminal-service-type)
 
                ;; Terminals
-               (mingetty-service (mingetty-configuration
-                                  (tty "tty1")
-                                  (auto-login "master")
-                                  (login-pause? #f)))
-               (mingetty-service (mingetty-configuration
-                                  (tty "tty2")
-                                  (auto-login "master")
-                                  (login-pause? #t)))
+               (service base-services:mingetty-service-type
+                        (base-services:mingetty-configuration
+                         (tty "tty1")
+                         (auto-login "master")
+                         (login-pause? #f)))
+               (service base-services:mingetty-service-type
+                        (base-services:mingetty-configuration
+                         (tty "tty2")
+                         (auto-login "master")
+                         (login-pause? #t)))
 
                ;; Terminals' fonts
-               (service console-font-service-type
-                        (map (match-lambda
+               (service base-services:console-font-service-type
+                        (map (lambda (tty)
                                (tty `(,tty . "LatGrkCyr-8x16")))
                              '("tty1" "tty2" ; "tty3" "tty4" "tty5" "tty6"
                                )))
 
                ;; Terminal mouse support
-               (service gpm-service-type)
+               (service base-services:gpm-service-type)
 
                ;; Login
-               (login-service (login-configuration
-                               (motd (plain-file "motd" (format #f "~%")))))
+               (service base-services:login-service-type
+                        (base-services:login-configuration
+                         (motd (plain-file "motd" (format #f "~%")))))
 
                ;; Might be useful
                (service special-files-service-type
-                        `(("/bin/sh" ,(file-append bash "/bin/sh"))))
+                        `(("/bin/sh" ,(file-append bash:bash "/bin/sh"))))
 
                ;; UDev
-               (service udev-service-type
-                        (udev-configuration
-                         (rules (list lvm2 fuse))))
+               (service base-services:udev-service-type
+                        (base-services:udev-configuration
+                         (rules (list linux:lvm2 linux:fuse))))
 
                ;; Guix service
-               (service guix-service-type
-                        (guix-configuration))
+               (service base-services:guix-service-type
+                        (base-services:guix-configuration))
 
                ;; Log
-               (syslog-service)
+               (service base-services:syslog-service-type)
 
                ;;
-               (service urandom-seed-service-type)
-               (nscd-service (nscd-configuration
-                              (caches (list (nscd-cache (database 'hosts)
-                                                        (positive-time-to-live (* 3600 12))
+               (service base-services:urandom-seed-service-type)
+               (service base-services:nscd-service-type
+                        (base-services:nscd-configuration
+                         (caches (list (base-services:nscd-cache
+                                        (database 'hosts)
+                                        (positive-time-to-live (* 3600 12))
 
-                                                        ;; Do not cache lookup failures at all since they are
-                                                        ;; quite likely (for instance when someone tries to ping a
-                                                        ;; host before networking is functional.)
-                                                        (negative-time-to-live 0)
+                                        ;; Do not cache lookup failures at all since they are
+                                        ;; quite likely (for instance when someone tries to ping a
+                                        ;; host before networking is functional.)
+                                        (negative-time-to-live 0)
 
-                                                        (persistent? #f)
-                                                        (max-database-size (* 5 (expt 2 20))))))))
+                                        (persistent? #f)
+                                        (max-database-size (* 5 (expt 2 20))))))))
 
                ;; Static network
-               (service static-networking-service-type
-                        (list (static-networking (interface "lo")
-                                                 (ip "127.0.0.1")
-                                                 (requirement '())
-                                                 (provision '(loopback)))))
+               (service base-services:static-networking-service-type
+                        base-services:%loopback-static-networking)
 
                ;; Smart cards support
-               (service pcscd-service-type)))
+               (service security-token-services:pcscd-service-type)))
 
     (packages (append
                (list (@ (gnu packages certs) nss-certs)

@@ -1,22 +1,20 @@
 (define-module (rsauex systems pc alpha)
-  #:use-module (gnu)
-  #:use-module (gnu packages)
-  #:use-module (gnu services xorg)
-  #:use-module (nongnu system linux-initrd)
-  #:use-module (nongnu packages linux)
-  #:use-module (rsauex systems base)
-  #:use-module (rsauex systems desktop)
+  #:use-module ((gnu))
+  #:use-module ((guix))
+  #:use-module ((nongnu packages linux)      #:prefix non-linux:)
+  #:use-module ((nongnu system linux-initrd) #:prefix non-linux-initrd:)
+  #:use-module ((rsauex systems desktop)     #:prefix my-desktop-systems:)
   #:export (%os))
 
 (define %os
   (operating-system
-    (inherit %my-base-desktop-system)
+    (inherit my-desktop-systems:%my-base-desktop-system)
 
     (host-name "alpha")
 
-    (kernel linux)
-    (initrd microcode-initrd)
-    (firmware (list linux-firmware))
+    (kernel non-linux:linux)
+    (initrd non-linux-initrd:microcode-initrd)
+    (firmware (list non-linux:linux-firmware))
 
     (mapped-devices (list (mapped-device
                            (source (uuid "eb58fa70-7419-4e29-8d9f-30c53f67cc26"))
@@ -33,9 +31,9 @@
                            (type "ext4")
                            (flags '(no-atime))
                            (dependencies mapped-devices))
-                         (operating-system-file-systems %my-base-desktop-system)))
+                         (operating-system-file-systems my-desktop-systems:%my-base-desktop-system)))
 
     (packages (cons*
                (@ (nongnu packages steam-client) steam)
 
-               (operating-system-packages %my-base-desktop-system)))))
+               (operating-system-packages my-desktop-systems:%my-base-desktop-system)))))

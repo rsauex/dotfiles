@@ -1,27 +1,22 @@
 (define-module (rsauex packages nm-forti)
-  #:use-module (gnu)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages vpn)
-  #:use-module (gnu packages samba)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages file)
-  #:use-module (gnu packages gettext)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages glib)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix utils))
+  #:use-module ((gnu packages glib)       #:prefix glib:)
+  #:use-module ((gnu packages gnome)      #:prefix gnome:)
+  #:use-module ((gnu packages gtk)        #:prefix gtk:)
+  #:use-module ((gnu packages pkg-config) #:prefix pkg-config:)
+  #:use-module ((gnu packages samba)      #:prefix samba:)
+  #:use-module ((gnu packages vpn)        #:prefix vpn:)
+  #:use-module ((guix build-system gnu)   #:prefix gnu-build-system:)
+  #:use-module ((guix download)           #:prefix download:)
+  #:use-module ((guix licenses)           #:prefix license:)
+  #:use-module ((guix packages))
+  #:use-module ((guix utils)))
 
 (define-public network-manager-openfortivpn
   (package
     (name "network-manager-openfortivpn")
     (version "1.2.10")
     (source (origin
-              (method url-fetch)
+              (method download:url-fetch)
               (uri (string-append
                     "mirror://gnome/sources/NetworkManager-fortisslvpn/"
                     (version-major+minor version)
@@ -29,7 +24,7 @@
               (sha256
                (base32
                 "1sw66cxgs4in4cjp1cm95c5ijsk8xbbmq4ykg2jwqwgz6cf2lr3s"))))
-    (build-system gnu-build-system)
+    (build-system gnu-build-system:gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var"
                            "--with-gnome=yes")
@@ -51,16 +46,16 @@
                   "#define NM_FORTISSLVPN_WAIT_PPPD 60000")))
              #t)))))
     (native-inputs
-     (list pkg-config
-           intltool))
+     (list pkg-config:pkg-config
+           glib:intltool))
     (inputs
-     (list openfortivpn
-           network-manager
-           `(,glib "bin")
-           ppp
-           gtk+
-           libnma
-           libsecret))
+     (list vpn:openfortivpn
+           gnome:network-manager
+           `(,glib:glib "bin")
+           samba:ppp
+           gtk:gtk+
+           gnome:libnma
+           gnome:libsecret))
     (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
     (synopsis "OpenFortiVPN plug-in for NetworkManager")
     (description

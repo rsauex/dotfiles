@@ -1,14 +1,14 @@
 (define-module (rsauex home services ssh)
-  #:use-module (gnu home)
+  #:use-module ((gnu home))
   #:use-module ((gnu packages ssh) #:prefix ssh:)
-  #:use-module (gnu packages)
-  #:use-module (gnu services configuration)
-  #:use-module (gnu services)
-  #:use-module (guix gexp)
-  #:use-module (guix packages)
-  #:use-module ((rsauex home services shepherd) #:prefix my-shepherd:)
+  #:use-module ((gnu packages))
+  #:use-module ((gnu services configuration))
+  #:use-module ((gnu services))
+  #:use-module ((guix gexp))
+  #:use-module ((guix packages))
   #:use-module ((rsauex home services gui-startup) #:prefix my-gui-startup:)
-  #:use-module (srfi srfi-1)
+  #:use-module ((rsauex home services shepherd) #:prefix my-shepherd:)
+  #:use-module ((srfi srfi-1))
 
   #:export (ssh-agent-configuration
 

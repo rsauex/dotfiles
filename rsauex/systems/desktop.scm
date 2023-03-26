@@ -1,4 +1,5 @@
 (define-module (rsauex systems desktop)
+  #:use-module ((gnu packages base)               #:prefix base:)
   #:use-module ((gnu packages cups)               #:prefix cups:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages libusb)             #:prefix libusb:)
@@ -6,7 +7,6 @@
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages wm)                 #:prefix wm:)
-  #:use-module ((gnu packages base)               #:prefix base:)
   #:use-module ((gnu services avahi)              #:prefix avahi-services:)
   #:use-module ((gnu services base)               #:prefix base-services:)
   #:use-module ((gnu services cups)               #:prefix cups-services:)

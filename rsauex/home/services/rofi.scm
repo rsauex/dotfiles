@@ -1,18 +1,11 @@
 (define-module (rsauex home services rofi)
-  #:use-module (gnu home)
-  #:use-module (gnu packages)
-  #:use-module (gnu services)
-  #:use-module (guix gexp)
-  #:use-module (guix packages)
-  #:use-module (gnu home services)
-  #:use-module (gnu home services shells)
-  #:use-module (gnu home services fontutils)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (guix git)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match)
-  #:use-module (gnu services configuration)
+  #:use-module ((gnu home services))
+  #:use-module ((gnu packages xdisorg) #:prefix xdisorg:)
+  #:use-module ((gnu services configuration))
+  #:use-module ((gnu services))
+  #:use-module ((guix gexp))
+  #:use-module ((guix packages))
+  #:use-module ((ice-9 match))
 
   #:export (rofi-configuration
 
@@ -53,7 +46,7 @@
 
 (define-configuration rofi-configuration
   (package
-    (package rofi)
+    (package xdisorg:rofi)
     "The Rofi package to use.")
   (config
    (alist '())

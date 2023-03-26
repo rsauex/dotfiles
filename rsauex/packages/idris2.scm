@@ -1,14 +1,12 @@
 (define-module (rsauex packages idris2)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages chez)
-  #:use-module (gnu packages llvm)
-  #:use-module (gnu packages multiprecision)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix utils)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module ((gnu packages chez)           #:prefix chez:)
+  #:use-module ((gnu packages llvm)           #:prefix llvm:)
+  #:use-module ((gnu packages multiprecision) #:prefix multiprecision:)
+  #:use-module ((guix build-system gnu)       #:prefix gnu-build-system:)
+  #:use-module ((guix gexp))
+  #:use-module ((guix git-download)           #:prefix git-download:)
+  #:use-module ((guix licenses)               #:prefix license:)
+  #:use-module ((guix packages)))
 
 (define-public idris2
   (let ((commit "bf87b623ef64244451d10c4b5460e8fc2f88c99a"))
@@ -16,22 +14,22 @@
       (name "idris2")
       (version "0.5.1")
       (source (origin
-                (method git-fetch)
-                (uri (git-reference
+                (method git-download:git-fetch)
+                (uri (git-download:git-reference
                       (url "https://github.com/idris-lang/Idris2.git")
                       (commit (if (string=? commit version)
                                   (string-append "v" version)
                                   commit))))
-                (file-name (git-file-name name version))
+                (file-name (git-download:git-file-name name version))
                 (sha256
                  (base32 "1q6yqd6adfvxwh8yq7dx00907yd9zmallwq2rlr27bxhs6shccgx"))))
-      (build-system gnu-build-system)
+      (build-system gnu-build-system:gnu-build-system)
       (native-inputs
-       (list clang
-             chez-scheme))
+       (list llvm:clang
+             chez:chez-scheme))
       (inputs
-       (list gmp
-             chez-scheme))
+       (list multiprecision:gmp
+             chez:chez-scheme))
       (arguments
        `(#:make-flags
          (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
