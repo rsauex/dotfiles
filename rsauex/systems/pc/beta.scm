@@ -103,6 +103,7 @@
                          (operating-system-user-services my-desktop-systems:%my-base-desktop-system)
                        (xorg-services:xorg-server-service-type
                         config => (xorg-services:xorg-configuration
+                                   (inherit config)
                                    (extra-config
                                     (cons* xorg-enable-dri3
                                            (xorg-services:xorg-configuration-extra-config config))))))))))
