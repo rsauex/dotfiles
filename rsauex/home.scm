@@ -10,6 +10,7 @@
   #:use-module ((gnu packages docker)             #:prefix docker:)
   #:use-module ((gnu packages emacs)              #:prefix emacs:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
+  #:use-module ((gnu packages freedesktop)        #:prefix freedesktop:)
   #:use-module ((gnu packages gimp)               #:prefix gimp:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages gnome-xyz)          #:prefix gnome-xyz:)
@@ -264,7 +265,20 @@
           ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-gui-startup:gui-startup-service-type
                    (my-gui-startup:gui-startup-configuration
-                    (program (file-append wm:i3-wm "/bin/i3"))))
+                    (program (program-file
+                              "my-gui-startup"
+                              #~(begin
+                                  ;; QT applications rely on StatusNotifierWatcher (appindicator) to send
+                                  ;; 'Balloon' notifications but when it's not available (and in case of i3bar
+                                  ;; it's not) they display ugly custom notifications that don't match
+                                  ;; anything else in the system...
+                                  ;; (See showMessage_sys in src/widgets/util/qsystemtrayicon_x11.cpp in qtbase)
+                                  ;; (Affects KeePassXC)
+                                  ;; Other possible solution is to use a different panel...
+                                  (system* #$(file-append freedesktop:snixembed "/bin/snixembed")
+                                           "--fork")
+                                  (execl #$(file-append wm:i3-wm "/bin/i3")
+                                         #$(file-append wm:i3-wm "/bin/i3")))))))
           (i3-config-service)
           (service my-dunst-service:dunst-service-type
                    (my-dunst-service:dunst-configuration
