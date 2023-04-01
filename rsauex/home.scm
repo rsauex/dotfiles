@@ -161,6 +161,10 @@
                    fonts:font-adobe-source-han-sans
                    fonts:font-awesome
                    fonts:font-google-material-design-icons
+                   fonts:font-terminus
+                   xorg:font-alias
+                   xorg:font-micro-misc
+                   xorg:font-adobe75dpi
 
                    gnome:gnome-themes-standard
                    gnome:gnome-themes-extra
@@ -292,6 +296,27 @@
                                   (string-append "-I" (getenv "HOME"))
                                   #$(rsauex-home-file ".Xresources" "Xresources"))
                           #t)))))))
+          (anon-service update-xlfd-fonts
+            (my-gui-startup:gui-startup-service-type
+             (my-gui-startup:gui-startup-extension
+              (services
+               (list (my-shepherd:simple-one-shot-shepherd-service
+                      'update-xlfd-fonts
+                      "Update XLFD fonts list"
+                      #~(lambda ()
+                          (let ((font-paths '("built-ins")))
+                            (ftw (string-append (getenv "HOME") "/.guix-home/profile/share/fonts/")
+                                 (lambda (file info flag)
+                                   (when (string= "fonts.dir" (basename file))
+                                     (set! font-paths (cons (dirname file) font-paths)))
+                                   #t))
+                            (invoke #$(file-append xorg:xset "/bin/xset")
+                                    "fp="
+                                    (string-join font-paths ","))
+                            (invoke #$(file-append xorg:xset "/bin/xset")
+                                    "fp" "rehash"))
+                          #t)
+                      #:extra-modules '((ice-9 ftw))))))))
           (anon-service xset-settings
             (my-gui-startup:gui-startup-service-type
              (my-gui-startup:gui-startup-extension

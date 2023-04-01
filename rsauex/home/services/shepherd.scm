@@ -167,11 +167,13 @@ as shepherd package."
 (define* (simple-one-shot-shepherd-service name documentation command-gexp
                                            #:key
                                            (auto-start? #t)
-                                           (requirement '()))
+                                           (requirement '())
+                                           (extra-modules '()))
   (shepherd-service
    (documentation documentation)
    (provision (list name))
    (start command-gexp)
    (one-shot? #t)
    (auto-start? auto-start?)
-   (requirement requirement)))
+   (requirement requirement)
+   (modules (append %default-modules extra-modules))))

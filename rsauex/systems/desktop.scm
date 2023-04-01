@@ -18,6 +18,7 @@
   #:use-module ((gnu system pam)                  #:prefix pam:)
   #:use-module ((gnu))
   #:use-module ((rsauex packages nm-forti)        #:prefix my-nm-forti:)
+  #:use-module ((rsauex packages xorg)            #:prefix my-xorg:)
   #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
   #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
   #:use-module ((srfi srfi-1))
@@ -80,7 +81,9 @@
 
    ;; Xorg
    (service desktop-services:x11-socket-directory-service-type)
-   (service xorg-services:xorg-server-service-type)
+   (service xorg-services:xorg-server-service-type
+            (xorg-services:xorg-configuration
+             (server my-xorg:xorg-server)))
    (service xorg-services:screen-locker-service-type
             (xorg-services:screen-locker-configuration
              "i3lock" (file-append wm:i3lock "/bin/i3lock") #f))
