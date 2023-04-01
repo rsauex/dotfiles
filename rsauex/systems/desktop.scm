@@ -1,4 +1,5 @@
 (define-module (rsauex systems desktop)
+  #:use-module ((gcrypt pk-crypto)                #:prefix pk-crypto:)
   #:use-module ((gnu packages base)               #:prefix base:)
   #:use-module ((gnu packages cups)               #:prefix cups:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
@@ -17,6 +18,7 @@
   #:use-module ((gnu services xorg)               #:prefix xorg-services:)
   #:use-module ((gnu system pam)                  #:prefix pam:)
   #:use-module ((gnu))
+  #:use-module ((rsauex channels)                 #:prefix my-channels:)
   #:use-module ((rsauex packages xorg)            #:prefix my-xorg:)
   #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
   #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
@@ -58,14 +60,13 @@
      (guix-configuration
       (inherit config)
       (substitute-urls
-       (append (list "https://substitutes.nonguix.org")
+       (append (list my-channels:nonguix-substitute-url)
                (guix-configuration-substitute-urls config)))
       (authorized-keys
        (append (list (plain-file "non-guix.pub"
-                                 "(public-key
-                                   (ecc
-                                    (curve Ed25519)
-                                    (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
+                                 (pk-crypto:canonical-sexp->string
+                                  (pk-crypto:sexp->canonical-sexp
+                                   my-channels:nonguix-substitute-primary-key))))
                (guix-configuration-authorized-keys config)))))))
 
 (define %my-desktop-services
