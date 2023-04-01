@@ -151,7 +151,7 @@
               #~`(#$(file-append syncthing:syncthing-gtk "/bin/syncthing-gtk"))
               #:data-packages (list syncthing:syncthing-gtk))))))))
 
-(define %home-environment
+(define-public %home-environment
   (home-environment
    (packages (list fonts:font-iosevka-term
                    fonts:font-google-roboto
