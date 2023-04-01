@@ -17,7 +17,6 @@
   #:use-module ((gnu services xorg)               #:prefix xorg-services:)
   #:use-module ((gnu system pam)                  #:prefix pam:)
   #:use-module ((gnu))
-  #:use-module ((rsauex packages nm-forti)        #:prefix my-nm-forti:)
   #:use-module ((rsauex packages xorg)            #:prefix my-xorg:)
   #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
   #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
@@ -128,9 +127,7 @@
    ;; Network manager
    (service networking-services:network-manager-service-type
             (networking-services:network-manager-configuration
-             (dns "dnsmasq")
-             (vpn-plugins
-              (list my-nm-forti:network-manager-openfortivpn))))
+             (dns "dnsmasq")))
    (service networking-services:wpa-supplicant-service-type)
    (service networking-services:modem-manager-service-type)
    (service networking-services:usb-modeswitch-service-type)

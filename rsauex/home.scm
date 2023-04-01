@@ -39,6 +39,7 @@
   #:use-module ((gnu packages wine)               #:prefix wine:)
   #:use-module ((gnu packages wm)                 #:prefix wm:)
   #:use-module ((gnu packages xdisorg)            #:prefix xdisorg:)
+  #:use-module ((gnu packages xfce)               #:prefix xfce:)
   #:use-module ((gnu packages xorg)               #:prefix xorg:)
   #:use-module ((gnu services))
   #:use-module ((guix channels)                   #:prefix channels:)
@@ -62,7 +63,6 @@
   #:use-module ((rsauex home services xdg-portal)     #:prefix my-xdg-portal-service:)
   #:use-module ((rsauex home services pipewire)       #:prefix my-pipewire-service:)
   #:use-module ((rsauex packages fcitx5)              #:prefix my-fcitx5:)
-  #:use-module ((rsauex packages gigolo)              #:prefix gigolo:)
   #:use-module ((rsauex packages kvantum)             #:prefix kvantum:)
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
   #:use-module ((rsauex packages powershell)          #:prefix powershell:)
@@ -200,7 +200,7 @@
                    scanner:xsane
                    passwd-utils:keepassxc
                    pulseaudio:pavucontrol
-                   gigolo:gigolo
+                   xfce:gigolo
                    pdf:qpdfview
                    gnome:system-config-printer
                    docker:docker-compose
