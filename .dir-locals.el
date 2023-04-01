@@ -29,6 +29,8 @@
    (eval . (put 'add-before 'scheme-indent-function 2))
    (eval . (put 'add-after 'scheme-indent-function 2))
 
+   (eval . (put 'modify-inputs 'scheme-indent-function 1))
+
    (eval . (put 'modify-services 'scheme-indent-function 1))
    (eval . (put 'with-directory-excursion 'scheme-indent-function 1))
    (eval . (put 'package 'scheme-indent-function 0))
