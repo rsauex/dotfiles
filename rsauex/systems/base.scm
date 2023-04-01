@@ -87,14 +87,21 @@
                    (name "rsauex")
                    (uid 1000)
                    (group "users")
-                   (supplementary-groups '("audio"
+                   (supplementary-groups '(;; Pipewire
+                                           "audio"
+                                           ;; X, DRI, backlight
                                            "video"
+                                           ;; X
                                            "input"
+                                           ;; sudo
                                            "wheel"
+                                           ;; Serial ports
                                            "dialout"
-                                           "disk"
+                                           ;; KVM acceleration
                                            "kvm"
+                                           ;; Printers
                                            "lpadmin"
                                            "lp"
+                                           ;; Docker without sudo
                                            "docker")))
                   %base-user-accounts))))
