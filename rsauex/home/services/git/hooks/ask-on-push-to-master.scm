@@ -1,8 +1,8 @@
 (define-module (rsauex home services git hooks ask-on-push-to-master)
-  #:use-module (ice-9 regex)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-69)
-  #:use-module (rsauex script utils)
+  #:use-module ((ice-9 regex))
+  #:use-module ((rsauex script utils))
+  #:use-module ((srfi srfi-1))
+  #:use-module ((srfi srfi-69))
 
   #:export (check))
 

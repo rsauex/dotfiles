@@ -1,16 +1,12 @@
 (define-module (rsauex packages kvantum)
-  #:use-module (gnu)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages kde-frameworks)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages xorg)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix licenses)
-  #:use-module (guix build-system qt)
-  #:use-module (guix utils))
+  #:use-module ((gnu packages kde-frameworks) #:prefix kde-frameworks:)
+  #:use-module ((gnu packages qt)             #:prefix qt:)
+  #:use-module ((gnu packages xorg)           #:prefix xorg:)
+  #:use-module ((guix build-system qt)        #:prefix qt-build-system:)
+  #:use-module ((guix gexp))
+  #:use-module ((guix git-download)           #:prefix git-download:)
+  #:use-module ((guix licenses)               #:prefix licenses:)
+  #:use-module ((guix packages)))
 
 (define-public kvantum
   (package
@@ -18,14 +14,14 @@
     (version "1.0.5")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
+       (method git-download:git-fetch)
+       (uri (git-download:git-reference
              (url "https://github.com/tsujan/Kvantum")
              (commit (string-append "V" version))))
        (sha256
         (base32
          "0xdx4i0c27advkzc645ckyvgn323kamfnvgnibaiv256k4x5750c"))))
-    (build-system qt-build-system)
+    (build-system qt-build-system:qt-build-system)
     (arguments
      `(#:tests? #f
        #:configure-flags '("-DENABLE_QT5=ON"
@@ -54,16 +50,16 @@
                 "add_definitions(-DDATADIR=\"/home/rsauex/.guix-home/profile/share\")"))
              #f)))))
     (native-inputs
-     `(,extra-cmake-modules
-       ,qttools))
+     `(,kde-frameworks:extra-cmake-modules
+       ,qt:qttools))
     (inputs
-     `(,qtbase-5
-       ,qtsvg-5
-       ,qtx11extras
-       ,libx11
-       ,libxext
-       ,kwindowsystem))
+     `(,qt:qtbase-5
+       ,qt:qtsvg-5
+       ,qt:qtx11extras
+       ,xorg:libx11
+       ,xorg:libxext
+       ,kde-frameworks:kwindowsystem))
     (synopsis "SVG-based Qt5 theme engine plus a config tool and extra themes")
     (description "SVG-based Qt5 theme engine plus a config tool and extra themes")
     (home-page "https://github.com/tsujan/Kvantum")
-    (license gpl3+)))
+    (license licenses:gpl3+)))

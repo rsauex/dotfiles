@@ -1,6 +1,6 @@
 (define-module (rsauex services)
-  #:use-module (ice-9 match)
-  #:use-module (gnu services)
+  #:use-module ((gnu services))
+  #:use-module ((ice-9 match))
 
   #:export (anon-service))
 

@@ -19,5 +19,5 @@ function global:Build-GuixHome() {
     [CmdletBinding()]
     param()
     Write-Host "Building home"
-    guix home reconfigure "$GUIX_CONFIG_HOME/rsauex/home.scm"
+    guix home reconfigure -e "(@ (rsauex home) %home-environment)"
 }

@@ -1,19 +1,14 @@
 (define-module (rsauex home services channels)
-  #:use-module (gnu home services)
-  #:use-module (gnu packages admin)
-  #:use-module (gnu services shepherd)
-  #:use-module (guix sets)
-  #:use-module (guix gexp)
-  #:use-module (guix records)
-  #:use-module ((guix channels) #:prefix channels:)
-  #:use-module (srfi srfi-1)
+  #:use-module ((gnu home services))
+  #:use-module ((guix channels))
+  #:use-module ((guix gexp))
   #:export (channels-service-type))
 
 (define (add-channels-configuration channels)
   `(("guix/channels.scm"
      ,(scheme-file
        "channels.scm"
-       #~(list #$@(map channels:channel->code channels))))))
+       #~(list #$@(map channel->code channels))))))
 
 (define channels-service-type
   (service-type (name 'channels)
@@ -21,5 +16,5 @@
                  (list (service-extension
                         home-xdg-configuration-files-service-type
                         add-channels-configuration)))
-                (default-value channels:%default-channels)
+                (default-value %default-channels)
                 (description "List guix channels")))

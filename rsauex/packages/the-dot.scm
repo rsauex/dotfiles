@@ -1,24 +1,21 @@
 (define-module (rsauex packages the-dot)
-  #:use-module (gnu)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages bash)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix licenses)
-  #:use-module (guix build-system trivial)
-  #:use-module (rsauex packages)
-  #:use-module (web uri))
+  #:use-module ((guix build-system trivial) #:prefix trivial-build-system:)
+  #:use-module ((guix download)             #:prefix download:)
+  #:use-module ((guix licenses)             #:prefix licenses:)
+  #:use-module ((guix packages))
+  #:use-module ((rsauex packages)           #:prefix my-packages:)
+  #:use-module ((web uri)))
 
 (define-public the-dot-cursor-theme
   (package
     (name "the-dot-cursor-theme")
     (version "0.6")
     (source
-      (origin
-        (method url-fetch/tarbomb)
-        (uri (uri->string (build-uri 'file #:path (search-rsauex-aux-file "thedot0.6.tar.gz"))))
-        (sha256 (base32 "1iwvlv9qcrjyfbzab00vjqafmp3vdybz1hi02r6lwbgvwyfyrifg"))))
-    (build-system trivial-build-system)
+     (origin
+       (method download:url-fetch/tarbomb)
+       (uri (uri->string (build-uri 'file #:path (my-packages:search-rsauex-aux-file "thedot0.6.tar.gz"))))
+       (sha256 (base32 "1iwvlv9qcrjyfbzab00vjqafmp3vdybz1hi02r6lwbgvwyfyrifg"))))
+    (build-system trivial-build-system:trivial-build-system)
     (arguments (list #:modules '((guix build utils))
                      #:builder `(begin
                                   (use-modules (guix build utils))
@@ -29,4 +26,4 @@
     (synopsis "A Gtk theme based on Material Design Refresh.")
     (description "A Gtk theme based on Material Design Refresh.")
     (home-page "https://gitlab.com/tista500/plata-theme")
-    (license gpl2)))
+    (license licenses:gpl2)))

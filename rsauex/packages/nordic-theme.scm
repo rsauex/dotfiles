@@ -1,10 +1,8 @@
 (define-module (rsauex packages nordic-theme)
-  #:use-module (gnu packages)
-  #:use-module (guix build-system copy)
-  #:use-module (guix packages)
-  #:use-module (guix git-download)
-  #:use-module (guix utils)
-  #:use-module ((guix licenses) #:prefix license:))
+  #:use-module ((guix build-system copy) #:prefix copy-build-system:)
+  #:use-module ((guix git-download)      #:prefix git-download:)
+  #:use-module ((guix licenses)          #:prefix license:)
+  #:use-module ((guix packages)))
 
 (define-public nordic-darker-theme
   (package
@@ -12,15 +10,15 @@
     (version "2.2.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
+       (method git-download:git-fetch)
+       (uri (git-download:git-reference
              (url "https://github.com/EliverLara/Nordic")
              (commit "v2.2.0")))
        (sha256
         (base32
          "02aa1dphzjfy1fi7ln4554di24fa0kcgz8baabm15m9zm9sqfdf1"))
-       (file-name (git-file-name name version))))
-    (build-system copy-build-system)
+       (file-name (git-download:git-file-name name version))))
+    (build-system copy-build-system:copy-build-system)
     (arguments
      `(#:install-plan
        `(("." "share/themes/Nordic-Darker"
@@ -38,15 +36,15 @@ palette.")
     (version "2.2.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
+       (method git-download:git-fetch)
+       (uri (git-download:git-reference
              (url "https://github.com/EliverLara/Nordic")
              (commit "v2.2.0")))
        (sha256
         (base32
          "02aa1dphzjfy1fi7ln4554di24fa0kcgz8baabm15m9zm9sqfdf1"))
-       (file-name (git-file-name name version))))
-    (build-system copy-build-system)
+       (file-name (git-download:git-file-name name version))))
+    (build-system copy-build-system:copy-build-system)
     (arguments
      `(#:install-plan
        `(("./kde/kvantum/Nordic-Darker" "share/Kvantum/Nordic-Darker"))
@@ -70,18 +68,18 @@ palette.")
   (let ((commit "71c76dcf31e38b426519198276cf6b5ba626e61c"))
     (package
       (name "rofi-nord-theme")
-      (version (git-version "1.0" "0" commit))
+      (version (git-download:git-version "1.0" "0" commit))
       (source
        (origin
-         (method git-fetch)
-         (uri (git-reference
+         (method git-download:git-fetch)
+         (uri (git-download:git-reference
                (url "https://github.com/amayer5125/nord-rofi/")
                (commit commit)))
          (sha256
           (base32
            "18kflmsr8351y7jljwdw07ncwni2q0hfq5c772zdhcir1bzpi6al"))
-         (file-name (git-file-name name version))))
-      (build-system copy-build-system)
+         (file-name (git-download:git-file-name name version))))
+      (build-system copy-build-system:copy-build-system)
       (arguments
        `(#:install-plan
          `(("./nord.rasi" "share/rofi/themes/"))))

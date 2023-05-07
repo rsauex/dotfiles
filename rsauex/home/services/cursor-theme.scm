@@ -1,11 +1,8 @@
 (define-module (rsauex home services cursor-theme)
-  #:use-module (gnu home)
-  #:use-module (gnu packages)
-  #:use-module (gnu services)
-  #:use-module (guix gexp)
-  #:use-module (guix packages)
   #:use-module (gnu home services)
   #:use-module (gnu services configuration)
+  #:use-module (guix gexp)
+  #:use-module (guix packages)
 
   #:export (cursor-theme-configuration
 
@@ -14,10 +11,10 @@
 
             cursor-theme-service-type))
 
-(define-maybe package)
-(define-maybe string)
+(define-maybe/no-serialization package)
+(define-maybe/no-serialization string)
 
-(define-configuration cursor-theme-configuration
+(define-configuration/no-serialization cursor-theme-configuration
   (theme-package
    (maybe-package)
    "The cursor theme package.")

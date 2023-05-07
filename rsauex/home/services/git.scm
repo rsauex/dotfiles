@@ -1,12 +1,9 @@
 (define-module (rsauex home services git)
-  #:use-module (gnu home)
-  #:use-module (gnu packages)
-  #:use-module (gnu services)
-  #:use-module (guix gexp)
-  #:use-module (guix packages)
-  #:use-module (gnu home services)
-  #:use-module (gnu services configuration)
-  #:use-module (srfi srfi-1)
+  #:use-module ((gnu home services))
+  #:use-module ((gnu services configuration))
+  #:use-module ((guix gexp))
+  #:use-module ((guix packages))
+  #:use-module ((srfi srfi-1))
 
   #:export (git-configuration
 

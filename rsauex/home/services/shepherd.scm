@@ -1,17 +1,18 @@
 (define-module (rsauex home services shepherd)
-  #:use-module (gnu home services)
-  #:use-module (gnu packages admin)
-  #:use-module (gnu services shepherd)
-  #:use-module (guix sets)
-  #:use-module (guix gexp)
-  #:use-module (guix records)
-  #:use-module (srfi srfi-1)
   #:use-module ((gnu home services shepherd)
                 #:select (home-shepherd-configuration
                           home-shepherd-configuration?
                           home-shepherd-configuration-shepherd
                           home-shepherd-configuration-auto-start?
                           home-shepherd-configuration-services))
+  #:use-module ((gnu home services))
+  #:use-module ((gnu packages admin))
+  #:use-module ((gnu services shepherd))
+  #:use-module ((guix gexp))
+  #:use-module ((guix records))
+  #:use-module ((guix sets))
+  #:use-module ((srfi srfi-1))
+
   #:export (home-shepherd-service-type
 
             simple-forkexec-shepherd-service

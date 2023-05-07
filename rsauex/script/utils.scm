@@ -1,7 +1,7 @@
 (define-module (rsauex script utils)
-  #:use-module (ice-9 popen)
-  #:use-module (ice-9 ports)
-  #:use-module (ice-9 textual-ports)
+  #:use-module ((ice-9 popen))
+  #:use-module ((ice-9 ports))
+  #:use-module ((ice-9 textual-ports))
 
   #:export (invoke/capture-string-all
             invoke/capture-strings

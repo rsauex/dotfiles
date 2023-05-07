@@ -1,4 +1,5 @@
 (define-module (rsauex systems desktop)
+  #:use-module ((gnu packages base)               #:prefix base:)
   #:use-module ((gnu packages cups)               #:prefix cups:)
   #:use-module ((gnu packages gnome)              #:prefix gnome:)
   #:use-module ((gnu packages libusb)             #:prefix libusb:)
@@ -6,7 +7,6 @@
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages wm)                 #:prefix wm:)
-  #:use-module ((gnu packages base)               #:prefix base:)
   #:use-module ((gnu services avahi)              #:prefix avahi-services:)
   #:use-module ((gnu services base)               #:prefix base-services:)
   #:use-module ((gnu services cups)               #:prefix cups-services:)
@@ -79,9 +79,11 @@
    (my-pam-u2f-auth-service)
 
    ;; Xorg
-   desktop-services:x11-socket-directory-service
+   (service desktop-services:x11-socket-directory-service-type)
    (service xorg-services:xorg-server-service-type)
-   (xorg-services:screen-locker-service wm:i3lock "i3lock")
+   (service xorg-services:screen-locker-service-type
+            (xorg-services:screen-locker-configuration
+             "i3lock" (file-append wm:i3lock "/bin/i3lock") #f))
 
    ;; Bluetooth
    (service desktop-services:bluetooth-service-type
@@ -140,13 +142,13 @@
    (service desktop-services:accountsservice-service-type)
    (service desktop-services:colord-service-type)
    (service desktop-services:cups-pk-helper-service-type)
-   (service avahi-services:avahi-service-type
-            (avahi-services:avahi-configuration))
-   (service desktop-services:udisks-service-type
-            (desktop-services:udisks-configuration))
+   (service avahi-services:avahi-service-type)
+   (service desktop-services:udisks-service-type)
    (service desktop-services:upower-service-type
-            (desktop-services:upower-configuration))
-   (desktop-services:geoclue-service)
+            (desktop-services:upower-configuration
+             (percentage-critical 10)
+             (percentage-action 5)))
+   (service desktop-services:geoclue-service-type)
 
    ;; Brightenss access for ordinary users
    (simple-service 'brightness-udev base-services:udev-service-type (list brightness-access-for-video-group))

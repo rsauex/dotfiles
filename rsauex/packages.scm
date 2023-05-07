@@ -1,15 +1,8 @@
 (define-module (rsauex packages)
-  #:use-module (guix describe)
-  #:use-module (guix diagnostics)
-  #:use-module (guix discovery)
-  #:use-module (guix gexp)
-  #:use-module (guix ui)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-9)
-  #:use-module (srfi srfi-9 gnu)
-  #:use-module (srfi srfi-26)
-  #:use-module (srfi srfi-34)
-  #:use-module (srfi srfi-35)
+  #:use-module ((guix diagnostics))
+  #:use-module ((guix gexp))
+  #:use-module ((guix ui))
+  #:use-module ((srfi srfi-26))
   #:export (search-rsauex-aux-file
             search-rsauex-private-file
             search-rsauex-home-file
