@@ -163,9 +163,6 @@
                    fonts:font-awesome
                    fonts:font-google-material-design-icons
                    fonts:font-terminus
-                   xorg:font-alias
-                   xorg:font-micro-misc
-                   xorg:font-adobe75dpi
 
                    gnome:gnome-themes-standard
                    gnome:gnome-themes-extra
@@ -319,11 +316,17 @@
                       "Update XLFD fonts list"
                       #~(lambda ()
                           (let ((font-paths '("built-ins")))
-                            (ftw (string-append (getenv "HOME") "/.guix-home/profile/share/fonts/")
-                                 (lambda (file info flag)
-                                   (when (string= "fonts.dir" (basename file))
-                                     (set! font-paths (cons (dirname file) font-paths)))
-                                   #t))
+                            (for-each
+                             (lambda (path)
+                               (ftw path
+                                    (lambda (file info flag)
+                                      (when (string= "fonts.dir" (basename file))
+                                        (set! font-paths (cons (dirname file) font-paths)))
+                                      #t)))
+                             (list (string-append (getenv "HOME") "/.guix-home/profile/share/fonts/")
+                                   #$(file-append xorg:font-alias "/share/fonts/")
+                                   #$(file-append xorg:font-micro-misc "/share/fonts/")
+                                   #$(file-append xorg:font-adobe75dpi "/share/fonts/")))
                             (invoke #$(file-append xorg:xset "/bin/xset")
                                     "fp="
                                     (string-join font-paths ","))
