@@ -32,7 +32,9 @@
                (("psutil==")
                 "psutil>=")
                (("sentry-sdk==")
-                "sentry-sdk>="))
+                "sentry-sdk>=")
+               (("jsonschema==")
+                "jsonschema>="))
              #t)))))
     (inputs
      `(,python-xyz:python-distro
