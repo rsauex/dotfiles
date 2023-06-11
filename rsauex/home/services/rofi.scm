@@ -51,11 +51,11 @@
   (config
    (alist '())
    "Association list of configuration options."
-   rofi-serialize-config)
+   (serializer rofi-serialize-config))
   (theme
    (maybe-file-like)
    "File-like with theme."
-   rofi-serialize-theme))
+   (serializer rofi-serialize-theme)))
 
 (define (add-rofi-configuration config)
   `(("rofi/config.rasi"
