@@ -170,7 +170,6 @@
                    gnome:adwaita-icon-theme
                    kde-frameworks:breeze-icons
                    nordic-theme:nordic-darker-theme
-                   nordic-theme:nordic-darker-kvantum-theme
 
                    ;; TODO: make separate service
                    kvantum:kvantum
@@ -444,7 +443,7 @@
                           `(("Kvantum/kvantum.kvconfig"
                              ,(plain-file
                                "kvantum.kvconfig"
-                               "theme=Nordic-Darker\n"))))
+                               "theme=Nordic-Darker-Solid\n"))))
           (simple-service 'qt5ct-conf
                           home-xdg-configuration-files-service-type
                           `(("qt5ct/qt5ct.conf"
