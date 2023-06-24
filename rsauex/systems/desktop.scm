@@ -86,7 +86,8 @@
              (server my-xorg:xorg-server)))
    (service xorg-services:screen-locker-service-type
             (xorg-services:screen-locker-configuration
-             "i3lock" (file-append wm:i3lock "/bin/i3lock") #f))
+             (name "i3lock")
+             (program (file-append wm:i3lock "/bin/i3lock"))))
 
    ;; Bluetooth
    (service desktop-services:bluetooth-service-type
