@@ -280,9 +280,9 @@
                    (my-dunst-service:dunst-configuration
                     (config (rsauex-home-file "dunstrc" "dunstrc"))))
           (syncthing-service)
-          (service my-picom-service:picom-service-type
-                   (my-picom-service:picom-configuration
-                    (config (rsauex-home-file "picom.conf" "picom.conf"))))
+          ;; (service my-picom-service:picom-service-type
+          ;;          (my-picom-service:picom-configuration
+          ;;           (config (rsauex-home-file "picom.conf" "picom.conf"))))
           (service my-pipewire-service:pipewire-service-type)
           (service my-xdg-portal-service:xdg-desktop-portal-service-type
                    (my-xdg-portal-service:xdg-desktop-portal-configuration
