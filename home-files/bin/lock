@@ -1,9 +1,8 @@
 #!/usr/bin/env sh
 
-i3lock_options=("-n" "-i" "${HOME}/.wallpapers/.current.png")
+i3lock_options=("-n" "-c" "1D1F21")
 
 start_i3lock() {
-    # -c '#1D1F21'
     if [[ "$with_sleep_lock" == "true" ]]; then
         i3lock "${i3lock_options[@]}" {XSS_SLEEP_LOCK_FD}<&- &
     else
