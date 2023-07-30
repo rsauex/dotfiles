@@ -443,7 +443,7 @@
                           `(("Kvantum/kvantum.kvconfig"
                              ,(plain-file
                                "kvantum.kvconfig"
-                               "theme=Nordic-Darker-Solid\n"))))
+                               "theme=Nordic-Darker\n"))))
           (simple-service 'qt5ct-conf
                           home-xdg-configuration-files-service-type
                           `(("qt5ct/qt5ct.conf"

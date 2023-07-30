@@ -1,34 +1,31 @@
 (define-module (rsauex packages nordic-theme)
-  #:use-module ((guix build-system copy) #:prefix copy-build-system:)
-  #:use-module ((guix git-download)      #:prefix git-download:)
-  #:use-module ((guix licenses)          #:prefix license:)
+  #:use-module ((gnu packages inkscape)   #:prefix inkscape:)
+  #:use-module ((gnu packages python)     #:prefix python:)
+  #:use-module ((gnu packages web)        #:prefix web:)
+  #:use-module ((guix build-system copy)  #:prefix copy-build-system:)
+  #:use-module ((guix build-system meson) #:prefix meson-build-system:)
+  #:use-module ((guix gexp))
+  #:use-module ((guix git-download)       #:prefix git-download:)
+  #:use-module ((guix licenses)           #:prefix license:)
   #:use-module ((guix packages)))
-
-(define nordic-source
-  (origin
-    (method git-download:git-fetch)
-    (uri (git-download:git-reference
-          (url "https://github.com/rsauex/Nordic")
-          (commit "294cd2ee45a1bceb7a3ac356945ae1319a8ff0eb")))
-    (sha256
-     (base32
-      "10bmbn3balv30dn9bq707s5043kzpm6bhrf2f8x1jn7rcj7m4mrc"))))
-
-(define nordic-version
-  "2.2.0-294cd2e")
 
 (define-public nordic-darker-theme
   (package
     (name "nordic-theme")
-    (version nordic-version)
-    (source nordic-source)
-    (build-system copy-build-system:copy-build-system)
-    (arguments
-     `(#:install-plan
-       `(("./gtk-2.0" "share/themes/Nordic-Darker/gtk-2.0")
-         ("./gtk-3.0" "share/themes/Nordic-Darker/gtk-3.0")
-         ("./gtk-4.0" "share/themes/Nordic-Darker/gtk-4.0")
-         ("./kde/kvantum/Nordic-Darker-Solid" "share/Kvantum/Nordic-Darker-Solid"))))
+    (version "2.2.0-c52c0f9")
+    (source (origin
+              (method git-download:git-fetch)
+              (uri (git-download:git-reference
+                    (url "https://github.com/rsauex/Nordic")
+                    (commit "c52c0f9a8c19803e4d218eb2464c9d18109cba18")))
+              (sha256
+               (base32
+                "0vf83d5ns0wbs853bzaswh86i0bhgmbnk28bjnybgbfhznhf2adh"))))
+    (build-system meson-build-system:meson-build-system)
+    (native-inputs
+     (list web:sassc
+           inkscape:inkscape
+           python:python-3))
     (home-page "https://github.com/rsauex/Nordic")
     (synopsis "Dark Gtk3.20+ theme using the Nord color palette")
     (description "Nordic is a Gtk3.20+ theme created using the Nord color
