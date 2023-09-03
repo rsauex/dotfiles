@@ -34,7 +34,7 @@
 ;; TODO: Better name!
 (define (my-pam-u2f-auth-service)
   (define (my-pam-u2f-auth-extension pam)
-    (if (member (pam:pam-service-name pam) '("login" "su" "sudo" "i3lock"))
+    (if (member (pam:pam-service-name pam) '("login" "su" "sudo" "screen-locker"))
         (pam:pam-service
          (inherit pam)
          (auth (cons* (my-pam-u2f-services:pam-u2f-entry "sufficient")
@@ -84,10 +84,10 @@
    (service xorg-services:xorg-server-service-type
             (xorg-services:xorg-configuration
              (server my-xorg:xorg-server)))
-   (service xorg-services:screen-locker-service-type
-            (xorg-services:screen-locker-configuration
-             (name "i3lock")
-             (program (file-append wm:i3lock "/bin/i3lock"))))
+   (simple-service 'screen-locker-pam
+                   pam:pam-root-service-type
+                   (list (unix-pam-service "screen-locker"
+                                           #:allow-empty-passwords? #f)))
 
    ;; Bluetooth
    (service desktop-services:bluetooth-service-type

@@ -47,6 +47,7 @@
   #:use-module ((guix gexp))
   #:use-module ((guix git))
   #:use-module ((guix modules))
+  #:use-module ((guix packages))
   #:use-module ((ice-9 match))
   #:use-module ((ice-9 textual-ports))
   #:use-module ((nongnu packages mozilla)             #:prefix mozilla:)
@@ -63,6 +64,7 @@
   #:use-module ((rsauex home services ssh)            #:prefix my-ssh-service:)
   #:use-module ((rsauex home services xdg-portal)     #:prefix my-xdg-portal-service:)
   #:use-module ((rsauex home services pipewire)       #:prefix my-pipewire-service:)
+  #:use-module ((rsauex home services screensaver)    #:prefix my-screensaver-service:)
   #:use-module ((rsauex packages fcitx5)              #:prefix my-fcitx5:)
   #:use-module ((rsauex packages kvantum)             #:prefix kvantum:)
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
@@ -100,6 +102,20 @@
 (define (my-essential-services he)
   (modify-services ((@@ (gnu home) home-environment-default-essential-services) he)
     (delete fontutils:home-fontconfig-service-type)))
+
+(define (i3lock-with-login-pam-service)
+  (package
+    (inherit wm:i3lock)
+    (version (string-append (package-version wm:i3lock)
+                            "-with-login-pam-service"))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'change-pam-service
+                    (lambda _
+                      (substitute* '("i3lock.c")
+                        (("pam_start\\(\"i3lock\"") "pam_start(\"screen-locker\"")))))))
+    (synopsis (string-append (package-synopsis wm:i3lock)
+                             " (with 'login' pam service)"))))
 
 (define (i3-config-service)
   (anon-service i3blocks-config
@@ -290,6 +306,11 @@
           (service my-fcitx5-service:fcitx5-service-type
                    (my-fcitx5-service:fcitx5-configuration
                     (addons (list my-fcitx5:fcitx5-m17n))))
+          (service my-screensaver-service:xss-lock-service-type
+                   (my-screensaver-service:xss-lock-configuration
+                    (screen-off-timeout 600)
+                    (locker-expr #~(let ((i3lock #$(file-append (i3lock-with-login-pam-service) "/bin/i3lock")))
+                                     `(i3lock "--nofork" "-n" "-c" "1D1F21")))))
           ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-ssh-service:ssh-agent-service-type)
           (anon-service load-xresources
@@ -343,10 +364,6 @@
                       #~(lambda ()
                           (let ((xset (lambda args
                                         (apply invoke #$(file-append xorg:xset "/bin/xset") args))))
-                            ;; Disable screen saver
-                            (xset "s" "off")
-                            ;; DPMS settings
-                            (xset "dpms" "0" "600" "900")
                             ;; Cursor speed
                             (xset "r" "rate" "400" "44"))
                           #t)))))))
@@ -406,16 +423,6 @@
                       'polkit-authentication-agent
                       "Run polkit-authenticator agent"
                       #~`(#$(file-append polkit:polkit-gnome "/libexec/polkit-gnome-authentication-agent-1"))))))))
-          ;; Screen locking (TODO: locking script)
-          (anon-service xss-lock-autostart
-            (my-gui-startup:gui-startup-service-type
-             (my-gui-startup:gui-startup-extension
-              (services
-               (list (my-shepherd:simple-forkexec-shepherd-service
-                      'xss-lock
-                      "Run `xss-lock'"
-                      #~`(#$(file-append xdisorg:xss-lock "/bin/xss-lock")
-                          "-l" "--" "lock")))))))
           (anon-service keepassxc-autostart
             (my-gui-startup:gui-startup-service-type
              (my-gui-startup:gui-startup-extension
