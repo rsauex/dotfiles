@@ -41,7 +41,9 @@
                       (pam:pam-service-auth pam))))
         pam))
 
-  (simple-service 'pam-u2f pam:pam-root-service-type (list my-pam-u2f-auth-extension)))
+  (simple-service 'pam-u2f pam:pam-root-service-type
+                  (list (pam:pam-extension
+                         (transformer my-pam-u2f-auth-extension)))))
 
 (define brightness-access-for-video-group
   (file->udev-rule
