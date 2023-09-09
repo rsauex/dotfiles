@@ -5,16 +5,16 @@
 
 ## Include private part
 
-[includeIf "gitdir:**/home/rsauex/.emacs.d/"]
+[includeIf "gitdir:~/.emacs.d/"]
   path = ~/.gitconfig_private
 
-[includeIf "gitdir:**/home/rsauex/dotfiles/"]
+[includeIf "gitdir:~/dotfiles/"]
   path = ~/.gitconfig_private
 
-[includeIf "gitdir:**/home/rsauex/Projects/"]
+[includeIf "gitdir:~/Projects/"]
   path = ~/.gitconfig_private
 
-[includeIf "gitdir:**/home/rsauex/work/"]
+[includeIf "gitdir:~/work/"]
   path = ~/.gitconfig_work
 
 ## Main idea:
