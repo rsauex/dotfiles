@@ -68,8 +68,7 @@ delay lock obtained from the login manager.")
     (my-shepherd:simple-forkexec-shepherd-service
      'screensaver-xssproxy
      "Run `xssproxy'"
-     #~(let ((xssproxy #$(file-append xssproxy-package "/bin/xssproxy")))
-         `(xssproxy)))))
+     #~`(#$(file-append xssproxy-package "/bin/xssproxy")))))
 
 (define (xss-lock-shepherd-service config)
   (let* ((xss-lock-package (xss-lock-configuration-xss-lock config))
@@ -93,12 +92,12 @@ delay lock obtained from the login manager.")
      "Set `xset' settings for screensaver"
      #~(lambda ()
          (let ((xset #$(file-append xorg:xset "/bin/xset")))
-           (invoke xset "s" (number->string blanking-timeout) "0")
+           (invoke xset "s" #$(number->string blanking-timeout) "0")
            (invoke xset "+dpms")
            (invoke xset "dpms"
-                   (number->string standby-timeout)
-                   (number->string suspend-timeout)
-                   (number->string off-timeout)))
+                   #$(number->string standby-timeout)
+                   #$(number->string suspend-timeout)
+                   #$(number->string off-timeout)))
          #t))))
 
 (define (add-xss-lock-shepherd-services config)

@@ -310,7 +310,7 @@
                    (my-screensaver-service:xss-lock-configuration
                     (screen-off-timeout 600)
                     (locker-expr #~(let ((i3lock #$(file-append (i3lock-with-login-pam-service) "/bin/i3lock")))
-                                     `(i3lock "--nofork" "-n" "-c" "1D1F21")))))
+                                     `(,i3lock "--nofork" "-n" "-c" "1D1F21")))))
           ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-ssh-service:ssh-agent-service-type)
           (anon-service load-xresources
