@@ -5,6 +5,7 @@
   #:use-module ((srfi srfi-26))
   #:export (search-rsauex-aux-file
             search-rsauex-private-file
+            search-rsauex-patch
             search-rsauex-home-file
             rsauex-home-file))
 
@@ -28,6 +29,18 @@
       (if no-error?
           #f
           (raise (formatted-message (G_ "~a: rsauex private file not found")
+                                    file-name)))))
+
+(define %rsauex-patch-path
+  (make-parameter
+   (map (cut string-append <> "/rsauex/packages/patches")
+        %load-path)))
+
+(define* (search-rsauex-patch file-name #:key (no-error? #f))
+  (or (search-path (%rsauex-patch-path) file-name)
+      (if no-error?
+          #f
+          (raise (formatted-message (G_ "~a: rsauex patch not found")
                                     file-name)))))
 
 (define* (search-rsauex-home-file file-name #:key (no-error? #f))

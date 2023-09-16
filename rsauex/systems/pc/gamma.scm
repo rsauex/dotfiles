@@ -5,12 +5,14 @@
   #:use-module ((gnu))
   #:use-module ((guix))
   #:use-module ((nongnu packages linux)           #:prefix non-linux:)
+  #:use-module ((nongnu packages nvidia)          #:prefix non-nvidia:)
   #:use-module ((nongnu packages video)           #:prefix non-video:)
+  #:use-module ((nongnu services nvidia)          #:prefix non-nvidia-services:)
   #:use-module ((nongnu system linux-initrd)      #:prefix non-linux-initrd:)
   #:use-module ((rsauex systems desktop)          #:prefix my-desktop-systems:)
   #:export (%os))
 
-(define intel-config
+(define gamma-xorg-config
   "Section \"Monitor\"
        Identifier  \"eDP-1\"
        DisplaySize 410 231
@@ -24,23 +26,37 @@
        Option      \"Monitor-eDP-1\" \"eDP-1\"
    EndSection
 
+  Section \"Device\"
+       Identifier \"Nvidia Card\"
+       Driver     \"nvidia\"
+       VendorName \"NVIDIA Corporation\"
+       BusID      \"PCI:1:0:0\"
+       Option     \"SidebandSocketPath\" \"/tmp\"
+  EndSection
+
   Section \"Screen\"
        Identifier \"Intel Screen\"
        Device     \"Intel Card\"
   EndSection
 
+  Section \"Screen\"
+       Identifier \"Nvidia Screen\"
+       Device     \"Nvidia Card\"
+
+  EndSection
+
   Section \"ServerLayout\"
        Identifier \"Main Layout\"
-       Screen     0 \"Intel Screen\" 0 0
+       Screen     0 \"Intel Screen\"
+       Inactive   \"Nvidia Card\"
+       Option     \"AllowNVIDIAGPUScreens\"
   EndSection
 ")
 
-(define kernel-args-disable-nvidia
+(define kernel-args-nvidia
   (list "modprobe.blacklist=nouveau"
-        "nouveau.modeset=0"))
-
-(define kernel-args-intel-graphics
-  (list "i915.enable_guc=3"))
+        "ibt=off" ;; See https://github.com/NVIDIA/open-gpu-kernel-modules/issues/256
+        ))
 
 (define (tlp-service)
   (let ((config (pm-services:tlp-configuration
@@ -80,9 +96,8 @@
 
     (host-name "gamma")
 
-    (kernel non-linux:linux)
-    (kernel-arguments (append kernel-args-disable-nvidia
-                              kernel-args-intel-graphics
+    (kernel non-linux:linux-lts)
+    (kernel-arguments (append kernel-args-nvidia
                               (operating-system-user-kernel-arguments my-desktop-systems:%my-base-desktop-system)))
     (initrd non-linux-initrd:microcode-initrd)
     (firmware (list non-linux:linux-firmware
@@ -111,6 +126,8 @@
     (packages (cons* (operating-system-packages my-desktop-systems:%my-base-desktop-system)))
 
     (services (cons* (tlp-service)
+
+                     ;; TODO: what if I want to use nvidia for hardware acceleration?
                      (simple-service 'intel-media-driver-va
                                      system-pam:session-environment-service-type
                                      `(("LIBVA_DRIVERS_PATH"
@@ -121,11 +138,19 @@
                                      system-pam:session-environment-service-type
                                      `(("HOST_DPI"
                                         . "119")))
+
+                     (service non-nvidia-services:nvidia-service-type
+                              (non-nvidia-services:nvidia-configuration
+                               (modules (list))))
+
                      (modify-services
                          (operating-system-user-services my-desktop-systems:%my-base-desktop-system)
                        (xorg-services:xorg-server-service-type
                         config => (xorg-services:xorg-configuration
                                    (inherit config)
+                                   (modules
+                                    (cons* non-nvidia:nvidia-driver
+                                           (xorg-services:xorg-configuration-modules config)))
                                    (extra-config
-                                    (cons* intel-config
+                                    (cons* gamma-xorg-config
                                            (xorg-services:xorg-configuration-extra-config config))))))))))
