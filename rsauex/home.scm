@@ -168,6 +168,10 @@
               #~`(#$(file-append syncthing:syncthing-gtk "/bin/syncthing-gtk"))
               #:data-packages (list syncthing:syncthing-gtk))))))))
 
+(define (host-dpi)
+  (let ((host-dpi (getenv "HOST_DPI")))
+    (if host-dpi (string->number host-dpi) 96)))
+
 (define-public %home-environment
   (home-environment
    (packages (list fonts:font-iosevka-term
@@ -243,8 +247,8 @@
           (service my-rofi:rofi-service-type
                    (my-rofi:rofi-configuration
                     (config
-                     '(("font" . "Monospace 10")
-                       ("dpi"  . 1)))
+                     `(("font" . "Monospace 12")
+                       ("dpi"  . ,(host-dpi))))
                     (theme
                      (file-append nordic-theme:rofi-nord-theme
                                   "/share/rofi/themes/nord.rasi"))))
@@ -322,7 +326,7 @@
                       "Load XResources"
                       #~(lambda ()
                           (invoke #$(file-append xorg:xrdb "/bin/xrdb")
-                                  (string-append "-DHOST_DPI=" (or (getenv "HOST_DPI") "96"))
+                                  (string-append "-DHOST_DPI=" ,(number->string (host-dpi)))
                                   "-merge"
                                   (string-append "-I" (getenv "HOME"))
                                   #$(rsauex-home-file ".Xresources" "Xresources"))

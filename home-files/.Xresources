@@ -48,6 +48,9 @@ Xft.lcdfilter: lcddefault
 Xft.rgba:      rgb
 Xft.dpi:       HOST_DPI
 
+! DPI ------------------------------------------------------------------------
+*dpi: HOST_DPI
+
 ! Emacs ----------------------------------------------------------------------
 Emacs.cursorBlink: off
 Emacs.default.attributeHeight: 120
