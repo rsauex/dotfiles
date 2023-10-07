@@ -21,3 +21,11 @@ function global:Build-GuixHome() {
     Write-Host "Building home"
     guix home reconfigure -e "(@ (rsauex home) %home-environment)"
 }
+
+function global:Clear-Guix() {
+    param()
+    sudo guix system delete-generations
+    guix home delete-generations
+    guix pull --delete-generations
+    sudo guix gc -d
+}
