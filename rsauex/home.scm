@@ -262,6 +262,8 @@
                                 (gtk-engine-paths #~(list #$(file-append gtk:murrine "/lib/gtk-2.0")
                                                           #$(file-append gnome:gnome-themes-extra "/lib/gtk-2.0"))))
                             (list
+                             ;; Fix scaling issues in Alacritty
+                             (cons "WINIT_X11_SCALE_FACTOR" (number->string (/ (host-dpi) 96.0)))
                              ;; Better DE compatibility
                              (cons "XDG_CURRENT_DESKTOP" "XFCE")
                              ;; Better QT
@@ -326,7 +328,7 @@
                       "Load XResources"
                       #~(lambda ()
                           (invoke #$(file-append xorg:xrdb "/bin/xrdb")
-                                  (string-append "-DHOST_DPI=" ,(number->string (host-dpi)))
+                                  (string-append "-DHOST_DPI=" #$(number->string (host-dpi)))
                                   "-merge"
                                   (string-append "-I" (getenv "HOME"))
                                   #$(rsauex-home-file ".Xresources" "Xresources"))
