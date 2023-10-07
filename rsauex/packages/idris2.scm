@@ -9,10 +9,10 @@
   #:use-module ((guix packages)))
 
 (define-public idris2
-  (let ((commit "bf87b623ef64244451d10c4b5460e8fc2f88c99a"))
+  (let ((commit "c52b029986e47d02f60fd2d59d79d1c9baaba0c1"))
     (package
       (name "idris2")
-      (version "0.5.1")
+      (version "0.6.0")
       (source (origin
                 (method git-download:git-fetch)
                 (uri (git-download:git-reference
@@ -22,7 +22,7 @@
                                   commit))))
                 (file-name (git-download:git-file-name name version))
                 (sha256
-                 (base32 "1q6yqd6adfvxwh8yq7dx00907yd9zmallwq2rlr27bxhs6shccgx"))))
+                 (base32 "1jzgmqj65dyavffd88l1yn8fa67ifl06jjnpbr702dshl3gf5nzl"))))
       (build-system gnu-build-system:gnu-build-system)
       (native-inputs
        (list llvm:clang
