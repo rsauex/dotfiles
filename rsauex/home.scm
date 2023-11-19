@@ -172,6 +172,11 @@
   (let ((host-dpi (getenv "HOST_DPI")))
     (if host-dpi (string->number host-dpi) 96)))
 
+(define xft-config
+  (my-config:xft-config
+   (hint-style "hintmedium")
+   (dpi (host-dpi))))
+
 (define-public %home-environment
   (home-environment
    (packages (list fonts:font-iosevka-term
@@ -326,13 +331,14 @@
                (list (my-shepherd:simple-one-shot-shepherd-service
                       'load-xresources
                       "Load XResources"
-                      #~(lambda ()
-                          (invoke #$(file-append xorg:xrdb "/bin/xrdb")
-                                  (string-append "-DHOST_DPI=" #$(number->string (host-dpi)))
-                                  "-merge"
-                                  (string-append "-I" (getenv "HOME"))
-                                  #$(rsauex-home-file ".Xresources" "Xresources"))
-                          #t)))))))
+                      (let* ((config-args `((#:xft . ,xft-config)))
+                             (config (rsauex-home-template-file ".Xresources" "Xresources" config-args)))
+                        #~(lambda ()
+                            (invoke #$(file-append xorg:xrdb "/bin/xrdb")
+                                    "-merge"
+                                    (string-append "-I" (getenv "HOME"))
+                                    #$config)
+                            #t))))))))
           (anon-service update-xlfd-fonts
             (my-gui-startup:gui-startup-service-type
              (my-gui-startup:gui-startup-extension
@@ -464,7 +470,8 @@
           (simple-service 'font-config
                           home-xdg-configuration-files-service-type
                           `(("fontconfig/fonts.conf"
-                             ,(rsauex-home-file "fonts.conf" "fonts.conf"))))
+                             ,(let ((args `((#:xft . ,xft-config))))
+                                (rsauex-home-template-file "fonts.conf" "fonts.conf" args)))))
           (simple-service 'alacritty
                           home-xdg-configuration-files-service-type
                           `(("alacritty/alacritty.yml"
@@ -472,18 +479,18 @@
           (simple-service 'gtk2
                           home-files-service-type
                           `((".gtkrc-2.0"
-                             ,(rsauex-home-file ".gtkrc-2.0" "gtkrc-2.0"))))
+                             ,(let ((args `((#:xft . ,xft-config))))
+                                (rsauex-home-template-file ".gtkrc-2.0" "gtkrc-2.0" args)))))
           (simple-service 'gtk3
                           home-xdg-configuration-files-service-type
                           `(("gtk-3.0/settings.ini"
-                             ,(rsauex-home-file "gtk-3.0-settings.ini" "gtk-3.0-settings.ini"))
+                             ,(let ((args `((#:xft . ,xft-config))))
+                                (rsauex-home-template-file "gtk-3.0-settings.ini" "gtk-3.0-settings.ini" args)))
                             ("gtk-3.0/gtk.css"
                              ,(rsauex-home-file "gtk-3.0.css" "gtk-3.0.css"))))
           (simple-service 'x-resources
                           home-files-service-type
-                          `((".Xresources"
-                             ,(rsauex-home-file ".Xresources" "Xresources"))
-                            (".x3270pro"
+                          `((".x3270pro"
                              ,(rsauex-home-file ".x3270pro" "x3270pro"))))
           (simple-service 'terminal-x-resources
                           home-xdg-configuration-files-service-type

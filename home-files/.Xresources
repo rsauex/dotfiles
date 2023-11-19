@@ -1,3 +1,7 @@
+#{!
+(define xft-config (get-arg #:xft))
+}#
+
 ! Urxvt settings -------------------------------------------------------------
 URxvt*termName:     rxvt-256color
 URxvt*urgentOnBell: true
@@ -43,13 +47,15 @@ URxvt.matcher.button:	1
 !URxvt.keysym.M-s: perl:keyboard-select:search
 
 ! Xft ------------------------------------------------------------------------
-Xft.hintstyle: hintslight
-Xft.lcdfilter: lcddefault
-Xft.rgba:      rgb
-Xft.dpi:       HOST_DPI
+Xft.antialias: #{# (if (xft-config-antialias? xft-config) "1" "0") }#
+Xft.hinting:   #{# (if (xft-config-hinting? xft-config) "1" "0") }#
+Xft.hintstyle: #{# (xft-config-hint-style xft-config) }#
+Xft.rgba:      #{# (xft-config-rgba xft-config) }#
+Xft.lcdfilter: #{# (xft-config-lcd-filter xft-config) }#
+Xft.dpi:       #{# (number->string (xft-config-dpi xft-config)) }#
 
 ! DPI ------------------------------------------------------------------------
-*dpi: HOST_DPI
+*dpi: #{# (number->string (xft-config-dpi xft-config)) }#
 
 ! Emacs ----------------------------------------------------------------------
 Emacs.cursorBlink: off
