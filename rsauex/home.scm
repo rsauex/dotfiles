@@ -379,36 +379,6 @@
                             ;; Cursor speed
                             (xset "r" "rate" "400" "44"))
                           #t)))))))
-          (anon-service keyboard-settings
-            (my-gui-startup:gui-startup-service-type
-             (my-gui-startup:gui-startup-extension
-              (services
-               (list (my-shepherd:simple-one-shot-shepherd-service
-                      'keyboard-settings
-                      "Set keyboard settings"
-                      #~(begin
-                          (use-modules (guix build utils)
-                                       (ice-9 popen)
-                                       (ice-9 textual-ports))
-                          (lambda ()
-                            (let ((setxkbmap (lambda args
-                                               (apply invoke #$(file-append xorg:setxkbmap "/bin/setxkbmap") args)))
-                                  (invoke/capture-stdout (lambda (program . args)
-                                                           (get-string-all (apply open-pipe* OPEN_READ program args)))))
-                              ;; Keyboard settings (default)
-                              (setxkbmap "-option"
-                                         "-option" "ctrl:nocaps"
-                                         "-layout" "us"
-                                         "-variant" "dvp")
-                              ;; Keyboard settings (Ergodox EZ)
-                              (let ((device (invoke/capture-stdout #$(file-append xorg:xinput "/bin/xinput")
-                                                                   "list"
-                                                                   "--id-only" "keyboard:ZSA Technology Labs ErgoDox EZ")))
-                                (unless (string-null? device)
-                                  (setxkbmap "-device" device
-                                             "-option"
-                                             "-layout" "us"))))
-                            #t))))))))
           (anon-service network-manager-applet-autostart
             (my-gui-startup:gui-startup-service-type
              (my-gui-startup:gui-startup-extension

@@ -72,6 +72,35 @@
                                    my-channels:nonguix-substitute-primary-key))))
                (guix-configuration-authorized-keys config)))))))
 
+(define default-xorg-config
+  "
+Section \"InputClass\"
+     Identifier      \"Default Keyboard\"
+     MatchIsKeyboard \"on\"
+     Option          \"XkbLayout\"  \"us\"
+     Option          \"XkbVariant\" \"dvp\"
+     Option          \"XkbOptions\" \"ctrl:nocaps\"
+EndSection
+
+Section \"InputClass\"
+     Identifier      \"RMC RMC 16k Keyboard\"
+     MatchIsKeyboard \"on\"
+     MatchProduct    \"RMC RMC 16k Keyboard\"
+     Option          \"XkbLayout\"  \"us\"
+     Option          \"XkbVariant\" \",\"
+     Option          \"XkbOptions\" \",\"
+EndSection
+
+Section \"InputClass\"
+     Identifier      \"ZSA ErgoDox EZ Keyboard\"
+     MatchIsKeyboard \"on\"
+     MatchProduct    \"ZSA Technology Labs ErgoDox EZ\"
+     Option          \"XkbLayout\"  \"us\"
+     Option          \"XkbVariant\" \",\"
+     Option          \"XkbOptions\" \",\"
+EndSection
+")
+
 (define %my-desktop-services
   (list
    ;; Gvfs
@@ -86,7 +115,8 @@
    (service desktop-services:x11-socket-directory-service-type)
    (service xorg-services:xorg-server-service-type
             (xorg-services:xorg-configuration
-             (server my-xorg:xorg-server)))
+             (server my-xorg:xorg-server)
+             (extra-config (list default-xorg-config))))
    (simple-service 'screen-locker-pam
                    pam:pam-root-service-type
                    (list (unix-pam-service "screen-locker"
