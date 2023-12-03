@@ -1,6 +1,6 @@
 (define-module (rsauex home services dunst)
   #:use-module ((gnu home services))
-  #:use-module ((gnu packages dunst)      #:prefix dunst:)
+  #:use-module ((gnu packages wm) #:prefix wm:)
   #:use-module ((gnu services configuration))
   #:use-module ((gnu services))
   #:use-module ((guix gexp))
@@ -14,7 +14,7 @@
 
 (define-configuration/no-serialization dunst-configuration
   (dunst
-   (package dunst:dunst)
+   (package wm:dunst)
    "The dunst package to use")
   (config
    (file-like)
