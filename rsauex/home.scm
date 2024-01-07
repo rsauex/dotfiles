@@ -284,7 +284,9 @@
                              ;; GTK2 engines (TODO: this should be search-paths from nordic-theme)
                              (cons "GUIX_GTK2_PATH" #~(string-join #$gtk-engine-paths ":"))
                              ;; Enable video hardware acceleration (TODO: Send a patch to mozilla?)
-                             (cons "MOZ_DISABLE_RDD_SANDBOX" "1"))))
+                             (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
+                             ;; Make packages from dotfiles available everywhere
+                             (cons "GUIX_PACKAGE_PATH" (string-append (getenv "HOME") "/dotfiles")))))
           ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-gui-startup:gui-startup-service-type
                    (my-gui-startup:gui-startup-configuration
