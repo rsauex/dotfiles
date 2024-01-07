@@ -40,7 +40,7 @@
                                                      "--removable"
                                                      "--boot-directory" install-dir
                                                      "--efi-directory" target-esp)))))))
-                 (target "/mnt/boot/efi")))
+                 (targets (list "/mnt/boot/efi"))))
 
     ;; (initrd (lambda (file-systems . rest)
     ;;           (apply base-initrd
