@@ -17,17 +17,20 @@
 use strict;
 use warnings;
 use utf8;
+use open qw( :std :encoding(UTF-8) );
 
-my $battery_name = $ENV{'battery_name'};
-my $battery_number = $ENV{'battery_number'};
+my $battery_name = $ENV{'battery_name'} // $ARGV[0];
+my $battery_number = $ENV{'battery_number'} // $ARGV[1];
 
 # read the first line of the "acpi" command output
 open (ACPI, "acpi -b | grep 'Battery $battery_number' |") or die "Can't exec acpi: $!\n";
-my $acpi = <ACPI>;
+my $acpi = <ACPI> // '';
 close(ACPI);
 
 # fail on unexpected output
 if ($acpi !~ /: (Not charging|Discharging|Full|Unknown|Charging|Full), (\d+)%/) {
+    print "$battery_name N/A\n";
+    print "$battery_name N/A\n";
     exit 0;
     # die "$acpi\n";
 }
