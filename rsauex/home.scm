@@ -52,6 +52,7 @@
   #:use-module ((ice-9 textual-ports))
   #:use-module ((nongnu packages mozilla)             #:prefix mozilla:)
   #:use-module ((rsauex channels)                     #:prefix my-channels:)
+  #:use-module ((rsauex home config)                  #:prefix my-config:)
   #:use-module ((rsauex home services channels)       #:prefix my-channels-service:)
   #:use-module ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
   #:use-module ((rsauex home services dunst)          #:prefix my-dunst-service:)
