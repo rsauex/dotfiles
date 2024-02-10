@@ -55,7 +55,7 @@
    (package xdisorg:sx)
    "The sx package to use")
   (shepherd-package
-   (package admin:shepherd-0.9)
+   (package admin:shepherd-0.10)
    "The shepherd package to use")
   (program
    (file-like (error "Program must be provided"))
