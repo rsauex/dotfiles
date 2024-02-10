@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+name="$1"
+
+if [[ ! -z "${name}" ]]; then
+    i3-msg 'workspace "'"${name}"'"' > /dev/null
+fi
