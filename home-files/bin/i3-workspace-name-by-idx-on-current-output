@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+workspace_number="$1"
+
+i3-msg -t get_workspaces \
+    | jq -r '[. | (.[] | select(.focused == true) | .output) as $output | .[] | select(.output == $output) | .name]['"${workspace_number}"' - 1] // empty'

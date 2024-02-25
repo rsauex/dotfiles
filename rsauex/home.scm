@@ -52,6 +52,7 @@
   #:use-module ((ice-9 textual-ports))
   #:use-module ((nongnu packages mozilla)             #:prefix mozilla:)
   #:use-module ((rsauex channels)                     #:prefix my-channels:)
+  #:use-module ((rsauex home config)                  #:prefix my-config:)
   #:use-module ((rsauex home services channels)       #:prefix my-channels-service:)
   #:use-module ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
   #:use-module ((rsauex home services dunst)          #:prefix my-dunst-service:)
@@ -284,7 +285,9 @@
                              ;; GTK2 engines (TODO: this should be search-paths from nordic-theme)
                              (cons "GUIX_GTK2_PATH" #~(string-join #$gtk-engine-paths ":"))
                              ;; Enable video hardware acceleration (TODO: Send a patch to mozilla?)
-                             (cons "MOZ_DISABLE_RDD_SANDBOX" "1"))))
+                             (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
+                             ;; Make packages from dotfiles available everywhere
+                             (cons "GUIX_PACKAGE_PATH" (string-append (getenv "HOME") "/dotfiles")))))
           ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-gui-startup:gui-startup-service-type
                    (my-gui-startup:gui-startup-configuration

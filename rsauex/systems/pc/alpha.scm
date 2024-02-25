@@ -34,6 +34,6 @@
                          (operating-system-file-systems my-desktop-systems:%my-base-desktop-system)))
 
     (packages (cons*
-               (@ (nongnu packages steam-client) steam)
+               (@ (nongnu packages game-client) steam)
 
                (operating-system-packages my-desktop-systems:%my-base-desktop-system)))))

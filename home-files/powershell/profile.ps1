@@ -316,3 +316,66 @@ function Measure-Size() {
         }
     }
 }
+
+# ------------------------------------------------------------------------------
+# ----- Guix Profiles ----------------------------------------------------------
+
+function Initialize-GProfile() {
+    [CmdletBinding()]
+    param(
+        [switch]$Force
+    )
+    if ((Test-Path "$PWD/manifest.scm") -and -not $Force) {
+        Write-Error "manifest.scm already exists. Use -Force to overwrite it."
+        return
+    }
+    @"
+(use-modules
+ ((gnu packages man)                              #:prefix man:))
+
+(define the-manifest
+  (packages->manifest
+   ``(,man:man-db)))
+
+the-manifest
+"@ > "$PWD/manifest.scm"
+    Write-Host "manifest.scm created!"
+    Update-GProfile
+}
+
+function Update-GProfile() {
+    [CmdletBinding()]
+    param()
+    if (-not (Test-Path -PathType Container -Path "$PWD/.profile")) {
+        New-Item -Type Directory -Path "$PWD/.profile" > $null
+    }
+    guix package -p "$PWD/.profile/profile" -m  "$PWD/manifest.scm"
+}
+
+function Restore-GProfile() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $false)]
+        [String]$Generation
+    )
+    if (-not $Generation) {
+        guix package -p "$PWD/.profile/profile" --roll-back
+    } else {
+        guix package -p "$PWD/.profile/profile" -S "$Generation"
+    }
+}
+
+function Clear-GProfile() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $false)]
+        [String]$Generation
+    )
+    guix package -p "$PWD/.profile/profile" -d "$Generation"
+}
+
+function Get-GProfileGenerations() {
+    [CmdletBinding()]
+    param()
+    guix package -p "$PWD/.profile/profile" -l
+}
