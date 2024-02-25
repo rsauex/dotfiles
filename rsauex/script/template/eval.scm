@@ -1,6 +1,5 @@
 (define-module (rsauex script template eval)
-  #:use-module ((guix gexp))
-  #:use-module ((rsauex home config)))
+  #:use-module ((guix gexp)))
 
 (define-public args
   (make-parameter '()))

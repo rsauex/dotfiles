@@ -52,7 +52,6 @@
   #:use-module ((ice-9 textual-ports))
   #:use-module ((nongnu packages mozilla)             #:prefix mozilla:)
   #:use-module ((rsauex channels)                     #:prefix my-channels:)
-  #:use-module ((rsauex home config)                  #:prefix my-config:)
   #:use-module ((rsauex home services channels)       #:prefix my-channels-service:)
   #:use-module ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
   #:use-module ((rsauex home services dunst)          #:prefix my-dunst-service:)
@@ -101,10 +100,6 @@
 
 (define (git-dont-push-wip-commits)
   (cons #:pre-push (program-fn-file '(rsauex home services git hooks dont-push-wip-commits) 'check)))
-
-(define (my-essential-services he)
-  (modify-services ((@@ (gnu home) home-environment-default-essential-services) he)
-    (delete fontutils:home-fontconfig-service-type)))
 
 (define (i3lock-with-login-pam-service)
   (package
@@ -175,11 +170,6 @@
   (let ((host-dpi (getenv "HOST_DPI")))
     (if host-dpi (string->number host-dpi) 96)))
 
-(define xft-config
-  (my-config:xft-config
-   (hint-style "hintmedium")
-   (dpi (host-dpi))))
-
 (define-public %home-environment
   (home-environment
    (packages (list fonts:font-iosevka-term
@@ -190,7 +180,6 @@
                    fonts:font-adobe-source-han-sans
                    fonts:font-awesome
                    fonts:font-google-material-design-icons
-                   fonts:font-terminus
 
                    gnome:gnome-themes-standard
                    gnome:gnome-themes-extra
@@ -237,8 +226,6 @@
                    vc:git
                    (list vc:git "gui")
                    gns3:gns3-gui))
-   (essential-services
-    (my-essential-services this-home-environment))
    (services
     (list (service
            shells:home-bash-service-type
@@ -260,6 +247,28 @@
                     (theme
                      (file-append nordic-theme:rofi-nord-theme
                                   "/share/rofi/themes/nord.rasi"))))
+          (simple-service 'my-fonts
+                          fontutils:home-fontconfig-service-type
+                          `((alias
+                             (family "system-ui")
+                             (prefer
+                              (family "Roboto Condensed")
+                              (family "Source Han Sans")))
+                            (alias
+                             (family "sans-serif")
+                             (prefer
+                              (family "Source Sans 3")
+                              (family "Source Han Sans")))
+                            (alias
+                             (family "serif")
+                             (prefer
+                              (family "Source Serif 3")
+                              (family "Source Han Serif")))
+                            (alias
+                             (family "monospace")
+                             (prefer
+                              (family "Iosevka Term")
+                              (family "Source Han Mono")))))
           (service xdg:home-xdg-user-directories-service-type)
           (simple-service 'my-environment
                           home-environment-variables-service-type
@@ -361,7 +370,7 @@
                                       (when (string= "fonts.dir" (basename file))
                                         (set! font-paths (cons (dirname file) font-paths)))
                                       #t)))
-                             (list (string-append (getenv "HOME") "/.guix-home/profile/share/fonts/")
+                             (list #$(file-append fonts:font-terminus "/share/fonts/")
                                    #$(file-append xorg:font-alias "/share/fonts/")
                                    #$(file-append xorg:font-micro-misc "/share/fonts/")
                                    #$(file-append xorg:font-adobe75dpi "/share/fonts/")))
@@ -455,27 +464,10 @@
                           home-xdg-configuration-files-service-type
                           `(("qt5ct/qt5ct.conf"
                              ,(rsauex-home-file "qt5ct.conf" "qt5ct.conf"))))
-          (simple-service 'font-config
-                          home-xdg-configuration-files-service-type
-                          `(("fontconfig/fonts.conf"
-                             ,(let ((args `((#:xft . ,xft-config))))
-                                (rsauex-home-template-file "fonts.conf" "fonts.conf" args)))))
           (simple-service 'alacritty
                           home-xdg-configuration-files-service-type
                           `(("alacritty/alacritty.yml"
                              ,(rsauex-home-file "alacritty.yml" "alacritty.yml"))))
-          (simple-service 'gtk2
-                          home-files-service-type
-                          `((".gtkrc-2.0"
-                             ,(let ((args `((#:xft . ,xft-config))))
-                                (rsauex-home-template-file ".gtkrc-2.0" "gtkrc-2.0" args)))))
-          (simple-service 'gtk3
-                          home-xdg-configuration-files-service-type
-                          `(("gtk-3.0/settings.ini"
-                             ,(let ((args `((#:xft . ,xft-config))))
-                                (rsauex-home-template-file "gtk-3.0-settings.ini" "gtk-3.0-settings.ini" args)))
-                            ("gtk-3.0/gtk.css"
-                             ,(rsauex-home-file "gtk-3.0.css" "gtk-3.0.css"))))
           (anon-service x3270
             (home-files-service-type
              `((".x3270pro"
