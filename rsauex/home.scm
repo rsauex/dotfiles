@@ -67,6 +67,7 @@
   #:use-module ((rsauex home services pipewire)       #:prefix my-pipewire-service:)
   #:use-module ((rsauex home services screensaver)    #:prefix my-screensaver-service:)
   #:use-module ((rsauex home services xsettingsd)     #:prefix my-xsettingsd-service:)
+  #:use-module ((rsauex home services xresources)     #:prefix my-xresources-service:)
   #:use-module ((rsauex packages fcitx5)              #:prefix my-fcitx5:)
   #:use-module ((rsauex packages kvantum)             #:prefix kvantum:)
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
@@ -289,6 +290,12 @@
                              (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
                              ;; Make packages from dotfiles available everywhere
                              (cons "GUIX_PACKAGE_PATH" (string-append (getenv "HOME") "/dotfiles")))))
+          (service my-xresources-service:xresources-service-type
+                   (my-xresources-service:xresources-configuration
+                    (xresources
+                     `(,(rsauex-home-file "urxvt/colors/nord" "colors")
+                       ("Xft.dpi" . ,(host-dpi))
+                       ("*dpi"    . ,(host-dpi))))))
           ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-gui-startup:gui-startup-service-type
                    (my-gui-startup:gui-startup-configuration
@@ -338,21 +345,6 @@
                        ("Xft/Antialias"        . 1)))))
           ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-ssh-service:ssh-agent-service-type)
-          (anon-service load-xresources
-            (my-gui-startup:gui-startup-service-type
-             (my-gui-startup:gui-startup-extension
-              (services
-               (list (my-shepherd:simple-one-shot-shepherd-service
-                      'load-xresources
-                      "Load XResources"
-                      (let* ((config-args `((#:xft . ,xft-config)))
-                             (config (rsauex-home-template-file ".Xresources" "Xresources" config-args)))
-                        #~(lambda ()
-                            (invoke #$(file-append xorg:xrdb "/bin/xrdb")
-                                    "-merge"
-                                    (string-append "-I" (getenv "HOME"))
-                                    #$config)
-                            #t))))))))
           (anon-service update-xlfd-fonts
             (my-gui-startup:gui-startup-service-type
              (my-gui-startup:gui-startup-extension
@@ -484,14 +476,14 @@
                                 (rsauex-home-template-file "gtk-3.0-settings.ini" "gtk-3.0-settings.ini" args)))
                             ("gtk-3.0/gtk.css"
                              ,(rsauex-home-file "gtk-3.0.css" "gtk-3.0.css"))))
-          (simple-service 'x-resources
-                          home-files-service-type
-                          `((".x3270pro"
-                             ,(rsauex-home-file ".x3270pro" "x3270pro"))))
-          (simple-service 'terminal-x-resources
-                          home-xdg-configuration-files-service-type
-                          `(("urxvt"
-                             ,(rsauex-home-file "urxvt" "urxvt" #:recursive? #t))))
+          (anon-service x3270
+            (home-files-service-type
+             `((".x3270pro"
+                ,(rsauex-home-file ".x3270pro" "x3270pro"))))
+            (my-xresources-service:xresources-service-type
+             (my-xresources-service:xresources-extension
+              (xresources
+               `(,(rsauex-home-file "x3270-xresources" "x3270-xresources"))))))
           (simple-service 'git-conf
                           home-files-service-type
                           `((".gitconfig"

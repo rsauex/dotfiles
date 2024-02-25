@@ -1,6 +1,0 @@
-! -*- mode: conf-xdefaults -*-
-
-URxvt.font:              -*-terminus-medium-*-*-*-16-*-*-*-*-*-iso10646-*, xft:WenQuanYi Zen Hei Mono:antialias=true
-URxvt.boldFont:	         -*-terminus-bold-*-*-*-16-*-*-*-*-*-iso10646-*,   xft:WenQuanYi Zen Hei Mono:antialias=true
-URxvt.italicFont:        -*-terminus-medium-*-*-*-16-*-*-*-*-*-iso10646-*, xft:WenQuanYi Zen Hei Mono:antialias=true
-URxvt.boldItalicFont:	 -*-terminus-bold-*-*-*-16-*-*-*-*-*-iso10646-*,   xft:WenQuanYi Zen Hei Mono:antialias=true
