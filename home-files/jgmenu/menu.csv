@@ -1,0 +1,10 @@
+Run Program,i3-run-in-workenv.sh run,system-run
+Terminal,i3-launch-or-select.sh Terminal alacritty -t,utilities-terminal
+Exit,^checkout(exit)
+
+^tag(exit)
+Lock,xset dpms force off,system-lock-screen
+Log Out,i3-msg exit,system-log-out
+Suspend,loginctl suspend,system-suspend
+Reboot,loginctl reboot,system-reboot
+Shutdown,loginctl poweroff -i,system-shutdown

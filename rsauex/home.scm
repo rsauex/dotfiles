@@ -413,6 +413,18 @@
                       'keepassxc
                       "Run `keepassxc'"
                       #~`(#$(file-append passwd-utils:keepassxc "/bin/keepassxc"))))))))
+          (anon-service jgmenu-autostart
+            (my-gui-startup:gui-startup-service-type
+             (my-gui-startup:gui-startup-extension
+              (services
+               (list (my-shepherd:simple-forkexec-shepherd-service
+                      'jgmenu
+                      "Run `jgmenu'"
+                      #~`(#$(file-append xdisorg:jgmenu "/bin/jgmenu")
+                          "--hide-on-startup"))))))
+            (home-xdg-configuration-files-service-type
+             `(("jgmenu"
+                ,(rsauex-home-file "jgmenu" "jgmenu-config" #:recursive? #t)))))
           ;; Git settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-git:git-service-type
                    (my-git:git-configuration
