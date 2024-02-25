@@ -66,6 +66,7 @@
   #:use-module ((rsauex home services xdg-portal)     #:prefix my-xdg-portal-service:)
   #:use-module ((rsauex home services pipewire)       #:prefix my-pipewire-service:)
   #:use-module ((rsauex home services screensaver)    #:prefix my-screensaver-service:)
+  #:use-module ((rsauex home services xsettingsd)     #:prefix my-xsettingsd-service:)
   #:use-module ((rsauex packages fcitx5)              #:prefix my-fcitx5:)
   #:use-module ((rsauex packages kvantum)             #:prefix kvantum:)
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
@@ -325,6 +326,16 @@
                     (screen-off-timeout 600)
                     (locker-expr #~(let ((i3lock #$(file-append (i3lock-with-login-pam-service) "/bin/i3lock")))
                                      `(,i3lock "--nofork" "-n" "-c" "1D1F21")))))
+          (service my-xsettingsd-service:xsettingsd-service-type
+                   (my-xsettingsd-service:xsettingsd-configuration
+                    (xsettings
+                     `(("Net/ThemeName"        . "Nordic-Darker")
+                       ("Net/IconThemeName"    . "breeze-dark")
+                       ("Gtk/FontName"         . "System-UI 11")
+                       ("Gtk/DecorationLayout" . "menu:")
+                       ("Xft/DPI"              . ,(* (host-dpi) 1024))
+                       ;; TODO: This is only needed for java...
+                       ("Xft/Antialias"        . 1)))))
           ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-ssh-service:ssh-agent-service-type)
           (anon-service load-xresources
