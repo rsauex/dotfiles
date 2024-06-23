@@ -447,8 +447,8 @@
                                 (rsauex-home-template-file "fonts.conf" "fonts.conf" args)))))
           (simple-service 'alacritty
                           home-xdg-configuration-files-service-type
-                          `(("alacritty/alacritty.yml"
-                             ,(rsauex-home-file "alacritty.yml" "alacritty.yml"))))
+                          `(("alacritty/alacritty.toml"
+                             ,(rsauex-home-file "alacritty.toml" "alacritty.toml"))))
           (simple-service 'gtk2
                           home-files-service-type
                           `((".gtkrc-2.0"
