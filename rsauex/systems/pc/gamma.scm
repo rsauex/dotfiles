@@ -23,7 +23,7 @@
        Identifier  \"Intel Card\"
        Driver      \"modesetting\"
        BusID       \"PCI:0:2:0\"
-       Option      \"Monitor-eDP-1\" \"eDP-1\"
+       # Option      \"Monitor-eDP-1\" \"eDP-1\"
    EndSection
 
   Section \"Device\"
@@ -42,14 +42,18 @@
   Section \"Screen\"
        Identifier \"Nvidia Screen\"
        Device     \"Nvidia Card\"
-
   EndSection
+
+  # Section \"ServerLayout\"
+  #      Identifier \"Main Layout\"
+  #      Screen     0 \"Intel Screen\"
+  #      Inactive   \"Nvidia Card\"
+  #      Option     \"AllowNVIDIAGPUScreens\"
+  # EndSection
 
   Section \"ServerLayout\"
        Identifier \"Main Layout\"
-       Screen     0 \"Intel Screen\"
-       Inactive   \"Nvidia Card\"
-       Option     \"AllowNVIDIAGPUScreens\"
+       Screen     0 \"Nvidia Screen\"
   EndSection
 ")
 
@@ -139,9 +143,7 @@
                                      `(("HOST_DPI"
                                         . "119")))
 
-                     (service non-nvidia-services:nvidia-service-type
-                              (non-nvidia-services:nvidia-configuration
-                               (modules (list))))
+                     (service non-nvidia-services:nvidia-service-type)
 
                      (modify-services
                          (operating-system-user-services my-desktop-systems:%my-base-desktop-system)
@@ -149,7 +151,7 @@
                         config => (xorg-services:xorg-configuration
                                    (inherit config)
                                    (modules
-                                    (cons* non-nvidia:nvidia-driver
+                                    (cons* non-nvidia:nvda
                                            (xorg-services:xorg-configuration-modules config)))
                                    (extra-config
                                     (cons* gamma-xorg-config
