@@ -16,17 +16,15 @@
             %my-base-system))
 
 (define %my-base-packages
-  (cons*
-   certs:nss-certs
-   (append (list disk:dosfstools
-                 linux:btrfs-progs
-                 linux:f2fs-tools
-                 file-systems:jfsutils
-                 linux:xfsprogs
-                 cryptsetup:cryptsetup
-                 file-systems:exfat-utils
-                 file-systems:exfatprogs)
-           %base-packages)))
+  (append (list disk:dosfstools
+                linux:btrfs-progs
+                linux:f2fs-tools
+                file-systems:jfsutils
+                linux:xfsprogs
+                cryptsetup:cryptsetup
+                file-systems:exfat-utils
+                file-systems:exfatprogs)
+          %base-packages))
 
 ;; TODO: Better name!
 (define (my-console-font-service-type services)
