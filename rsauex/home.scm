@@ -202,6 +202,7 @@
                    fonts:font-awesome
                    fonts:font-google-material-design-icons
                    fonts:font-terminus
+                   fonts:font-liberation
 
                    gnome:gnome-themes-standard
                    gnome:gnome-themes-extra
