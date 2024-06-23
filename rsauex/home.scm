@@ -5,6 +5,7 @@
   #:use-module ((gnu home services))
   #:use-module ((gnu home))
   #:use-module ((gnu packages admin)              #:prefix admin:)
+  #:use-module ((gnu packages aspell)             #:prefix aspell:)
   #:use-module ((gnu packages base)               #:prefix base-packages:)
   #:use-module ((gnu packages compression)        #:prefix compression:)
   #:use-module ((gnu packages docker)             #:prefix docker:)
@@ -169,6 +170,18 @@
               #~`(#$(file-append syncthing:syncthing-gtk "/bin/syncthing-gtk"))
               #:data-packages (list syncthing:syncthing-gtk))))))))
 
+(define (my-aspell-service)
+  (anon-service aspell-service
+    ;; Install aspell and dictionaries
+    (home-profile-service-type
+     (list aspell:aspell
+           aspell:aspell-dict-uk
+           aspell:aspell-dict-ru
+           aspell:aspell-dict-en))
+    ;; Make aspell look for dicts in the correct dir
+    (home-environment-variables-service-type
+     (list (cons "ASPELL_DICT_DIR" (string-append (getenv "HOME") "/.guix-home/profile/lib/aspell/"))))))
+
 (define (host-dpi)
   (let ((host-dpi (getenv "HOST_DPI")))
     (if host-dpi (string->number host-dpi) 96)))
@@ -259,6 +272,7 @@
                      (file-append nordic-theme:rofi-nord-theme
                                   "/share/rofi/themes/nord.rasi"))))
           (service xdg:home-xdg-user-directories-service-type)
+          (my-aspell-service)
           (simple-service 'my-environment
                           home-environment-variables-service-type
                           (let ((qt-platform-plugin-path (string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins"))
