@@ -77,7 +77,9 @@
   #:use-module ((rsauex script template))
   #:use-module ((rsauex services))
   #:use-module ((srfi srfi-1))
-  #:use-module ((srfi srfi-26)))
+  #:use-module ((srfi srfi-26))
+
+  #:export (%home-environment))
 
 (define (rsauex-module-name? name)
   (match name
@@ -191,7 +193,7 @@
    (hint-style "hintmedium")
    (dpi (host-dpi))))
 
-(define-public %home-environment
+(define (%home-environment)
   (home-environment
    (packages (list fonts:font-iosevka-term
                    fonts:font-google-roboto
@@ -500,5 +502,3 @@
                           home-files-service-type
                           `((".ssh/config"
                              ,(rsauex-home-file "ssh-config" "ssh-config"))))))))
-
-%home-environment
