@@ -8,6 +8,7 @@
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
   #:use-module ((gnu services networking)         #:prefix network-services:)
   #:use-module ((gnu services security-token)     #:prefix security-token-services:)
+  #:use-module ((gnu system nss)                  #:prefix system-nss:)
   #:use-module ((gnu))
   #:use-module ((ice-9 match))
   #:use-module ((srfi srfi-1))
@@ -68,6 +69,7 @@
     (host-name "")
     (timezone "Europe/Kiev")
     (locale "en_IE.UTF-8")
+    (name-service-switch system-nss:%mdns-host-lookup-nss)
 
     (bootloader (bootloader-configuration
                  (bootloader grub-efi-bootloader)
