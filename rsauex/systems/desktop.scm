@@ -56,6 +56,26 @@
     "RUN+=\"" base:coreutils "/bin/chgrp video /sys/class/backlight/%k/brightness\","
     "RUN+=\"" base:coreutils "/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
 
+(define tobii-access-udev
+  (file->udev-rule
+   "90-talon.rules"
+   (mixed-text-file
+    "talon.rules"
+    "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"2104\", ATTRS{idProduct}==\"0127\", GROUP=\"users\", MODE=\"0666\"\n"
+    "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"2104\", ATTRS{idProduct}==\"0118\", GROUP=\"users\", MODE=\"0666\"\n"
+    "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"2104\", ATTRS{idProduct}==\"0106\", GROUP=\"users\", MODE=\"0666\"\n"
+    "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"2104\", ATTRS{idProduct}==\"0128\", GROUP=\"users\", MODE=\"0666\"\n"
+    "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"2104\", ATTRS{idProduct}==\"010a\", GROUP=\"users\", MODE=\"0666\"\n"
+    "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"2104\", ATTRS{idProduct}==\"0102\", GROUP=\"users\", MODE=\"0666\"\n"
+    "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"2104\", ATTRS{idProduct}==\"0313\", GROUP=\"users\", MODE=\"0666\"\n")))
+
+(define card-reader-udev
+  (file->udev-rule
+   "90-card-reader-enable-polling.rules"
+   (mixed-text-file
+    "card-reader-enable-polling.rules"
+    "SUBSYSTEM==\"block\", SUBSYSTEMS==\"usb\", ATTRS{idVendor}==\"05e3\", ATTRS{idProduct}==\"0748\", ATTR{events_poll_msecs}=\"1000\"\n")))
+
 (define (add-nonguix-substitute services)
   (modify-services services
     (guix-service-type
@@ -189,6 +209,11 @@ EndSection
 
    ;; Brightenss access for ordinary users
    (simple-service 'brightness-udev base-services:udev-service-type (list brightness-access-for-video-group))
+
+   ;; Talon Tobii
+   (simple-service 'talon-tobii-udev base-services:udev-service-type (list tobii-access-udev))
+
+   (simple-service 'card-reader-udev base-services:udev-service-type (list card-reader-udev))
 
    ;; Pipewire
    (simple-service 'pipewire-udev base-services:udev-service-type (list linux:pipewire))
