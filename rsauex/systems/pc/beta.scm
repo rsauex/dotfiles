@@ -18,11 +18,9 @@
 
    Section \"Device\"
        Identifier  \"Intel Graphics\"
-       Driver      \"intel\"
-       Option      \"AccelMethod\" \"sna\"
+       Driver      \"modesetting\"
+       Option      \"AccelMethod\" \"glamor\"
        Option      \"DRI\"  \"3\"
-       Option      \"TearFree\" \"true\"
-       Option      \"Monitor-eDP1\" \"eDP1\"
    EndSection")
 
 (define (tlp-service)
@@ -70,7 +68,6 @@
                              "resume_offset=3315712"
                              (operating-system-user-kernel-arguments my-desktop-systems:%my-base-desktop-system)))
     (initrd non-linux-initrd:microcode-initrd)
-    (initrd-modules (cons "i915" linux-initrd:%base-initrd-modules))
     (firmware (list non-linux:linux-firmware))
 
     (mapped-devices (list (mapped-device
