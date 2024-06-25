@@ -9,4 +9,6 @@ message="$1"
     ls -1Nd ~/Projects/*/ | sed 's#^.*/\([^/]\+\)/$#\1#g'
     # Work
     echo 'work'
+    # Dotfiles
+    echo 'dotfiles'
 } | sort | uniq | rofi -dmenu -i -p "${message:?Workspace}"

@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 
 current_workspace=`i3-msg -t get_workspaces | jq -r '.[] | select(.focused == true) | .name'`
-if [[ "work" == "${current_workspace}" ]]; then
-    project_dir="${HOME}/work"
-else
-    project_dir="${HOME}/Projects/${current_workspace}"
-fi
+
+case "${current_workspace}" in
+    "work")
+        project_dir="${HOME}/work"
+        ;;
+    "dotfiles")
+        project_dir="${HOME}/dotfiles"
+        ;;
+    *)
+        project_dir="${HOME}/Projects/${current_workspace}"
+        ;;
+esac
 
 if [[ -d "${project_dir}" ]]; then
     export PROJECT_HOME="${project_dir}"
