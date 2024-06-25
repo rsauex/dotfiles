@@ -1,4 +1,0 @@
-/* Never use rounded elements */
-* :not(slider) {
-    border-radius: 0;
-}

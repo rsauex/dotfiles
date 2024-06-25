@@ -69,6 +69,7 @@
     (host-name "")
     (timezone "Europe/Kiev")
     (locale "en_IE.UTF-8")
+
     (name-service-switch system-nss:%mdns-host-lookup-nss)
 
     (bootloader (bootloader-configuration

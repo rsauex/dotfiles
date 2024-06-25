@@ -53,7 +53,6 @@
   #:use-module ((ice-9 textual-ports))
   #:use-module ((nongnu packages mozilla)             #:prefix mozilla:)
   #:use-module ((rsauex channels)                     #:prefix my-channels:)
-  #:use-module ((rsauex home config)                  #:prefix my-config:)
   #:use-module ((rsauex home services channels)       #:prefix my-channels-service:)
   #:use-module ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
   #:use-module ((rsauex home services dunst)          #:prefix my-dunst-service:)
@@ -67,6 +66,8 @@
   #:use-module ((rsauex home services xdg-portal)     #:prefix my-xdg-portal-service:)
   #:use-module ((rsauex home services pipewire)       #:prefix my-pipewire-service:)
   #:use-module ((rsauex home services screensaver)    #:prefix my-screensaver-service:)
+  #:use-module ((rsauex home services xsettingsd)     #:prefix my-xsettingsd-service:)
+  #:use-module ((rsauex home services xresources)     #:prefix my-xresources-service:)
   #:use-module ((rsauex packages fcitx5)              #:prefix my-fcitx5:)
   #:use-module ((rsauex packages kvantum)             #:prefix kvantum:)
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
@@ -102,10 +103,6 @@
 
 (define (git-dont-push-wip-commits)
   (cons #:pre-push (program-fn-file '(rsauex home services git hooks dont-push-wip-commits) 'check)))
-
-(define (my-essential-services he)
-  (modify-services ((@@ (gnu home) home-environment-default-essential-services) he)
-    (delete fontutils:home-fontconfig-service-type)))
 
 (define (i3lock-with-login-pam-service)
   (package
@@ -188,11 +185,6 @@
   (let ((host-dpi (getenv "HOST_DPI")))
     (if host-dpi (string->number host-dpi) 96)))
 
-(define xft-config
-  (my-config:xft-config
-   (hint-style "hintmedium")
-   (dpi (host-dpi))))
-
 (define (%home-environment)
   (home-environment
    (packages (list fonts:font-iosevka-term
@@ -251,8 +243,6 @@
                    vc:git
                    (list vc:git "gui")
                    gns3:gns3-gui))
-   (essential-services
-    (my-essential-services this-home-environment))
    (services
     (list (service
            shells:home-bash-service-type
@@ -274,6 +264,41 @@
                     (theme
                      (file-append nordic-theme:rofi-nord-theme
                                   "/share/rofi/themes/nord.rasi"))))
+          (simple-service 'my-fonts
+                          fontutils:home-fontconfig-service-type
+                          `((alias
+                             (family "ui-sans-serif")
+                             (prefer
+                              (family "Roboto Condensed")
+                              (family "Source Han Sans")))
+                            (alias
+                             (family "ui-serif")
+                             (prefer
+                              (family "serif")))
+                            (alias
+                             (family "ui-monospace")
+                             (prefer
+                              (family "monospace")))
+                            (alias
+                             (family "system-ui")
+                             (prefer
+                              (family "Roboto Condensed")
+                              (family "Source Han Sans")))
+                            (alias
+                             (family "sans-serif")
+                             (prefer
+                              (family "Source Sans 3")
+                              (family "Source Han Sans")))
+                            (alias
+                             (family "serif")
+                             (prefer
+                              (family "Source Serif 3")
+                              (family "Source Han Serif")))
+                            (alias
+                             (family "monospace")
+                             (prefer
+                              (family "Iosevka Term")
+                              (family "Source Han Mono")))))
           (service xdg:home-xdg-user-directories-service-type)
           (my-aspell-service)
           (simple-service 'my-environment
@@ -305,6 +330,12 @@
                              (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
                              ;; Make packages from dotfiles available everywhere
                              (cons "GUIX_PACKAGE_PATH" (string-append (getenv "HOME") "/dotfiles")))))
+          (service my-xresources-service:xresources-service-type
+                   (my-xresources-service:xresources-configuration
+                    (xresources
+                     `(,(rsauex-home-file "urxvt/colors/nord" "colors")
+                       ("Xft.dpi" . ,(host-dpi))
+                       ("*dpi"    . ,(host-dpi))))))
           ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-gui-startup:gui-startup-service-type
                    (my-gui-startup:gui-startup-configuration
@@ -342,23 +373,18 @@
                     (screen-off-timeout 600)
                     (locker-expr #~(let ((i3lock #$(file-append (i3lock-with-login-pam-service) "/bin/i3lock")))
                                      `(,i3lock "--nofork" "-n" "-c" "1D1F21")))))
+          (service my-xsettingsd-service:xsettingsd-service-type
+                   (my-xsettingsd-service:xsettingsd-configuration
+                    (xsettings
+                     `(("Net/ThemeName"        . "Nordic-Darker")
+                       ("Net/IconThemeName"    . "breeze-dark")
+                       ("Gtk/FontName"         . "System-UI 11")
+                       ("Gtk/DecorationLayout" . "menu:")
+                       ("Xft/DPI"              . ,(* (host-dpi) 1024))
+                       ;; TODO: This is only needed for java...
+                       ("Xft/Antialias"        . 1)))))
           ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-ssh-service:ssh-agent-service-type)
-          (anon-service load-xresources
-            (my-gui-startup:gui-startup-service-type
-             (my-gui-startup:gui-startup-extension
-              (services
-               (list (my-shepherd:simple-one-shot-shepherd-service
-                      'load-xresources
-                      "Load XResources"
-                      (let* ((config-args `((#:xft . ,xft-config)))
-                             (config (rsauex-home-template-file ".Xresources" "Xresources" config-args)))
-                        #~(lambda ()
-                            (invoke #$(file-append xorg:xrdb "/bin/xrdb")
-                                    "-merge"
-                                    (string-append "-I" (getenv "HOME"))
-                                    #$config)
-                            #t))))))))
           (anon-service update-xlfd-fonts
             (my-gui-startup:gui-startup-service-type
              (my-gui-startup:gui-startup-extension
@@ -375,7 +401,7 @@
                                       (when (string= "fonts.dir" (basename file))
                                         (set! font-paths (cons (dirname file) font-paths)))
                                       #t)))
-                             (list (string-append (getenv "HOME") "/.guix-home/profile/share/fonts/")
+                             (list #$(file-append fonts:font-terminus "/share/fonts/")
                                    #$(file-append xorg:font-alias "/share/fonts/")
                                    #$(file-append xorg:font-micro-misc "/share/fonts/")
                                    #$(file-append xorg:font-adobe75dpi "/share/fonts/")))
@@ -433,6 +459,18 @@
                       'keepassxc
                       "Run `keepassxc'"
                       #~`(#$(file-append passwd-utils:keepassxc "/bin/keepassxc"))))))))
+          (anon-service jgmenu-autostart
+            (my-gui-startup:gui-startup-service-type
+             (my-gui-startup:gui-startup-extension
+              (services
+               (list (my-shepherd:simple-forkexec-shepherd-service
+                      'jgmenu
+                      "Run `jgmenu'"
+                      #~`(#$(file-append xdisorg:jgmenu "/bin/jgmenu")
+                          "--hide-on-startup"))))))
+            (home-xdg-configuration-files-service-type
+             `(("jgmenu"
+                ,(rsauex-home-file "jgmenu" "jgmenu-config" #:recursive? #t)))))
           ;; Git settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-git:git-service-type
                    (my-git:git-configuration
@@ -457,35 +495,18 @@
                           home-xdg-configuration-files-service-type
                           `(("qt5ct/qt5ct.conf"
                              ,(rsauex-home-file "qt5ct.conf" "qt5ct.conf"))))
-          (simple-service 'font-config
-                          home-xdg-configuration-files-service-type
-                          `(("fontconfig/fonts.conf"
-                             ,(let ((args `((#:xft . ,xft-config))))
-                                (rsauex-home-template-file "fonts.conf" "fonts.conf" args)))))
           (simple-service 'alacritty
                           home-xdg-configuration-files-service-type
                           `(("alacritty/alacritty.toml"
                              ,(rsauex-home-file "alacritty.toml" "alacritty.toml"))))
-          (simple-service 'gtk2
-                          home-files-service-type
-                          `((".gtkrc-2.0"
-                             ,(let ((args `((#:xft . ,xft-config))))
-                                (rsauex-home-template-file ".gtkrc-2.0" "gtkrc-2.0" args)))))
-          (simple-service 'gtk3
-                          home-xdg-configuration-files-service-type
-                          `(("gtk-3.0/settings.ini"
-                             ,(let ((args `((#:xft . ,xft-config))))
-                                (rsauex-home-template-file "gtk-3.0-settings.ini" "gtk-3.0-settings.ini" args)))
-                            ("gtk-3.0/gtk.css"
-                             ,(rsauex-home-file "gtk-3.0.css" "gtk-3.0.css"))))
-          (simple-service 'x-resources
-                          home-files-service-type
-                          `((".x3270pro"
-                             ,(rsauex-home-file ".x3270pro" "x3270pro"))))
-          (simple-service 'terminal-x-resources
-                          home-xdg-configuration-files-service-type
-                          `(("urxvt"
-                             ,(rsauex-home-file "urxvt" "urxvt" #:recursive? #t))))
+          (anon-service x3270
+            (home-files-service-type
+             `((".x3270pro"
+                ,(rsauex-home-file ".x3270pro" "x3270pro"))))
+            (my-xresources-service:xresources-service-type
+             (my-xresources-service:xresources-extension
+              (xresources
+               `(,(rsauex-home-file "x3270-xresources" "x3270-xresources"))))))
           (simple-service 'git-conf
                           home-files-service-type
                           `((".gitconfig"

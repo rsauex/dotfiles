@@ -1,6 +1,0 @@
-! -*- mode: conf-xdefaults -*-
-
-URxvt.font:              xft:Iosevka Term:pixelsize=16:antialias=true,xft:Sarasa Term CL:pixelsize=16:antialias=true
-URxvt.boldFont:	         xft:Iosevka Term:pixelsize=16:antialias=true,xft:Sarasa Term CL:pixelsize=16:antialias=true
-URxvt.italicFont:        xft:Iosevka Term:pixelsize=16:antialias=true,xft:Sarasa Term CL:pixelsize=16:antialias=true
-URxvt.boldItalicFont:	 xft:Iosevka Term:pixelsize=16:antialias=true,xft:Sarasa Term CL:pixelsize=16:antialias=true
