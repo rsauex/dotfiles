@@ -2,6 +2,13 @@
 
 message="$1"
 
-i3-msg -t get_workspaces \
-    | jq -r 'sort_by(.focused, .visible != true) | .[].name' \
-    | rofi -dmenu -p "${message:?Workspace}"
+{
+    # Existing workspaces
+    i3-msg -t get_workspaces | jq -r '.[].name'
+    # Projects
+    ls -1Nd ~/Projects/*/ | sed 's#^.*/\([^/]\+\)/$#\1#g'
+    # Work
+    echo 'work'
+    # Dotfiles
+    echo 'dotfiles'
+} | sort | uniq | rofi -dmenu -i -p "${message:?Workspace}"

@@ -19,7 +19,7 @@ function global:Build-GuixHome() {
     [CmdletBinding()]
     param()
     Write-Host "Building home"
-    guix home reconfigure -e "(@ (rsauex home) %home-environment)"
+    guix home reconfigure -e "((@ (rsauex home) %home-environment))"
 }
 
 function global:Clear-Guix() {

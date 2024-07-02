@@ -5,6 +5,7 @@
   #:use-module ((gnu home services))
   #:use-module ((gnu home))
   #:use-module ((gnu packages admin)              #:prefix admin:)
+  #:use-module ((gnu packages aspell)             #:prefix aspell:)
   #:use-module ((gnu packages base)               #:prefix base-packages:)
   #:use-module ((gnu packages compression)        #:prefix compression:)
   #:use-module ((gnu packages docker)             #:prefix docker:)
@@ -77,7 +78,9 @@
   #:use-module ((rsauex script template))
   #:use-module ((rsauex services))
   #:use-module ((srfi srfi-1))
-  #:use-module ((srfi srfi-26)))
+  #:use-module ((srfi srfi-26))
+
+  #:export (%home-environment))
 
 (define (rsauex-module-name? name)
   (match name
@@ -166,11 +169,23 @@
               #~`(#$(file-append syncthing:syncthing-gtk "/bin/syncthing-gtk"))
               #:data-packages (list syncthing:syncthing-gtk))))))))
 
+(define (my-aspell-service)
+  (anon-service aspell-service
+    ;; Install aspell and dictionaries
+    (home-profile-service-type
+     (list aspell:aspell
+           aspell:aspell-dict-uk
+           aspell:aspell-dict-ru
+           aspell:aspell-dict-en))
+    ;; Make aspell look for dicts in the correct dir
+    (home-environment-variables-service-type
+     (list (cons "ASPELL_DICT_DIR" (string-append (getenv "HOME") "/.guix-home/profile/lib/aspell/"))))))
+
 (define (host-dpi)
   (let ((host-dpi (getenv "HOST_DPI")))
     (if host-dpi (string->number host-dpi) 96)))
 
-(define-public %home-environment
+(define (%home-environment)
   (home-environment
    (packages (list fonts:font-iosevka-term
                    fonts:font-google-roboto
@@ -180,6 +195,7 @@
                    fonts:font-adobe-source-han-sans
                    fonts:font-awesome
                    fonts:font-google-material-design-icons
+                   fonts:font-terminus
                    fonts:font-liberation
 
                    gnome:gnome-themes-standard
@@ -251,6 +267,19 @@
           (simple-service 'my-fonts
                           fontutils:home-fontconfig-service-type
                           `((alias
+                             (family "ui-sans-serif")
+                             (prefer
+                              (family "Roboto Condensed")
+                              (family "Source Han Sans")))
+                            (alias
+                             (family "ui-serif")
+                             (prefer
+                              (family "serif")))
+                            (alias
+                             (family "ui-monospace")
+                             (prefer
+                              (family "monospace")))
+                            (alias
                              (family "system-ui")
                              (prefer
                               (family "Roboto Condensed")
@@ -271,6 +300,7 @@
                               (family "Iosevka Term")
                               (family "Source Han Mono")))))
           (service xdg:home-xdg-user-directories-service-type)
+          (my-aspell-service)
           (simple-service 'my-environment
                           home-environment-variables-service-type
                           (let ((qt-platform-plugin-path (string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins"))
@@ -467,8 +497,8 @@
                              ,(rsauex-home-file "qt5ct.conf" "qt5ct.conf"))))
           (simple-service 'alacritty
                           home-xdg-configuration-files-service-type
-                          `(("alacritty/alacritty.yml"
-                             ,(rsauex-home-file "alacritty.yml" "alacritty.yml"))))
+                          `(("alacritty/alacritty.toml"
+                             ,(rsauex-home-file "alacritty.toml" "alacritty.toml"))))
           (anon-service x3270
             (home-files-service-type
              `((".x3270pro"
@@ -493,5 +523,3 @@
                           home-files-service-type
                           `((".ssh/config"
                              ,(rsauex-home-file "ssh-config" "ssh-config"))))))))
-
-%home-environment
