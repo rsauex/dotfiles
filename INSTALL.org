@@ -1,10 +1,10 @@
 * Partition Disk
 Partition scheme
-| /dev/sda1 | /boot/efi | EFI System       | FAT32     | - EFI partition  |
-| /dev/sda2 | /         | Linux filesystem | LUKS+Ext4 | - Root partition |
+| /dev/<device>1 | /boot/efi | EFI System       | FAT32     | - EFI partition  |
+| /dev/<device>2 | /         | Linux filesystem | LUKS+Ext4 | - Root partition |
 
 #+BEGIN_SRC shell-script
-$ gdisk /dev/sda
+$ gdisk /dev/<device>
 #+END_SRC
 
 #+BEGIN_SRC
@@ -81,17 +81,42 @@ mount /dev/sda1 /mnt/boot/efi
 #+END_SRC
 
 * Create swap file (if needed):
-From Fedora 33 Installation Guide:
-| Amount of RAM in the system | Recommended swap space      | Recommended swap space if allowing for hibernation |
-| less than 2 GB              | 2 times the amount of RAM   | 3 times the amount of RAM                          |
-| 2 GB - 8 GB                 | Equal to the amount of RAM  | 2 times the amount of RAM                          |
-| 8 GB - 64 GB                | 0.5 times the amount of RAM | 1.5 times the amount of RAM                        |
-| more than 64 GB             | workload dependent          | hibernation not recommended                        |
+[[https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/managing_storage_devices/getting-started-with-swap_managing-storage-devices#recommended-system-swap-space_getting-started-with-swap][Getting started with swap in RHEL 8 manual]]:
+| Amount of RAM in the system | Recommended swap space | Recommended swap space if allowing for hibernation |
+| less than 2 GB              | 2x amount of RAM       | 3x the amount of RAM                               |
+| 2 GB - 8 GB                 | 1x amount of RAM       | 2x the amount of RAM                               |
+| 8 GB - 64 GB                | At least 4 GB          | 1.5x times the amount of RAM                       |
+| more than 64 GB             | At least 4 GB          | Hibernation not recommended                        |
+
+From ???
+| RAM   | No hibernation | With Hibernation | Maximum |
+| 256MB | 256MB          | 512MB            | 512MB   |
+| 512MB | 512MB          | 1024MB           | 1024MB  |
+| 1GB   | 1GB            | 2GB              | 2GB     |
+| 2GB   | 1GB            | 3GB              | 4GB     |
+| 3GB   | 2GB            | 5GB              | 6GB     |
+| 4GB   | 2GB            | 6GB              | 8GB     |
+| 5GB   | 2GB            | 7GB              | 10GB    |
+| 6GB   | 2GB            | 8GB              | 12GB    |
+| 8GB   | 3GB            | 11GB             | 16GB    |
+| 12GB  | 3GB            | 15GB             | 24GB    |
+| 16GB  | 4GB            | 20GB             | 32GB    |
+| 24GB  | 5GB            | 29GB             | 48GB    |
+| 32GB  | 6GB            | 38GB             | 64GB    |
+| 64GB  | 8GB            | 72GB             | 128GB   |
+| 128GB | 11GB           | 139GB            | 256GB   |
+| 256GB | 16GB           | 272GB            | 512GB   |
+| 512GB | 23GB           | 535GB            | 1TB     |
+| 1TB   | 32GB           | 1056GB           | 2TB     |
+| 2TB   | 46GB           | 2094GB           | 4TB     |
+| 4TB   | 64GB           | 4160GB           | 8TB     |
+| 8TB   | 91GB           | 8283GB           | 16TB    |
 
 #+BEGIN_SRC shell-script
-dd if=/dev/zero of=/swapfile bs=1G count=8 status=progress
-chmod 600 /swapfile
-mkswap /swapfile
+dd if=/dev/zero of=/mnt/swapfile bs=1G count=8 status=progress
+chmod 600 /mnt/swapfile
+mkswap /mnt/swapfile
+swapon /mnt/swapfile
 #+END_SRC
 
 * Key file for initrd
@@ -99,3 +124,39 @@ mkswap /swapfile
 dd bs=512 count=4 if=/dev/urandom of=private-files/keyfile iflag=fullblock
 sudo cryptosetup luksAddKey /dev/sda2 private-files/keyfile
 #+END_SRC
+
+* Use store on /mnt
+#+BEGIN_SRC shell-script
+herd start cow-store /mnt
+#+END_SRC
+
+* Update channels
+
+TODO: add nonguix channel
+
+#+BEGIN_SRC shell-script
+guix pull
+#+END_SRC
+
+TODO: set ~GUIX_PROFILE~ and load ~$GUIX_PROFILE/etc/profile~
+
+* Clone dotfiles repo
+#+BEGIN_SRC shell-script
+guix shell git -- git clone https://github.com/rsauex/dotfiles.git
+#+END_SRC
+
+* (TODO)
+- lsblk -o 'NAME,LABEL,RM,RO,SIZE,TYPE,FSTYPE,MOUNTPOINT,UUID'
+- non-guix channel
+- drives UUID??
+
+* (TODO) Install bootstrap system
+#+BEGIN_SRC shell-script
+guix system init -L /root/dotfiles ???.scm /mnt
+#+END_SRC
+
+- install bootstrap home
+
+* (TODO) Configure to full system
+
+- pull
