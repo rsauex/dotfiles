@@ -133,7 +133,8 @@
            music:playerctl
            ;; Called from i3 scripts (TODO: Remove)
            xdisorg:xdotool
-           web:jq))
+           web:jq
+           wm:dunst))
     (home-xdg-configuration-files-service-type
      `(("i3/i3blocks.conf"
         ,(rsauex-home-file "i3blocks.conf" "i3blocks.conf"))

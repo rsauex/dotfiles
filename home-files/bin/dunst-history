@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+select_history_element () {
+    dunstctl history \
+        | jq -r '.data[0] | sort_by(-.timestamp.data).[] | "\(.id.data): [\(.summary.data)]\(if (.body.data != "") then ": " else "" end)\(.body.data)"' \
+        | rofi -dmenu \
+        || exit 1
+}
+
+select_history_element | grep -Eo '^[0-9]+'
