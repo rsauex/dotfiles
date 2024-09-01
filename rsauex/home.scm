@@ -261,6 +261,7 @@
                    (my-rofi:rofi-configuration
                     (config
                      `(("font" . "Monospace 12")
+                       ;; TODO: are xresources '*dpi' respected?
                        ("dpi"  . ,(host-dpi))))
                     (theme
                      (file-append nordic-theme:rofi-nord-theme
@@ -312,6 +313,8 @@
                                                           #$(file-append gnome:gnome-themes-extra "/lib/gtk-2.0"))))
                             (list
                              ;; Fix scaling issues in Alacritty
+                             ;; TODO: Should not be needed. Apparently computed from Xft.dpi in xresources.
+                             ;; See https://docs.rs/winit/latest/winit/dpi/index.html
                              (cons "WINIT_X11_SCALE_FACTOR" (number->string (/ (host-dpi) 96.0)))
                              ;; Better DE compatibility
                              (cons "XDG_CURRENT_DESKTOP" "XFCE")
