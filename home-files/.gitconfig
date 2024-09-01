@@ -94,8 +94,5 @@
 [push]
   default = simple
 
-[pull]
-  ff = only
-
 [diff]
   guitool = kdiff3
