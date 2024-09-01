@@ -153,6 +153,9 @@ EndSection
                    dbus-services:polkit-service-type
                    (list networking:blueman))
 
+   ;; Containerd
+   (service docker-services:containerd-service-type)
+
    ;; Docker
    (service docker-services:docker-service-type)
 

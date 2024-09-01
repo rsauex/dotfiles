@@ -24,6 +24,7 @@
     (build-system qt-build-system:qt-build-system)
     (arguments
      `(#:tests? #f
+       #:qtbase ,qt:qtbase-5
        #:configure-flags '("-DENABLE_QT5=ON"
                            "-DENABLE_QT4=OFF"
                            "-DCMAKE_BUILD_TYPE=Release")
@@ -58,7 +59,7 @@
        ,qt:qtx11extras
        ,xorg:libx11
        ,xorg:libxext
-       ,kde-frameworks:kwindowsystem))
+       ,kde-frameworks:kwindowsystem-5))
     (synopsis "SVG-based Qt5 theme engine plus a config tool and extra themes")
     (description "SVG-based Qt5 theme engine plus a config tool and extra themes")
     (home-page "https://github.com/tsujan/Kvantum")
