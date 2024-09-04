@@ -7,7 +7,7 @@
   #:use-module ((gnu packages admin)              #:prefix admin:)
   #:use-module ((gnu packages aspell)             #:prefix aspell:)
   #:use-module ((gnu packages base)               #:prefix base-packages:)
-  #:use-module ((gnu packages compression)        #:prefix compression:)
+  #:use-module ((gnu packages backup)             #:prefix backup:)
   #:use-module ((gnu packages docker)             #:prefix docker:)
   #:use-module ((gnu packages emacs)              #:prefix emacs:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
@@ -216,9 +216,7 @@
                    ;; TODO: needed for my emacs package
                    rsync:rsync
 
-                   compression:zip
-                   compression:unzip
-                   compression:p7zip
+                   backup:libarchive
                    security-token:yubikey-personalization
                    security-token:python-yubikey-manager
                    ssh:openssh
