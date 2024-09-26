@@ -20,10 +20,10 @@
 (define-public powershell
   (package
     (name "powershell")
-    (version "7.2.6")
+    (version "7.4.5")
     (source (origin (method download:url-fetch/tarbomb)
                     (uri (string-append "https://github.com/PowerShell/PowerShell/releases/download/v" version "/powershell-" version "-linux-x64.tar.gz"))
-                    (sha256 (base32 "1lip3855jgn7m7i62srgi8vhvhcn4xkgxy1q943qddnb9g7zc9wr"))))
+                    (sha256 (base32 "0nzl6vn2znjym0s969ilm9wgjl2cxrwza9paysgjpih89p60jdf2"))))
     (build-system trivial-build-system:trivial-build-system)
     (arguments (list #:modules '((guix build utils))
                      #:builder `(begin
@@ -53,9 +53,10 @@
                                                            (string-append (assoc-ref %build-inputs package) "/lib"))
                                                          '("libunwind" "util-linux" "icu4c" "curl" "openssl" "linux-pam" "lttng-ust" "zlib")))
                                             (format #t "export TERMINFO='~a/share/terminfo'~%" (assoc-ref %build-inputs "ncurses"))
-                                            (format #t "exec ~a/pwsh \"$@\"~%" pwsh-output)))
+                                            (format #t "exec ~a \"$@\"~%" pwsh)))
+                                        (chmod pwsh #o755)
                                         (chmod wrapper #o755)))))))
-    (inputs `(("gcc:lib" ,gcc:gcc-9 "lib")
+    (inputs `(("gcc:lib" ,gcc:gcc "lib")
               ("glibc" ,base:glibc)
               ("libunwind" ,libunwind:libunwind)
               ("util-linux" ,linux:util-linux)
