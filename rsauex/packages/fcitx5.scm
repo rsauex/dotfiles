@@ -14,7 +14,7 @@
 (define-public fcitx5-m17n
   (package
     (name "fcitx5-m17n")
-    (version "5.0.9")
+    (version "5.1.3")
     (source
      (origin
        (method git-download:git-fetch)
@@ -24,7 +24,7 @@
        (file-name (git-download:git-file-name name version))
        (sha256
         (base32
-         "1fwipb11018b96lcp7xx5msqn8b56ivy0h04prmsarlgdk6q8917"))))
+         "1kb2wqjgqhn99fhgk0g108laywcj750wrgfl08sb5ykwq8r04wwh"))))
     (build-system cmake-build-system:cmake-build-system)
     (native-inputs
      `(,gettext:gettext-minimal
