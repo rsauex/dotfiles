@@ -1,0 +1,3 @@
+[submodule "home-files-private"]
+	path = home-files-private
+	url = ssh://phi/~rsauex/git/dotfiles-private.git
