@@ -14,6 +14,9 @@ Update-FormatData -PrependPath (Join-Path (Split-Path -Parent $PROFILE) "formatt
 # ------------------------------------------------------------------------------
 # ----- ReadLine options -------------------------------------------------------
 
+# Disable Predictive IntelliSense
+Set-PSReadLineOption -PredictionSource None
+
 Set-PSReadLineOption -Colors @{
   Parameter = [System.ConsoleColor]::DarkMagenta
   Operator  = [System.ConsoleColor]::DarkMagenta

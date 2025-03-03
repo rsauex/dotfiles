@@ -7,7 +7,9 @@
             search-rsauex-private-file
             search-rsauex-patch
             search-rsauex-home-file
-            rsauex-home-file))
+            rsauex-home-file
+            search-rsauex-private-home-file
+            rsauex-private-home-file))
 
 (define %rsauex-aux-files-path
   (make-parameter
@@ -63,4 +65,26 @@
                            (recursive? #f)
                            (select? (const #t)))
   (local-file (assume-valid-file-name (search-rsauex-home-file file))
+              name #:recursive? recursive? #:select? select?))
+
+(define* (search-rsauex-private-home-file file-name #:key (no-error? #f))
+  (let ((file-name (if (absolute-file-name? file-name)
+                       file-name
+                       (string-append (getenv "HOME") "/dotfiles/home-files-private/" file-name))))
+    (cond
+     ((file-exists? file-name)
+      file-name)
+     (no-error?
+      #f)
+     (#t
+      (raise (formatted-message (G_ "~a: rsauex private home file not found")
+                                file-name))))))
+
+(define* (rsauex-private-home-file file
+                                   #:optional
+                                   (name (basename file))
+                                   #:key
+                                   (recursive? #f)
+                                   (select? (const #t)))
+  (local-file (assume-valid-file-name (search-rsauex-private-home-file file))
               name #:recursive? recursive? #:select? select?))
