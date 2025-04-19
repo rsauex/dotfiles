@@ -9,6 +9,7 @@
   #:use-module ((nongnu packages video)           #:prefix non-video:)
   #:use-module ((nongnu services nvidia)          #:prefix non-nvidia-services:)
   #:use-module ((nongnu system linux-initrd)      #:prefix non-linux-initrd:)
+  #:use-module ((rsauex services desktop)         #:prefix my-desktop-services:)
   #:use-module ((rsauex systems desktop)          #:prefix my-desktop-systems:)
   #:export (%os))
 
@@ -155,4 +156,10 @@
                                            (xorg-services:xorg-configuration-modules config)))
                                    (extra-config
                                     (cons* gamma-xorg-config
-                                           (xorg-services:xorg-configuration-extra-config config))))))))))
+                                           (xorg-services:xorg-configuration-extra-config config)))))
+                       (my-desktop-services:elogind-service-type
+                        config => (my-desktop-services:elogind-configuration
+                                   (inherit config)
+                                   (handle-lid-switch 'ignore)
+                                   (handle-lid-switch-external-power 'ignore)
+                                   (handle-lid-switch-docked 'ignore))))))))
