@@ -8,7 +8,7 @@
 (define-public clojure-lsp
   (package
     (name "clojure-lsp")
-    (version "2024.04.22-11.50.26")
+    (version "2025.03.27-20.21.36")
     (source
      (origin
        (method download:url-fetch/zipbomb)
@@ -16,7 +16,7 @@
                            version "/clojure-lsp-native-static-linux-amd64.zip"))
        (sha256
         (base32
-         "0zrcvi9c5ir2552rxyhgn5vfcj5f9rxbl5qrmc7f3srkdnqnhcx9"))))
+         "02agc612mxdhghnqypshy4sj3f6wkfhancf108wzp3ipkhgmncqa"))))
     (build-system copy-build-system:copy-build-system)
     (arguments
      (list #:install-plan
