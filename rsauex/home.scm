@@ -8,7 +8,6 @@
   #:use-module ((gnu packages aspell)             #:prefix aspell:)
   #:use-module ((gnu packages base)               #:prefix base-packages:)
   #:use-module ((gnu packages backup)             #:prefix backup:)
-  #:use-module ((gnu packages docker)             #:prefix docker:)
   #:use-module ((gnu packages emacs)              #:prefix emacs:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages freedesktop)        #:prefix freedesktop:)
@@ -233,7 +232,6 @@
                    xfce:gigolo
                    pdf:qpdfview
                    gnome:system-config-printer
-                   docker:docker-compose
                    wine:wine
                    video:vlc
                    emacs:emacs

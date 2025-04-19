@@ -20,6 +20,7 @@
   #:use-module ((gnu))
   #:use-module ((rsauex channels)                 #:prefix my-channels:)
   #:use-module ((rsauex packages elogind)         #:prefix my-elogind:)
+  #:use-module ((rsauex packages docker)          #:prefix my-docker:)
   #:use-module ((rsauex packages xorg)            #:prefix my-xorg:)
   #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
   #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
@@ -30,7 +31,8 @@
 
 (define %my-desktop-packages
   (list package-management:flatpak
-        gnome:gvfs))
+        gnome:gvfs
+        my-docker:docker-compose-2))
 
 ;; TODO: Better name!
 (define (my-pam-u2f-auth-service)
