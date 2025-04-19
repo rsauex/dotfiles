@@ -6,6 +6,7 @@
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages linux)              #:prefix linux:)
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
+  #:use-module ((gnu packages ncurses)            #:prefix ncurses:)
   #:use-module ((gnu services networking)         #:prefix network-services:)
   #:use-module ((gnu services security-token)     #:prefix security-token-services:)
   #:use-module ((gnu system nss)                  #:prefix system-nss:)
@@ -24,7 +25,8 @@
                 linux:xfsprogs
                 cryptsetup:cryptsetup
                 file-systems:exfat-utils
-                file-systems:exfatprogs)
+                file-systems:exfatprogs
+                ncurses:ncurses)
           %base-packages))
 
 ;; TODO: Better name!
