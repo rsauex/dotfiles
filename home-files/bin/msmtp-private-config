@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+msmtp -C "$HOME/dotfiles/home-files-private/mail/msmtprc" "$@"

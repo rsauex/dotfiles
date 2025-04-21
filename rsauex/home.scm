@@ -19,6 +19,7 @@
   #:use-module ((gnu packages kde-frameworks)     #:prefix kde-frameworks:)
   #:use-module ((gnu packages libreoffice)        #:prefix libreoffice:)
   #:use-module ((gnu packages linux)              #:prefix linux:)
+  #:use-module ((gnu packages mail)               #:prefix mail:)
   #:use-module ((gnu packages music)              #:prefix music:)
   #:use-module ((gnu packages networking)         #:prefix networking:)
   #:use-module ((gnu packages password-utils)     #:prefix passwd-utils:)
@@ -214,6 +215,12 @@
 
                    ;; TODO: needed for my emacs package
                    rsync:rsync
+
+                   ;; Email
+                   mail:mu
+                   mail:isync
+                   mail:msmtp
+                   gnome:libsecret
 
                    backup:libarchive
                    security-token:yubikey-personalization
@@ -471,6 +478,26 @@
             (home-xdg-configuration-files-service-type
              `(("jgmenu"
                 ,(rsauex-home-file "jgmenu" "jgmenu-config" #:recursive? #t)))))
+          (anon-service emacs-daemon-autostart
+            (my-gui-startup:gui-startup-service-type
+             (my-gui-startup:gui-startup-extension
+              (services
+               (list (my-shepherd:simple-forkexec-shepherd-service
+                      'emacs-daemon
+                      "Run emacs daemon"
+                      #~`(#$(file-append emacs:emacs "/bin/emacs")
+                          "--fg-daemon"))))))
+            (xdg:home-xdg-mime-applications-service-type
+             (xdg:home-xdg-mime-applications-configuration
+              (default
+                '((x-scheme-handler/mailto . mu4e.desktop)))
+              (desktop-entries
+               (list (xdg:xdg-desktop-entry
+                      (file "mu4e")
+                      (name "Mu4e")
+                      (type 'application)
+                      (config
+                       '((exec . "emacsclient-call browse-url-mail-popup-frame %u")))))))))
           ;; Git settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (service my-git:git-service-type
                    (my-git:git-configuration

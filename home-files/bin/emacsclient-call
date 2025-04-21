@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+func="$1"; shift
+
+args=("$@")
+args=("${args[@]//\\/\\\\}")
+args=("${args[@]//\"/\\\"}")
+args=("${args[@]/#/\"}")
+args=("${args[@]/%/\"}")
+
+exec emacsclient \
+     --create-frame \
+     --alternate-editor= \
+     --display="$DISPLAY" \
+     --eval "($func ${args[@]})"
