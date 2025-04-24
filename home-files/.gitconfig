@@ -15,7 +15,7 @@
   path = ~/.gitconfig_private
 
 [includeIf "gitdir:~/work/"]
-  path = ~/.gitconfig_work
+  path = ~/work/.gitconfig
 
 ## Main idea:
 # - every important command has a one-character alias (OCA)
