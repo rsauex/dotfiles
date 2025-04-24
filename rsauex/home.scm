@@ -6,8 +6,9 @@
   #:use-module ((gnu home))
   #:use-module ((gnu packages admin)              #:prefix admin:)
   #:use-module ((gnu packages aspell)             #:prefix aspell:)
-  #:use-module ((gnu packages base)               #:prefix base-packages:)
+  #:use-module ((gnu packages audio)              #:prefix audio:)
   #:use-module ((gnu packages backup)             #:prefix backup:)
+  #:use-module ((gnu packages base)               #:prefix base-packages:)
   #:use-module ((gnu packages emacs)              #:prefix emacs:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages freedesktop)        #:prefix freedesktop:)
@@ -478,6 +479,17 @@
             (home-xdg-configuration-files-service-type
              `(("jgmenu"
                 ,(rsauex-home-file "jgmenu" "jgmenu-config" #:recursive? #t)))))
+          (anon-service easyeffects-autostart
+            (home-profile-service-type
+             (list audio:easyeffects))
+            (my-gui-startup:gui-startup-service-type
+             (my-gui-startup:gui-startup-extension
+              (services
+               (list (my-shepherd:simple-forkexec-shepherd-service
+                      'easyeffects
+                      "Run `easyeffects'"
+                      #~`(#$(file-append audio:easyeffects "/bin/easyeffects")
+                          "--gapplication-service")))))))
           (anon-service emacs-daemon-autostart
             (my-gui-startup:gui-startup-service-type
              (my-gui-startup:gui-startup-extension
