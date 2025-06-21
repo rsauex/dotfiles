@@ -76,7 +76,8 @@
 
     (bootloader (bootloader-configuration
                  (bootloader grub-efi-bootloader)
-                 (targets (list "/boot/efi"))))
+                 (targets (list "/boot/efi"))
+                 (extra-initrd "/keyfile.cpio")))
 
     (file-systems %base-file-systems)
 

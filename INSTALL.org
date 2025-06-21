@@ -120,9 +120,14 @@ swapon /mnt/swapfile
 #+END_SRC
 
 * Key file for initrd
+TODO: /dev/random vs /dev/urandom?
+TODO: is sudo needed?
 #+BEGIN_SRC shell-script
-dd bs=512 count=4 if=/dev/urandom of=private-files/keyfile iflag=fullblock
-sudo cryptosetup luksAddKey /dev/sda2 private-files/keyfile
+sudo dd bs=4096 count=1 if=/dev/urandom of=/mnt/keyfile
+sudo cryptosetup luksAddKey /dev/sda2 /mnt/keyfile
+sudo sh -c 'echo /mnt/keyfile | cpio -oH newc >/mnt/keyfile.cpio' # TODO: check paths
+sudo rm /mnt/keyfile
+sudo chmod 0000 /mnt/keyfile.cpio
 #+END_SRC
 
 * Use store on /mnt

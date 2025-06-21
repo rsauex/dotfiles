@@ -116,7 +116,8 @@
     (mapped-devices (list (mapped-device
                            (source (uuid "303dd691-56d1-40e9-8992-4cfd1627e0ec"))
                            (target "cryptroot")
-                           (type luks-device-mapping))))
+                           (type (luks-device-mapping-with-options
+                                  #:key-file "/keyfile")))))
 
     (file-systems (cons* (file-system
                            (device (uuid "8B75-092F" 'fat))
