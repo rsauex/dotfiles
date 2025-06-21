@@ -1,7 +1,8 @@
 (define-module (rsauex systems pc gamma)
-  #:use-module ((gnu services pm)                 #:prefix pm-services:)
+  #:use-module ((gnu services desktop)            #:prefix desktop-services:)
   #:use-module ((gnu services xorg)               #:prefix xorg-services:)
   #:use-module ((gnu system pam)                  #:prefix system-pam:)
+  #:use-module ((gnu services pm)                 #:prefix pm-services:)
   #:use-module ((gnu))
   #:use-module ((guix))
   #:use-module ((nongnu packages linux)           #:prefix non-linux:)
@@ -9,7 +10,6 @@
   #:use-module ((nongnu packages video)           #:prefix non-video:)
   #:use-module ((nongnu services nvidia)          #:prefix non-nvidia-services:)
   #:use-module ((nongnu system linux-initrd)      #:prefix non-linux-initrd:)
-  #:use-module ((rsauex services desktop)         #:prefix my-desktop-services:)
   #:use-module ((rsauex systems desktop)          #:prefix my-desktop-systems:)
   #:export (%os))
 
@@ -157,8 +157,8 @@
                                    (extra-config
                                     (cons* gamma-xorg-config
                                            (xorg-services:xorg-configuration-extra-config config)))))
-                       (my-desktop-services:elogind-service-type
-                        config => (my-desktop-services:elogind-configuration
+                       (desktop-services:elogind-service-type
+                        config => (desktop-services:elogind-configuration
                                    (inherit config)
                                    (handle-lid-switch 'ignore)
                                    (handle-lid-switch-external-power 'ignore)

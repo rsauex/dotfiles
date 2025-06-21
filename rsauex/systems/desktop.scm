@@ -21,7 +21,6 @@
   #:use-module ((rsauex channels)                 #:prefix my-channels:)
   #:use-module ((rsauex packages docker)          #:prefix my-docker:)
   #:use-module ((rsauex packages xorg)            #:prefix my-xorg:)
-  #:use-module ((rsauex services desktop)         #:prefix my-desktop-services:)
   #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
   #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
   #:use-module ((srfi srfi-1))
@@ -198,7 +197,7 @@ EndSection
    ;; D-Bus services
    (service dbus-services:dbus-root-service-type)
    (service dbus-services:polkit-service-type)
-   (service my-desktop-services:elogind-service-type)
+   (service desktop-services:elogind-service-type)
    (service desktop-services:accountsservice-service-type)
    (service desktop-services:colord-service-type)
    (service desktop-services:cups-pk-helper-service-type)
