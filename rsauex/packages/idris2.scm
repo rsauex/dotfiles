@@ -9,10 +9,12 @@
   #:use-module ((guix packages)))
 
 (define-public idris2
-  (let ((commit "c52b029986e47d02f60fd2d59d79d1c9baaba0c1"))
+  (let* ((commit "562ef55a31635a2a7196b80ad7a0e034b8de6d43")
+         (commit-short (substring commit 0 7))
+         (base-version "0.7.0"))
     (package
       (name "idris2")
-      (version "0.6.0")
+      (version (string-append base-version "-" commit-short))
       (source (origin
                 (method git-download:git-fetch)
                 (uri (git-download:git-reference
@@ -22,7 +24,7 @@
                                   commit))))
                 (file-name (git-download:git-file-name name version))
                 (sha256
-                 (base32 "1jzgmqj65dyavffd88l1yn8fa67ifl06jjnpbr702dshl3gf5nzl"))))
+                 (base32 "1kpbrxw8gz9l2mi1lq93g3691xbnkcnp7klkrp6933kkdcmxmr4h"))))
       (build-system gnu-build-system:gnu-build-system)
       (native-inputs
        (list llvm:clang
@@ -55,11 +57,17 @@
                   (lambda (file)
                     (substitute* file
                       (("/bin/sh") (string-append bash "/bin/sh"))))
-                  (list "src/Compiler/Scheme/Chez.idr"
+                  (list "support/c/idris_file.c"
+                        "src/Compiler/Scheme/Chez.idr"
                         "src/Compiler/Scheme/ChezSep.idr"
                         "src/Compiler/Scheme/Racket.idr"
                         "bootstrap/idris2_app/idris2.rkt"
-                        "bootstrap/idris2_app/idris2.ss")))))
+                        "bootstrap/idris2_app/idris2.ss"))
+                 (for-each
+                  (lambda (file)
+                    (substitute* file
+                      (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))
+                  (list "bootstrap-stage1-chez.sh")))))
            (replace 'install
              (lambda* (#:key (make-flags '()) #:allow-other-keys)
                (apply invoke "make" "install" "install-with-src-libs" make-flags)))
@@ -77,7 +85,7 @@
                  ;;   IDRIS2_PREFIX. We set that to a default of ~/.idris2, to mirror the
                  ;;   behaviour of the standard Makefile install.
                  (let* ((chez (assoc-ref inputs "chez-scheme"))
-                        (name (string-append ,name "-" ,version))
+                        (name (string-append ,name "-" ,base-version))
                         (global-libraries (list (string-append out "/" name))))
                    (wrap-program
                        (string-append out "/bin/idris2")
