@@ -60,39 +60,44 @@
 
 (define kernel-args-nvidia
   (list "modprobe.blacklist=nouveau"
-        "ibt=off" ;; See https://github.com/NVIDIA/open-gpu-kernel-modules/issues/256
-        ))
+        "nvidia_drm.modeset=1"))
 
 (define (tlp-service)
   (let ((config (pm-services:tlp-configuration
                  (tlp-enable? #t)
-                 (sound-power-save-on-ac 1)
-                 (sound-power-save-on-bat 1)
                  (sound-power-save-controller? #t)
                  (start-charge-thresh-bat0 75)
                  (stop-charge-thresh-bat0 85)
-                 (sata-linkpwr-on-ac "med_power_with_dipm")
-                 (sata-linkpwr-on-bat "med_power_with_dipm")
                  (nmi-watchdog? #f)
-                 (wifi-pwr-on-ac? #f)
-                 (wifi-pwr-on-bat? #f)
                  (wol-disable? #t)
-                 (cpu-scaling-governor-on-ac '("powersave"))
-                 (cpu-scaling-governor-on-bat '("powersave"))
-                 (cpu-min-perf-on-ac 17)
-                 (cpu-max-perf-on-ac 100)
-                 (cpu-min-perf-on-bat 17)
-                 (cpu-max-perf-on-bat 100)
-                 (cpu-boost-on-ac? #f)
-                 (cpu-boost-on-bat? #f)
-                 (sched-powersave-on-ac? #t)
-                 (sched-powersave-on-bat? #t)
-                 (runtime-pm-on-ac "auto")
-                 (runtime-pm-on-bat "auto")
                  (runtime-pm-blacklist '("0b:00.0"))
+                 (usb-autosuspend? #t)
+
+                 ;; AC
+                 (sound-power-save-on-ac 0)
+                 (sata-linkpwr-on-ac "med_power_with_dipm")
+                 (wifi-pwr-on-ac? #f)
+                 (cpu-scaling-governor-on-ac '("performance"))
+                 (cpu-min-perf-on-ac 0)
+                 (cpu-max-perf-on-ac 100)
+                 (cpu-boost-on-ac? #t)
+                 (sched-powersave-on-ac? #f)
+                 (energy-perf-policy-on-ac "performance")
+                 (runtime-pm-on-ac "auto")
                  (pcie-aspm-on-ac "default")
-                 (pcie-aspm-on-bat "default")
-                 (usb-autosuspend? #t))))
+
+                 ;; Battery
+                 (sound-power-save-on-bat 1)
+                 (sata-linkpwr-on-bat "med_power_with_dipm")
+                 (wifi-pwr-on-bat? #f)
+                 (cpu-scaling-governor-on-bat '("powersave"))
+                 (cpu-min-perf-on-bat 0)
+                 (cpu-max-perf-on-bat 100)
+                 (cpu-boost-on-bat? #f)
+                 (sched-powersave-on-bat? #t)
+                 (energy-perf-policy-on-bat "power")
+                 (runtime-pm-on-bat "auto")
+                 (pcie-aspm-on-bat "default"))))
     (service pm-services:tlp-service-type config)))
 
 (define %os
@@ -133,12 +138,19 @@
     (services (cons* (tlp-service)
 
                      ;; TODO: what if I want to use nvidia for hardware acceleration?
-                     (simple-service 'intel-media-driver-va
+                     ;; (simple-service 'intel-media-driver-va
+                     ;;                 system-pam:session-environment-service-type
+                     ;;                 `(("LIBVA_DRIVERS_PATH"
+                     ;;                    . ,(file-append non-video:intel-media-driver "/lib/dri"))
+                     ;;                   ("LIBVA_DRIVER_NAME"
+                     ;;                    . "iHD")))
+                     ;; TODO: is this needed?
+                     (simple-service 'nvidia-vaapi
                                      system-pam:session-environment-service-type
                                      `(("LIBVA_DRIVERS_PATH"
-                                        . ,(file-append non-video:intel-media-driver "/lib/dri"))
+                                        . ,(file-append non-video:nvidia-vaapi-driver "/lib/dri"))
                                        ("LIBVA_DRIVER_NAME"
-                                        . "iHD")))
+                                        . "nvidia")))
                      (simple-service 'host-dpi-env-var
                                      system-pam:session-environment-service-type
                                      `(("HOST_DPI"
