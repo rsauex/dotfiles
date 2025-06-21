@@ -33,6 +33,7 @@
   #:use-module ((gnu packages scanner)            #:prefix scanner:)
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
   #:use-module ((gnu packages ssh)                #:prefix ssh:)
+  #:use-module ((gnu packages sync)               #:prefix sync:)
   #:use-module ((gnu packages syncthing)          #:prefix syncthing:)
   #:use-module ((gnu packages terminals)          #:prefix terms:)
   #:use-module ((gnu packages text-editors)       #:prefix text-editors:)
@@ -516,6 +517,13 @@
                     (hooks (list (git-dont-push-wip-commits)
                                  (git-prevent-push-to-important-branches)))))
           ;; Other settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+          (anon-service rclone-env
+            (home-profile-service-type
+             (list sync:rclone))
+            (home-environment-variables-service-type
+             (list
+              (cons "RCLONE_PASSWORD_COMMAND" #~(string-append #$(file-append gnome:libsecret "/bin/secret-tool") " lookup Title rclone"))
+              (cons "RCLONE_CONFIG" (string-append (getenv "HOME") "/dotfiles/home-files-private/rclone/rclone.conf")))))
           (simple-service 'tmux
                           home-files-service-type
                           `((".tmux.conf"
