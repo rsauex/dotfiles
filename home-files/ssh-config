@@ -7,9 +7,12 @@ HashKnownHosts no
 # Don't connect to unknown host or add them to known_hosts.
 StrictHostKeyChecking yes
 
+# know_hosts file is stored along with other private home files.
+UserKnownHostsFile ~/dotfiles/home-files-private/ssh/known_hosts
+
 ## Host specific options
 
-Include ~/.ssh/configs/*.conf
+Include ~/dotfiles/home-files-private/ssh/configs/*.conf
 
 ## Default options
 Host *
