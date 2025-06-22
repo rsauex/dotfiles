@@ -6,13 +6,13 @@
 ## Include private part
 
 [includeIf "gitdir:~/.emacs.d/"]
-  path = ~/.gitconfig_private
+  path = ~/dotfiles/home-files-private/git/config-personal
 
 [includeIf "gitdir:~/dotfiles/"]
-  path = ~/.gitconfig_private
+  path = ~/dotfiles/home-files-private/git/config-personal
 
 [includeIf "gitdir:~/Projects/"]
-  path = ~/.gitconfig_private
+  path = ~/dotfiles/home-files-private/git/config-personal
 
 [includeIf "gitdir:~/work/"]
   path = ~/work/.gitconfig
