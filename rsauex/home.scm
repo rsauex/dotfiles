@@ -569,6 +569,4 @@
           (simple-service 'ssh-config
                           home-files-service-type
                           `((".ssh/config"
-                             ,(rsauex-home-file "ssh-config" "ssh-config"))
-                            (".ssh/known_hosts"
-                             ,(rsauex-private-home-file "ssh/known_hosts" "ssh-known-hosts"))))))))
+                             ,(rsauex-home-file "ssh-config" "ssh-config"))))))))
