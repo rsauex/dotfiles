@@ -15,6 +15,7 @@
   #:use-module ((gnu services desktop)            #:prefix desktop-services:)
   #:use-module ((gnu services docker)             #:prefix docker-services:)
   #:use-module ((gnu services networking)         #:prefix networking-services:)
+  #:use-module ((gnu services sysctl)             #:prefix sysctl-services:)
   #:use-module ((gnu services xorg)               #:prefix xorg-services:)
   #:use-module ((gnu system pam)                  #:prefix pam:)
   #:use-module ((gnu))
@@ -183,7 +184,7 @@ EndSection
    ;; so mount it read-only.
    desktop-services:fontconfig-file-system-service
 
-   ;; Network manager
+   ;; Network
    (service networking-services:network-manager-service-type
             (networking-services:network-manager-configuration
              (dns "dnsmasq")))
@@ -193,6 +194,12 @@ EndSection
    (simple-service 'network-manager-applet
                    profile-service-type
                    (list gnome:network-manager-applet))
+   (simple-service 'sysctl-ipv6
+                   sysctl-services:sysctl-service-type
+                   `(;; Enable Privacy Extensions and prefer temporary
+                     ;; addresses over public addresses
+                     ("net.ipv6.conf.all.use_tempaddr"     . "2")
+                     ("net.ipv6.conf.default.use_tempaddr" . "2")))
 
    ;; D-Bus services
    (service dbus-services:dbus-root-service-type)
