@@ -24,6 +24,7 @@
   #:use-module ((rsauex packages xorg)            #:prefix my-xorg:)
   #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
   #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
+  #:use-module ((rsauex packages firewalld)       #:prefix my-firewalld:)
   #:use-module ((srfi srfi-1))
   #:export (%my-desktop-packages
             %my-desktop-services
@@ -122,6 +123,23 @@ Section \"InputClass\"
      Option          \"XkbOptions\" \",\"
 EndSection
 ")
+
+(define (firewalld-configuration-package _config)
+  my-firewalld:firewalld)
+
+(define firewalld-service-type
+  (service-type
+   (name 'firewalld)
+   (description
+    "Run @command{firewalld}, setting up the specified ruleset.")
+   (extensions
+    (list (service-extension dbus-services:dbus-root-service-type
+                             (compose list firewalld-configuration-package))
+          (service-extension dbus-services:polkit-service-type
+                             (compose list firewalld-configuration-package))
+          (service-extension profile-service-type
+                             (compose list firewalld-configuration-package))))
+   (default-value #nil)))
 
 (define %my-desktop-services
   (list
@@ -231,7 +249,10 @@ EndSection
    (service base-services:pam-limits-service-type
             (list
              ;; Increase max open files
-             (pam:pam-limits-entry "*" 'both 'nofile 65536)))))
+             (pam:pam-limits-entry "*" 'both 'nofile 65536)))
+
+   ;; Firewalld
+   (service firewalld-service-type)))
 
 (define %my-base-desktop-system
   (operating-system
