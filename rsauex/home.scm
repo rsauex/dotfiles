@@ -75,6 +75,7 @@
   #:use-module ((rsauex packages kvantum)             #:prefix kvantum:)
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
   #:use-module ((rsauex packages powershell)          #:prefix powershell:)
+  #:use-module ((rsauex packages rclone)              #:prefix my-rclone:)
   #:use-module ((rsauex packages the-dot)             #:prefix the-dot:)
   #:use-module ((rsauex packages))
   #:use-module ((rsauex script template))
@@ -519,7 +520,7 @@
           ;; Other settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           (anon-service rclone-env
             (home-profile-service-type
-             (list sync:rclone))
+             (list my-rclone:rclone-next))
             (home-environment-variables-service-type
              (list
               (cons "RCLONE_PASSWORD_COMMAND" #~(string-append #$(file-append gnome:libsecret "/bin/secret-tool") " lookup Title rclone"))
