@@ -77,9 +77,9 @@
     (name-service-switch system-nss:%mdns-host-lookup-nss)
 
     (bootloader (bootloader-configuration
-                 (bootloader grub-efi-bootloader)
-                 (targets (list "/boot/efi"))
-                 (extra-initrd "/keyfile.cpio")))
+                  (bootloader grub-efi-bootloader)
+                  (targets (list "/boot/efi"))
+                  (extra-initrd "/keyfile.cpio")))
 
     (file-systems %base-file-systems)
 
@@ -90,24 +90,24 @@
     (services %my-base-services)
 
     (users (cons* (user-account
-                   (name "rsauex")
-                   (uid 1000)
-                   (group "users")
-                   (supplementary-groups '(;; Pipewire
-                                           "audio"
-                                           ;; X, DRI, backlight
-                                           "video"
-                                           ;; X
-                                           "input"
-                                           ;; sudo
-                                           "wheel"
-                                           ;; Serial ports
-                                           "dialout"
-                                           ;; KVM acceleration
-                                           "kvm"
-                                           ;; Printers
-                                           "lpadmin"
-                                           "lp"
-                                           ;; Docker without sudo
-                                           "docker")))
+                    (name "rsauex")
+                    (uid 1000)
+                    (group "users")
+                    (supplementary-groups '(;; Pipewire
+                                            "audio"
+                                            ;; X, DRI, backlight
+                                            "video"
+                                            ;; X
+                                            "input"
+                                            ;; sudo
+                                            "wheel"
+                                            ;; Serial ports
+                                            "dialout"
+                                            ;; KVM acceleration
+                                            "kvm"
+                                            ;; Printers
+                                            "lpadmin"
+                                            "lp"
+                                            ;; Docker without sudo
+                                            "docker")))
                   %base-user-accounts))))

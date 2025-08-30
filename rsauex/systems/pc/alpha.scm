@@ -17,9 +17,9 @@
     (firmware (list non-linux:linux-firmware))
 
     (mapped-devices (list (mapped-device
-                           (source (uuid "eb58fa70-7419-4e29-8d9f-30c53f67cc26"))
-                           (target "cryptroot")
-                           (type luks-device-mapping))))
+                            (source (uuid "eb58fa70-7419-4e29-8d9f-30c53f67cc26"))
+                            (target "cryptroot")
+                            (type luks-device-mapping))))
 
     (file-systems (cons* (file-system
                            (device (uuid "1776-7414" 'fat))

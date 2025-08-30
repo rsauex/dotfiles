@@ -1,10 +1,10 @@
 (define-module (rsauex home services shepherd)
   #:use-module ((gnu home services shepherd)
                 #:select (home-shepherd-configuration
-                          home-shepherd-configuration?
-                          home-shepherd-configuration-shepherd
-                          home-shepherd-configuration-auto-start?
-                          home-shepherd-configuration-services))
+                           home-shepherd-configuration?
+                           home-shepherd-configuration-shepherd
+                           home-shepherd-configuration-auto-start?
+                           home-shepherd-configuration-services))
   #:use-module ((gnu home services))
   #:use-module ((gnu packages admin))
   #:use-module ((gnu services shepherd))
@@ -21,25 +21,25 @@
             home-shepherd-configuration-file
             home-shepherd-session-launch-file)
   #:re-export (shepherd-service
-               shepherd-service?
-               shepherd-service-documentation
-               shepherd-service-provision
-               shepherd-service-canonical-name
-               shepherd-service-requirement
-               shepherd-service-one-shot?
-               shepherd-service-respawn?
-               shepherd-service-start
-               shepherd-service-stop
-               shepherd-service-auto-start?
-               shepherd-service-modules
+                shepherd-service?
+                shepherd-service-documentation
+                shepherd-service-provision
+                shepherd-service-canonical-name
+                shepherd-service-requirement
+                shepherd-service-one-shot?
+                shepherd-service-respawn?
+                shepherd-service-start
+                shepherd-service-stop
+                shepherd-service-auto-start?
+                shepherd-service-modules
 
-               shepherd-action
+                shepherd-action
 
-               home-shepherd-configuration
-               home-shepherd-configuration?
-               home-shepherd-configuration-shepherd
-               home-shepherd-configuration-auto-start?
-               home-shepherd-configuration-services))
+                home-shepherd-configuration
+                home-shepherd-configuration?
+                home-shepherd-configuration-shepherd
+                home-shepherd-configuration-auto-start?
+                home-shepherd-configuration-services))
 
 (define (home-shepherd-configuration-file config)
   "Return the shepherd configuration file for SERVICES.  SHEPHERD is used
@@ -124,10 +124,10 @@ as shepherd package."
                 (extend
                  (lambda (config extra-services)
                    (home-shepherd-configuration
-                    (inherit config)
-                    (services
-                     (append (home-shepherd-configuration-services config)
-                             extra-services)))))
+                     (inherit config)
+                     (services
+                      (append (home-shepherd-configuration-services config)
+                              extra-services)))))
                 (default-value (home-shepherd-configuration))
                 (description "Configure and install userland Shepherd.")))
 
@@ -150,19 +150,19 @@ as shepherd package."
                                            (requirement '())
                                            (data-packages '()))
   (shepherd-service
-   (documentation documentation)
-   (provision (list name))
-   (start #~(make-forkexec-constructor
-             #$command-gexp
-             #:environment-variables #$(add-packages-to-xdg-data-dirs-gexp
-                                        data-packages
-                                        #~(default-environment-variables))))
-   (stop #~(make-kill-destructor))
-   (respawn? respawn?)
-   (requirement requirement)
-   (modules (cons* `(srfi srfi-1)
-                   `(srfi srfi-26)
-                   %default-modules))))
+    (documentation documentation)
+    (provision (list name))
+    (start #~(make-forkexec-constructor
+              #$command-gexp
+              #:environment-variables #$(add-packages-to-xdg-data-dirs-gexp
+                                         data-packages
+                                         #~(default-environment-variables))))
+    (stop #~(make-kill-destructor))
+    (respawn? respawn?)
+    (requirement requirement)
+    (modules (cons* `(srfi srfi-1)
+                    `(srfi srfi-26)
+                    %default-modules))))
 
 (define* (simple-one-shot-shepherd-service name documentation command-gexp
                                            #:key
@@ -170,10 +170,10 @@ as shepherd package."
                                            (requirement '())
                                            (extra-modules '()))
   (shepherd-service
-   (documentation documentation)
-   (provision (list name))
-   (start command-gexp)
-   (one-shot? #t)
-   (auto-start? auto-start?)
-   (requirement requirement)
-   (modules (append %default-modules extra-modules))))
+    (documentation documentation)
+    (provision (list name))
+    (start command-gexp)
+    (one-shot? #t)
+    (auto-start? auto-start?)
+    (requirement requirement)
+    (modules (append %default-modules extra-modules))))

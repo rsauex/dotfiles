@@ -45,7 +45,7 @@
   (let ((backend-packages (map xdg-desktop-portal-backend-package
                                (xdg-desktop-portal-configuration-backends config))))
     (profile
-     (content (packages->manifest backend-packages)))))
+      (content (packages->manifest backend-packages)))))
 
 (define (xdg-desktop-portal-gui-startup-service config)
   (let ((xdg-desktop-portal (xdg-desktop-portal-configuration-xdg-desktop-portal config))

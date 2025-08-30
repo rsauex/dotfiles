@@ -52,8 +52,8 @@
              #~'(("." "share/openscad/lib/BOSL2"))))
       (native-search-paths
        (list (search-path-specification
-              (variable "OPENSCADPATH")
-              (files '("share/openscad/lib")))))
+               (variable "OPENSCADPATH")
+               (files '("share/openscad/lib")))))
       (home-page "https://github.com/BelfrySCAD/BOSL2")
       (synopsis "The Belfry OpenScad Library, v2.0.")
       (description "An OpenSCAD library of shapes, masks, and manipulators to make working with OpenSCAD easier.")

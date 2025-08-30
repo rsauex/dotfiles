@@ -16,31 +16,31 @@
 
     (label "master")
     (bootloader (bootloader-configuration
-                 (bootloader (bootloader
-                              (inherit grub-efi-bootloader)
-                              (installer
-                               ;; Copied from (gnu bootloader grub)
-                               #~(lambda (bootloader efi-dir mount-point)
-                                   ;; There is nothing useful to do when called in the context of a disk
-                                   ;; image generation.
-                                   (when efi-dir
-                                     ;; Install GRUB onto the EFI partition mounted at EFI-DIR, for the
-                                     ;; system whose root is mounted at MOUNT-POINT.
-                                     (let ((grub-install (string-append bootloader "/sbin/grub-install"))
-                                           (install-dir (string-append mount-point "/boot"))
-                                           ;; When installing Guix, it's common to mount EFI-DIR below
-                                           ;; MOUNT-POINT rather than /boot/efi on the live image.
-                                           (target-esp (if (file-exists? (string-append mount-point efi-dir))
-                                                           (string-append mount-point efi-dir)
-                                                           efi-dir)))
-                                       ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
-                                       ;; root partition.
-                                       (setenv "GRUB_ENABLE_CRYPTODISK" "y")
-                                       (invoke/quiet grub-install
-                                                     "--removable"
-                                                     "--boot-directory" install-dir
-                                                     "--efi-directory" target-esp)))))))
-                 (targets (list "/mnt/boot/efi"))))
+                  (bootloader (bootloader
+                                (inherit grub-efi-bootloader)
+                                (installer
+                                 ;; Copied from (gnu bootloader grub)
+                                 #~(lambda (bootloader efi-dir mount-point)
+                                     ;; There is nothing useful to do when called in the context of a disk
+                                     ;; image generation.
+                                     (when efi-dir
+                                       ;; Install GRUB onto the EFI partition mounted at EFI-DIR, for the
+                                       ;; system whose root is mounted at MOUNT-POINT.
+                                       (let ((grub-install (string-append bootloader "/sbin/grub-install"))
+                                             (install-dir (string-append mount-point "/boot"))
+                                             ;; When installing Guix, it's common to mount EFI-DIR below
+                                             ;; MOUNT-POINT rather than /boot/efi on the live image.
+                                             (target-esp (if (file-exists? (string-append mount-point efi-dir))
+                                                             (string-append mount-point efi-dir)
+                                                             efi-dir)))
+                                         ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
+                                         ;; root partition.
+                                         (setenv "GRUB_ENABLE_CRYPTODISK" "y")
+                                         (invoke/quiet grub-install
+                                                       "--removable"
+                                                       "--boot-directory" install-dir
+                                                       "--efi-directory" target-esp)))))))
+                  (targets (list "/mnt/boot/efi"))))
 
     ;; (initrd (lambda (file-systems . rest)
     ;;           (apply base-initrd
@@ -50,9 +50,9 @@
 
     (mapped-devices (list
                      (mapped-device
-                      (source (uuid "413c889d-432a-4cc9-b3ad-ef9f689fc62c"))
-                      (target "cryptroot")
-                      (type luks-device-mapping))))
+                       (source (uuid "413c889d-432a-4cc9-b3ad-ef9f689fc62c"))
+                       (target "cryptroot")
+                       (type luks-device-mapping))))
 
     (file-systems (list
                    (file-system
@@ -79,10 +79,10 @@
 
     (users (list
             (user-account
-             (name "master")
-             (group "users")
-             (password "")
-             (supplementary-groups '("wheel")))))
+              (name "master")
+              (group "users")
+              (password "")
+              (supplementary-groups '("wheel")))))
 
     (name-service-switch %mdns-host-lookup-nss)
 
