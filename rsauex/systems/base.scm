@@ -5,8 +5,9 @@
   #:use-module ((gnu packages file-systems)       #:prefix file-systems:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages linux)              #:prefix linux:)
-  #:use-module ((gnu packages security-token)     #:prefix security-token:)
+  #:use-module ((gnu packages mtools)             #:prefix mtools:)
   #:use-module ((gnu packages ncurses)            #:prefix ncurses:)
+  #:use-module ((gnu packages security-token)     #:prefix security-token:)
   #:use-module ((gnu services networking)         #:prefix network-services:)
   #:use-module ((gnu services security-token)     #:prefix security-token-services:)
   #:use-module ((gnu system nss)                  #:prefix system-nss:)
@@ -19,6 +20,7 @@
 
 (define %my-base-packages
   (append (list disk:dosfstools
+                mtools:mtools
                 linux:btrfs-progs
                 linux:f2fs-tools
                 file-systems:jfsutils
