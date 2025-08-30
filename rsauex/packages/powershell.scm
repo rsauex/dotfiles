@@ -60,7 +60,7 @@
               ("glibc" ,base:glibc)
               ("libunwind" ,libunwind:libunwind)
               ("util-linux" ,linux:util-linux)
-              ("icu4c" ,icu4c:icu4c-69)
+              ("icu4c" ,icu4c:icu4c)
               ("curl" ,curl:curl)
               ("openssl" ,tls:openssl)
               ("lttng-ust" ,instrumentation:lttng-ust)
