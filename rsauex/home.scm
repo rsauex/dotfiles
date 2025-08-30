@@ -324,6 +324,8 @@
                              (cons "WINIT_X11_SCALE_FACTOR" (number->string (/ (host-dpi) 96.0)))
                              ;; Better DE compatibility
                              (cons "XDG_CURRENT_DESKTOP" "XFCE")
+                             ;; Flatpak (TODO: on system level?)
+                             (cons "XDG_DATA_DIRS" "$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share")
                              ;; Better QT
                              (cons "QT_QPA_PLATFORMTHEME" "qt5ct")
                              ;; Local bin
