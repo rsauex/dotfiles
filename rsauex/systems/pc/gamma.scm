@@ -1,8 +1,10 @@
 (define-module (rsauex systems pc gamma)
+  #:use-module ((gnu packages virtualization)     #:prefix virtualization:)
   #:use-module ((gnu services desktop)            #:prefix desktop-services:)
+  #:use-module ((gnu services docker)             #:prefix docker-services:)
+  #:use-module ((gnu services pm)                 #:prefix pm-services:)
   #:use-module ((gnu services xorg)               #:prefix xorg-services:)
   #:use-module ((gnu system pam)                  #:prefix system-pam:)
-  #:use-module ((gnu services pm)                 #:prefix pm-services:)
   #:use-module ((gnu))
   #:use-module ((guix))
   #:use-module ((nongnu packages linux)           #:prefix non-linux:)
@@ -10,6 +12,7 @@
   #:use-module ((nongnu packages video)           #:prefix non-video:)
   #:use-module ((nongnu services nvidia)          #:prefix non-nvidia-services:)
   #:use-module ((nongnu system linux-initrd)      #:prefix non-linux-initrd:)
+  #:use-module ((rsauex packages nvidia-container) #:prefix my-nvidia-container:)
   #:use-module ((rsauex systems desktop)          #:prefix my-desktop-systems:)
   #:export (%os))
 
@@ -100,6 +103,20 @@
                  (pcie-aspm-on-bat "default"))))
     (service pm-services:tlp-service-type config)))
 
+(define docker-nvidia
+  (mixed-text-file
+   "daemon.json"
+   "
+{
+    \"runtimes\": {
+        \"nvidia\": {
+            \"args\": [],
+            \"path\": \"" my-nvidia-container:nvidia-container-toolkit "/bin/nvidia-container-runtime\"
+        }
+    }
+}
+"))
+
 (define %os
   (operating-system
     (inherit my-desktop-systems:%my-base-desktop-system)
@@ -134,7 +151,9 @@
     (swap-devices (list (swap-space
                           (target "/swapfile"))))
 
-    (packages (cons* (operating-system-packages my-desktop-systems:%my-base-desktop-system)))
+    (packages (cons* my-nvidia-container:nvidia-container-toolkit
+                     virtualization:runc
+                     (operating-system-packages my-desktop-systems:%my-base-desktop-system)))
 
     (services (cons* (tlp-service)
 
@@ -175,4 +194,10 @@
                                    (inherit config)
                                    (handle-lid-switch 'ignore)
                                    (handle-lid-switch-external-power 'ignore)
-                                   (handle-lid-switch-docked 'ignore))))))))
+                                   (handle-lid-switch-docked 'ignore)))
+                       (docker-services:docker-service-type
+                        config => (docker-services:docker-configuration
+                                   (inherit config)
+                                   (config-file docker-nvidia)
+                                   (environment-variables
+                                    (list "PATH=/run/current-system/profile/bin:/run/current-system/profile/sbin")))))))))
