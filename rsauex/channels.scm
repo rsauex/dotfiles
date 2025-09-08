@@ -25,3 +25,16 @@
                  51 236 80 201 243 7 174 33
                  113 162 211 181 44 128 70 66
                  167 163 95 132 243 164 234 152)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define %channels
+  (list
+   (channels:channel
+    (inherit channels:%default-guix-channel)
+    (commit "3f3359c7be235a7e86dc27c70f2221ec82871613"))
+   (channels:channel
+    (inherit nonguix-channel)
+    (commit "b5f43404ef9c79220b355e835481749587751512"))))
+
+%channels

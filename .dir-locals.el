@@ -19,7 +19,9 @@
                      (fill-column . 72)))
  (scheme-mode
   .
-  (;; Note this next setting will use the current guix as the geiser binary;
+  ((eval . (put 'anon-service 'scheme-indent-function 1))
+
+   ;; Note this next setting will use the current guix as the geiser binary;
    ;; one working with a local guix checkout may want something different.
    (geiser-guile-binary . ("guix" "repl"))
    

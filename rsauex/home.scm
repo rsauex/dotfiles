@@ -55,6 +55,7 @@
   #:use-module ((ice-9 textual-ports))
   #:use-module ((nongnu packages mozilla)             #:prefix mozilla:)
   #:use-module ((rsauex channels)                     #:prefix my-channels:)
+  #:use-module ((rsauex inferior)                     #:prefix my-inferior:)
   #:use-module ((rsauex home services channels)       #:prefix my-channels-service:)
   #:use-module ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
   #:use-module ((rsauex home services dunst)          #:prefix my-dunst-service:)
@@ -189,6 +190,15 @@
   (let ((host-dpi (getenv "HOST_DPI")))
     (if host-dpi (string->number host-dpi) 96)))
 
+(define (working-xsane)
+  (my-inferior:lookup-package-in-channel
+   (channels:channel
+    (name 'guix)
+    (url "https://codeberg.org/hugobuddel/guix-mirror.git")
+    (commit "45fdaa4d3123302338f1beb0f3354e1d6c6f37a9"))
+   "xsane"
+   #:authenticate? #f))
+
 (define (%home-environment)
   (home-environment
     (packages (list fonts:font-iosevka-term
@@ -225,6 +235,8 @@
                     mail:msmtp
                     gnome:libsecret
 
+                    base-packages:glibc-locales
+
                     backup:libarchive
                     security-token:yubikey-personalization
                     security-token:python-yubikey-manager
@@ -236,13 +248,13 @@
                     terms:alacritty
                     xdisorg:arandr
                     libreoffice:libreoffice
-                    scanner:xsane
+                    (working-xsane) ;; scanner:xsane
                     passwd-utils:keepassxc
                     pulseaudio:pavucontrol
                     xfce:gigolo
                     pdf:qpdfview
                     gnome:system-config-printer
-                    wine:wine
+                    ;; wine:wine ;; broken
                     video:vlc
                     emacs:emacs
                     gimp:gimp
@@ -260,9 +272,6 @@
               (list (rsauex-home-file ".bashrc" "bashrc")))
              (bash-logout
               (list (rsauex-home-file ".bash_logout" "bash_logout")))))
-           (service my-channels-service:channels-service-type
-                    (cons* my-channels:nonguix-channel
-                           channels:%default-channels))
            (service my-rofi:rofi-service-type
                     (my-rofi:rofi-configuration
                      (config
