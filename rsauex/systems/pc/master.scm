@@ -161,7 +161,7 @@
                (service security-token-services:pcscd-service-type)))
 
     (packages (append
-               (list (@ (gnu packages nss) nss-certs)
+               (list (@ (gnu packages certs) nss-certs)
                      (@ (gnu packages gnupg) gnupg)
                      (@ (gnu packages gnupg) paperkey)
                      (@ (gnu packages gnupg) pinentry-tty)
