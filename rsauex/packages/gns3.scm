@@ -34,7 +34,9 @@
                (("sentry-sdk==")
                 "sentry-sdk>=")
                (("jsonschema==")
-                "jsonschema>="))
+                "jsonschema>=")
+               (("distro==")
+                "distro>="))
              #t)))))
     (inputs
      `(,python-xyz:python-distro

@@ -190,29 +190,19 @@
   (let ((host-dpi (getenv "HOST_DPI")))
     (if host-dpi (string->number host-dpi) 96)))
 
-(define (working-xsane)
-  (my-inferior:lookup-package-in-channel
-   (channels:channel
-    (name 'guix)
-    (url "https://codeberg.org/hugobuddel/guix-mirror.git")
-    (commit "45fdaa4d3123302338f1beb0f3354e1d6c6f37a9"))
-   "xsane"
-   #:authenticate? #f))
-
 (define (%home-environment)
   (home-environment
     (packages (list fonts:font-iosevka-term
                     fonts:font-google-roboto
                     fonts:font-google-noto
-                    fonts:font-adobe-source-sans-pro
-                    fonts:font-adobe-source-serif-pro
+                    fonts:font-adobe-source-sans
+                    fonts:font-adobe-source-serif
                     fonts:font-adobe-source-han-sans
                     fonts:font-awesome
                     fonts:font-google-material-design-icons
                     fonts:font-terminus
                     fonts:font-liberation
 
-                    gnome:gnome-themes-standard
                     gnome:gnome-themes-extra
                     gnome:hicolor-icon-theme
                     gnome:adwaita-icon-theme
@@ -248,7 +238,7 @@
                     terms:alacritty
                     xdisorg:arandr
                     libreoffice:libreoffice
-                    (working-xsane) ;; scanner:xsane
+                    scanner:xsane
                     passwd-utils:keepassxc
                     pulseaudio:pavucontrol
                     xfce:gigolo
