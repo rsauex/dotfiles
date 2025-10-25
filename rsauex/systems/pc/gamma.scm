@@ -13,6 +13,7 @@
   #:use-module ((nongnu services nvidia)          #:prefix non-nvidia-services:)
   #:use-module ((nongnu system linux-initrd)      #:prefix non-linux-initrd:)
   #:use-module ((rsauex packages nvidia-container) #:prefix my-nvidia-container:)
+  #:use-module ((rsauex services bolt)            #:prefix my-bolt-services:)
   #:use-module ((rsauex systems desktop)          #:prefix my-desktop-systems:)
   #:export (%os))
 
@@ -177,6 +178,8 @@
                                         . "119")))
 
                      (service non-nvidia-services:nvidia-service-type)
+
+                     (service my-bolt-services:boltd-service-type)
 
                      (modify-services
                          (operating-system-user-services my-desktop-systems:%my-base-desktop-system)
