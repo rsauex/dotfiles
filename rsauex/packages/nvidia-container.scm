@@ -37,7 +37,7 @@
               (file-name (git-file-name name version))
               (patches (list (search-rsauex-patch "nvidia-modprobe.patch")))
               (sha256
-               (base32 "03w47yr5n3dz8jsfd7rm29g1iw6i647699awlmyc2wam2xp5lzyw"))))
+               (base32 "1xjjk3436k9dv9y44kzwvwhd8903yzkkvqqq7l5r2v3592biyr35"))))
     (build-system gnu-build-system)
     (arguments
      (list
