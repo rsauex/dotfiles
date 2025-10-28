@@ -25,6 +25,7 @@
   #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
   #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
   #:use-module ((rsauex packages firewalld)       #:prefix my-firewalld:)
+  #:use-module ((rsauex packages scanner)         #:prefix my-scanner:)
   #:use-module ((srfi srfi-1))
   #:export (%my-desktop-packages
             %my-desktop-services
@@ -191,7 +192,9 @@ EndSection
              (default-paper-size "A4")))
 
    ;; Add udev rules for scanners.
-   (service desktop-services:sane-service-type)
+   (service desktop-services:sane-service-type
+            (desktop-services:sane-configuration
+             (backends (list my-scanner:sane-backends-fixed))))
 
    ;; Add polkit rules, so that non-root users in the wheel group can
    ;; perform administrative tasks (similar to "sudo").
