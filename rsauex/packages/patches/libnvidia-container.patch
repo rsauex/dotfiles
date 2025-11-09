@@ -82,7 +82,7 @@ diff --git a/src/nvc_info.c b/src/nvc_info.c
 index 85c9a4d..2464299 100644
 --- a/src/nvc_info.c
 +++ b/src/nvc_info.c
-@@ -216,23 +216,23 @@ find_library_paths(struct error *err, struct dxcore_context *dxcore, struct nvc_
+@@ -216,29 +216,29 @@ find_library_paths(struct error *err, struct dxcore_context *dxcore, struct nvc_
 
          if (path_resolve_full(err, path, root, ldcache) < 0)
                  return (-1);

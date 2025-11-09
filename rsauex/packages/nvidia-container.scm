@@ -141,7 +141,7 @@
 (define-public nvidia-container-toolkit
   (package
     (name "nvidia-container-toolkit")
-    (version "1.13.1")
+    (version "1.17.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -150,7 +150,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01gh57jfpcv07c4442lbf9wiy0l1iwl85ig9drpp0637gbkzgwa4"))))
+                "1qxxafzggdn5yvpfp347w9k1p9fg6zx61yq440ahx80sl11i611i"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -160,11 +160,28 @@
           (add-after 'unpack 'fix-paths
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (substitute* "src/github.com/NVIDIA/nvidia-container-toolkit/internal/config/config.go"
-                (("/usr/bin")
-                 (string-append #$output "/bin")))
+                (("/usr/bin/nvidia-ctk")
+                 (string-append #$output "/bin/nvidia-ctk"))
+                (("/usr/bin/nvidia-cdi-hook")
+                 (string-append #$output "/bin/nvidia-cdi-hook"))
+                (("/usr/bin/nvidia-container-runtime-hook")
+                 (string-append #$output "/bin/nvidia-container-runtime-hook"))
+                (("/sbin/ldconfig")
+                 (search-input-file inputs "/sbin/ldconfig")))
               (substitute* "src/github.com/NVIDIA/nvidia-container-toolkit/internal/lookup/path.go"
                 (("\"/usr/local/sbin\", \"/usr/local/bin\", \"/usr/sbin\", \"/usr/bin\", \"/sbin\", \"/bin\"")
-                 "\"/run/current-system/profile/bin\", \"/run/current-system/profile/sbin\""))))
+                 "\"/run/current-system/profile/bin\", \"/run/current-system/profile/sbin\""))
+              (substitute* "src/github.com/NVIDIA/nvidia-container-toolkit/tools/container/toolkit/toolkit.go"
+                (("/sbin/ldconfig")
+                 (search-input-file inputs "/sbin/ldconfig")))
+              (substitute* "src/github.com/NVIDIA/nvidia-container-toolkit/cmd/nvidia-cdi-hook/update-ldcache/update-ldcache.go"
+                (("/sbin/ldconfig")
+                 (search-input-file inputs "/sbin/ldconfig")))
+              (substitute* "src/github.com/NVIDIA/nvidia-container-toolkit/cmd/nvidia-ctk/runtime/configure/configure.go"
+                (("\"/usr/bin/nvidia-container-runtime\"")
+                 (string-append "\"" (string-append #$output "/bin/nvidia-container-runtime") "\""))
+                (("\"/usr/bin/nvidia-container-runtime-hook\"")
+                 (string-append "\"" (string-append #$output "/bin/nvidia-container-runtime-hook") "\"")))))
           (replace 'build
             (lambda arguments
               (for-each
@@ -178,6 +195,8 @@
       #:install-source? #f))
     (propagated-inputs
      (list libnvidia-container))
+    (inputs
+     (list base:glibc))
     (synopsis "Build and run containers leveraging NVIDIA GPUs")
     (description "The NVIDIA Container Toolkit allows users to build and run GPU accelerated containers. The toolkit includes a container runtime library and utilities to automatically configure containers to leverage NVIDIA GPUs.")
     (home-page "https://github.com/NVIDIA/nvidia-container-toolkit")
