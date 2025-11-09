@@ -72,6 +72,7 @@
   #:use-module ((rsauex home services xresources)     #:prefix my-xresources-service:)
   #:use-module ((rsauex home services xsettingsd)     #:prefix my-xsettingsd-service:)
   #:use-module ((rsauex packages fcitx5)              #:prefix my-fcitx5:)
+  #:use-module ((rsauex packages fonts)               #:prefix my-fonts:)
   #:use-module ((rsauex packages gns3)                #:prefix gns3:)
   #:use-module ((rsauex packages kvantum)             #:prefix kvantum:)
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
@@ -192,7 +193,7 @@
 
 (define (%home-environment)
   (home-environment
-    (packages (list fonts:font-iosevka-term
+    (packages (list my-fonts:font-iosevka-fixed
                     fonts:font-google-roboto
                     fonts:font-google-noto
                     fonts:font-adobe-source-sans
@@ -304,7 +305,7 @@
                              (alias
                               (family "monospace")
                               (prefer
-                               (family "Iosevka Term")
+                               (family "Iosevka Fixed")
                                (family "Source Han Mono")))))
            (service xdg:home-xdg-user-directories-service-type)
            (my-aspell-service)
