@@ -55,7 +55,6 @@
   #:use-module ((ice-9 textual-ports))
   #:use-module ((nongnu packages mozilla)             #:prefix mozilla:)
   #:use-module ((rsauex channels)                     #:prefix my-channels:)
-  #:use-module ((rsauex inferior)                     #:prefix my-inferior:)
   #:use-module ((rsauex home services channels)       #:prefix my-channels-service:)
   #:use-module ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
   #:use-module ((rsauex home services dunst)          #:prefix my-dunst-service:)
@@ -77,7 +76,6 @@
   #:use-module ((rsauex packages kvantum)             #:prefix kvantum:)
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
   #:use-module ((rsauex packages powershell)          #:prefix powershell:)
-  #:use-module ((rsauex packages rclone)              #:prefix my-rclone:)
   #:use-module ((rsauex packages the-dot)             #:prefix the-dot:)
   #:use-module ((rsauex packages))
   #:use-module ((rsauex script template))
@@ -522,7 +520,7 @@
            ;; Other settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
            (anon-service rclone-env
              (home-profile-service-type
-              (list my-rclone:rclone-next))
+              (list sync:rclone))
              (home-environment-variables-service-type
               (list
                (cons "RCLONE_PASSWORD_COMMAND" #~(string-append #$(file-append gnome:libsecret "/bin/secret-tool") " lookup Title rclone"))

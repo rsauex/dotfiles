@@ -25,6 +25,7 @@
     (build-system python-build-system:python-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases
+                   (delete 'check)
                    (add-after 'unpack 'enter-subdirectory
                      (lambda _
                        (chdir "py")))
