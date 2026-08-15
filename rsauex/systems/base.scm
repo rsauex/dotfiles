@@ -111,7 +111,7 @@
                                             "lpadmin"
                                             "lp"
                                             ;; Docker without sudo
-                                            "docker"
+                                            ;; "docker"
                                             ;; Podman
                                             "cgroup")))
                   %base-user-accounts))))
