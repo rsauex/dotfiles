@@ -7,6 +7,7 @@
   #:use-module ((gnu packages linux)              #:prefix linux:)
   #:use-module ((gnu packages mtools)             #:prefix mtools:)
   #:use-module ((gnu packages ncurses)            #:prefix ncurses:)
+  #:use-module ((gnu packages samba)              #:prefix samba:)
   #:use-module ((gnu packages security-token)     #:prefix security-token:)
   #:use-module ((gnu services networking)         #:prefix network-services:)
   #:use-module ((gnu services security-token)     #:prefix security-token-services:)
@@ -28,6 +29,7 @@
                 cryptsetup:cryptsetup
                 file-systems:exfat-utils
                 file-systems:exfatprogs
+                samba:cifs-utils
                 ncurses:ncurses)
           %base-packages))
 
