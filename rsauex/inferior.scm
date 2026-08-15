@@ -32,12 +32,15 @@ This is a convenience procedure that people may use in manifests passed to
 
 (define* (lookup-package-in-channel channel package
                                     #:key
-                                    (authenticate? #t))
+                                    (authenticate? #t)
+                                    version)
   (define inferior
     (inferior-for-channels (list channel)
                            #:authenticate? authenticate?))
 
-  (match (inferior:lookup-inferior-packages inferior package)
+  (match (if version
+             (inferior:lookup-inferior-packages inferior package version)
+             (inferior:lookup-inferior-packages inferior package))
     (()
      (error "Package not found"))
     ((package)
