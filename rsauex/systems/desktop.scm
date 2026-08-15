@@ -151,7 +151,18 @@ EndSection
                    (list gnome:gvfs))
 
    ;; Allow u2f for auth
-   (my-pam-u2f-auth-service)
+   ;; TODO: linux-pam is broken since f4860cfe3f and causes sudo to fail!
+   ;; Disabling pam-u2f "fixes" it...
+   ;; Details: guix applies linux-pam-no-setfsuid.patch to linux-pam to make
+   ;; it work on systems without setfsuid. The patch relies on
+   ;; HAVE_SYS_FSUID_H, which was set by Autotools in the older version:
+   ;; configure.ac:536: AC_CHECK_HEADERS(... sys/fsuid.h ...)
+   ;; f4860cfe3f updated linux-pam to 1.7.2, which uses Meson instead.
+   ;; The build config of the new version doesn't set HAVE_SYS_FSUID_H
+   ;; causing the patched in code to be compiled instead of the original.
+   ;; The code in the patch seems to be missing braces, so one of the branches
+   ;; is not executed when needed.
+   ;; (my-pam-u2f-auth-service)
 
    ;; Xorg
    (service desktop-services:x11-socket-directory-service-type)

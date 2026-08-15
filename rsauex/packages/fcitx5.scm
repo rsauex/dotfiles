@@ -1,5 +1,5 @@
 (define-module (rsauex packages fcitx5)
-  #:use-module ((gnu packages emacs)          #:prefix emacs:)
+  #:use-module ((gnu packages language)       #:prefix language:)
   #:use-module ((gnu packages fcitx5)         #:prefix fcitx5:)
   #:use-module ((gnu packages gettext)        #:prefix gettext:)
   #:use-module ((gnu packages kde-frameworks) #:prefix kde-frameworks:)
@@ -32,8 +32,8 @@
        ,kde-frameworks:extra-cmake-modules))
     (inputs
      `(,fcitx5:fcitx5
-       ,emacs:m17n-lib
-       ,emacs:m17n-db
+       ,language:m17n-lib
+       ,language:m17n-db
        ,pretty-print:fmt))
     (synopsis "m17n engine for fcitx5")
     (description "m17n engine for fcitx5")

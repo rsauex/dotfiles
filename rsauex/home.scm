@@ -41,7 +41,7 @@
   #:use-module ((gnu packages video)              #:prefix video:)
   #:use-module ((gnu packages web)                #:prefix web:)
   #:use-module ((gnu packages wine)               #:prefix wine:)
-  #:use-module ((gnu packages wm)                 #:prefix wm:)
+  #:use-module ((gnu packages window-management)  #:prefix wm:)
   #:use-module ((gnu packages xdisorg)            #:prefix xdisorg:)
   #:use-module ((gnu packages xfce)               #:prefix xfce:)
   #:use-module ((gnu packages xorg)               #:prefix xorg:)

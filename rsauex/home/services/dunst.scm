@@ -1,6 +1,6 @@
 (define-module (rsauex home services dunst)
   #:use-module ((gnu home services))
-  #:use-module ((gnu packages wm) #:prefix wm:)
+  #:use-module ((gnu packages window-management) #:prefix wm:)
   #:use-module ((gnu services configuration))
   #:use-module ((gnu services))
   #:use-module ((guix gexp))

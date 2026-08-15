@@ -32,9 +32,9 @@
   (list
    (channels:channel
     (inherit channels:%default-guix-channel)
-    (commit "cf9a48f6fc9d50d1b62f0f8f8a83e54653d97e7f"))
+    (commit "c58165bfe4f81dfa061fece78b1abc114e3b6d3c"))
    (channels:channel
     (inherit nonguix-channel)
-    (commit "889b2f01dc2375bfdd3d3fda378c45159fa06f00"))))
+    (commit "653504e6551198c9b2b998c143d7cf2675b22547"))))
 
 %channels
