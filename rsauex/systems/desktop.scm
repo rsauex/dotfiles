@@ -9,6 +9,7 @@
   #:use-module ((gnu packages wm)                 #:prefix wm:)
   #:use-module ((gnu services avahi)              #:prefix avahi-services:)
   #:use-module ((gnu services base)               #:prefix base-services:)
+  #:use-module ((gnu services containers)         #:prefix containers-services:)
   #:use-module ((gnu services cups)               #:prefix cups-services:)
   #:use-module ((gnu services dbus)               #:prefix dbus-services:)
   #:use-module ((gnu services desktop)            #:prefix desktop-services:)
@@ -16,6 +17,7 @@
   #:use-module ((gnu services networking)         #:prefix networking-services:)
   #:use-module ((gnu services sysctl)             #:prefix sysctl-services:)
   #:use-module ((gnu services xorg)               #:prefix xorg-services:)
+  #:use-module ((gnu system accounts)             #:prefix accounts:)
   #:use-module ((gnu system pam)                  #:prefix pam:)
   #:use-module ((gnu))
   #:use-module ((rsauex channels)                 #:prefix my-channels:)
@@ -174,10 +176,18 @@ EndSection
                    (list networking:blueman))
 
    ;; Containerd
-   (service docker-services:containerd-service-type)
+   ;; (service docker-services:containerd-service-type)
 
    ;; Docker
-   (service docker-services:docker-service-type)
+   ;; (service docker-services:docker-service-type)
+
+   ;; Podman
+   (service containers-services:rootless-podman-service-type
+            (containers-services:rootless-podman-configuration
+              (subgids
+               (list (accounts:subid-range (name "rsauex") (count (* 4 65536)))))
+              (subuids
+               (list (accounts:subid-range (name "rsauex") (count (* 4 65536)))))))
 
    ;; Add udev rules for MTP devices so that non-root users can access
    ;; them.
