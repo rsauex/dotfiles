@@ -232,6 +232,7 @@ EndSection
    ;; D-Bus services
    (service dbus-services:dbus-root-service-type)
    (service dbus-services:polkit-service-type)
+   (service dbus-services:rtkit-service-type)
    (service desktop-services:elogind-service-type)
    (service desktop-services:accountsservice-service-type)
    (service desktop-services:colord-service-type)
