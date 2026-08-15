@@ -6,7 +6,6 @@
   #:use-module ((gnu packages libusb)             #:prefix libusb:)
   #:use-module ((gnu packages linux)              #:prefix linux:)
   #:use-module ((gnu packages networking)         #:prefix networking:)
-  #:use-module ((gnu packages package-management) #:prefix package-management:)
   #:use-module ((gnu packages wm)                 #:prefix wm:)
   #:use-module ((gnu services avahi)              #:prefix avahi-services:)
   #:use-module ((gnu services base)               #:prefix base-services:)
@@ -21,6 +20,7 @@
   #:use-module ((gnu))
   #:use-module ((rsauex channels)                 #:prefix my-channels:)
   #:use-module ((rsauex packages docker)          #:prefix my-docker:)
+  #:use-module ((rsauex packages package-management) #:prefix my-package-management:)
   #:use-module ((rsauex packages xorg)            #:prefix my-xorg:)
   #:use-module ((rsauex services pam-u2f)         #:prefix my-pam-u2f-services:)
   #:use-module ((rsauex systems base)             #:prefix my-base-systems:)
@@ -31,7 +31,7 @@
             %my-base-desktop-system))
 
 (define %my-desktop-packages
-  (list package-management:flatpak
+  (list my-package-management:flatpak-fixed
         gnome:gvfs
         my-docker:docker-compose-2))
 
