@@ -12,13 +12,11 @@
   #:use-module ((srfi srfi-1))
 
   #:export (xsettingsd-configuration
-
             xsettingsd-configuration-xsettingsd-package
-            xsettingsd-configuration-xsessions
+            xsettingsd-configuration-xsettings
 
             xsettingsd-extension
-
-            xsettingsd-extension-xsessions
+            xsettingsd-extension-xsettings
 
             xsettingsd-service-type))
 
