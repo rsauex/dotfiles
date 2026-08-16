@@ -37,6 +37,7 @@
   #:use-module ((gnu packages syncthing)          #:prefix syncthing:)
   #:use-module ((gnu packages terminals)          #:prefix terms:)
   #:use-module ((gnu packages text-editors)       #:prefix text-editors:)
+  #:use-module ((gnu packages tmux)               #:prefix tmux:)
   #:use-module ((gnu packages version-control)    #:prefix vc:)
   #:use-module ((gnu packages video)              #:prefix video:)
   #:use-module ((gnu packages web)                #:prefix web:)
@@ -78,6 +79,7 @@
   #:use-module ((rsauex packages nordic-theme)        #:prefix nordic-theme:)
   #:use-module ((rsauex packages powershell)          #:prefix powershell:)
   #:use-module ((rsauex packages the-dot)             #:prefix the-dot:)
+  #:use-module ((rsauex packages x3270)               #:prefix my-x3270:)
   #:use-module ((rsauex packages))
   #:use-module ((rsauex script template))
   #:use-module ((rsauex services))
@@ -184,7 +186,7 @@
            aspell:aspell-dict-en))
     ;; Make aspell look for dicts in the correct dir
     (home-environment-variables-service-type
-     (list (cons "ASPELL_DICT_DIR" (string-append (getenv "HOME") "/.guix-home/profile/lib/aspell/"))))))
+     (list (cons "ASPELL_DICT_DIR" "$HOME/.guix-home/profile/lib/aspell/")))))
 
 (define (host-dpi)
   (let ((host-dpi (getenv "HOST_DPI")))
@@ -228,10 +230,8 @@
                     security-token:python-yubikey-manager
                     ssh:openssh
                     admin:htop
-                    powershell:powershell
                     text-editors:texmacs
                     mozilla:firefox
-                    terms:alacritty
                     xdisorg:arandr
                     libreoffice:libreoffice
                     scanner:xsane
@@ -245,8 +245,6 @@
                     emacs:emacs
                     gimp:gimp
                     image-viewers:viewnior
-                    vc:git
-                    (list vc:git "gui")
                     gns3:gns3-gui))
     (services
      (list (service
@@ -258,15 +256,7 @@
               (list (rsauex-home-file ".bashrc" "bashrc")))
              (bash-logout
               (list (rsauex-home-file ".bash_logout" "bash_logout")))))
-           (service my-rofi:rofi-service-type
-                    (my-rofi:rofi-configuration
-                     (config
-                      `(("font" . "Monospace 12")
-                        ;; TODO: are xresources '*dpi' respected?
-                        ("dpi"  . ,(host-dpi))))
-                     (theme
-                      (file-append nordic-theme:rofi-nord-theme
-                                   "/share/rofi/themes/nord.rasi"))))
+
            (simple-service 'my-fonts
                            fontutils:home-fontconfig-service-type
                            `((alias
@@ -302,8 +292,11 @@
                               (prefer
                                (family "Iosevka Fixed")
                                (family "Source Han Mono")))))
+
            (service xdg:home-xdg-user-directories-service-type)
+
            (my-aspell-service)
+
            (simple-service 'my-environment
                            home-environment-variables-service-type
                            (let ()
@@ -322,6 +315,33 @@
                               (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
                               ;; Make packages from dotfiles available everywhere
                               (cons "GUIX_PACKAGE_PATH" (string-append (getenv "HOME") "/dotfiles")))))
+
+           ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+           (service my-gui-startup:gui-startup-service-type
+                    (my-gui-startup:gui-startup-configuration
+                     (program (program-file
+                               "my-gui-startup"
+                               #~(begin
+                                   ;; QT applications rely on StatusNotifierWatcher (appindicator) to send
+                                   ;; 'Balloon' notifications but when it's not available (and in case of i3bar
+                                   ;; it's not) they display ugly custom notifications that don't match
+                                   ;; anything else in the system...
+                                   ;; (See showMessage_sys in src/widgets/util/qsystemtrayicon_x11.cpp in qtbase)
+                                   ;; (Affects KeePassXC)
+                                   ;; Other possible solution is to use a different panel...
+                                   (system* #$(file-append freedesktop:snixembed "/bin/snixembed")
+                                            "--fork")
+                                   (execl #$(file-append wm:i3-wm "/bin/i3")
+                                          #$(file-append wm:i3-wm "/bin/i3")))))))
+
+           (i3-config-service)
+
+           (service my-screensaver-service:xss-lock-service-type
+                    (my-screensaver-service:xss-lock-configuration
+                     (screen-off-timeout 600)
+                     (locker-expr #~(let ((i3lock #$(file-append (i3lock-with-login-pam-service) "/bin/i3lock")))
+                                      `(,i3lock "--nofork" "-n" "-c" "1D1F21")))))
 
            ;; --- Fcitx5 ---
 
@@ -462,42 +482,42 @@
                (xsettings
                 `(("Xft/Antialias" . 1))))))
 
-           ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-           (service my-gui-startup:gui-startup-service-type
-                    (my-gui-startup:gui-startup-configuration
-                     (program (program-file
-                               "my-gui-startup"
-                               #~(begin
-                                   ;; QT applications rely on StatusNotifierWatcher (appindicator) to send
-                                   ;; 'Balloon' notifications but when it's not available (and in case of i3bar
-                                   ;; it's not) they display ugly custom notifications that don't match
-                                   ;; anything else in the system...
-                                   ;; (See showMessage_sys in src/widgets/util/qsystemtrayicon_x11.cpp in qtbase)
-                                   ;; (Affects KeePassXC)
-                                   ;; Other possible solution is to use a different panel...
-                                   (system* #$(file-append freedesktop:snixembed "/bin/snixembed")
-                                            "--fork")
-                                   (execl #$(file-append wm:i3-wm "/bin/i3")
-                                          #$(file-append wm:i3-wm "/bin/i3")))))))
-           (i3-config-service)
+           ;; --- Dunst ---
+
            (service my-dunst-service:dunst-service-type
                     (my-dunst-service:dunst-configuration
                      (config (rsauex-home-file "dunstrc" "dunstrc"))))
-           (syncthing-service)
+
+           ;; --- Picom ---
+
            ;; (service my-picom-service:picom-service-type
            ;;          (my-picom-service:picom-configuration
            ;;           (config (rsauex-home-file "picom.conf" "picom.conf"))))
+
+           ;; --- Pipewire ---
+
            (service my-pipewire-service:pipewire-service-type)
+
+           ;; --- Portal ---
+
            (service my-xdg-portal-service:xdg-desktop-portal-service-type
                     (my-xdg-portal-service:xdg-desktop-portal-configuration
                      (backends (list my-xdg-portal-service:xdg-desktop-portal-gtk-backend))))
-           (service my-screensaver-service:xss-lock-service-type
-                    (my-screensaver-service:xss-lock-configuration
-                     (screen-off-timeout 600)
-                     (locker-expr #~(let ((i3lock #$(file-append (i3lock-with-login-pam-service) "/bin/i3lock")))
-                                      `(,i3lock "--nofork" "-n" "-c" "1D1F21")))))
-           ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+           ;; --- SSH ---
+
            (service my-ssh-service:ssh-agent-service-type)
+
+           (simple-service 'ssh-config
+                           home-files-service-type
+                           `((".ssh/config"
+                              ,(rsauex-home-file "ssh-config" "ssh-config"))))
+
+           ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+           ;; TODO: broken
+           ;; (syncthing-service)
+
            (anon-service network-manager-applet-autostart
              (my-gui-startup:gui-startup-service-type
               (my-gui-startup:gui-startup-extension
@@ -506,6 +526,7 @@
                        'network-manager-applet
                        "Run `nm-applet'"
                        #~`(#$(file-append gnome:network-manager-applet "/bin/nm-applet"))))))))
+
            (anon-service blueman-applet-autostart
              (home-profile-service-type
               (list networking:blueman))
@@ -516,6 +537,7 @@
                        'blueman-applet
                        "Run `blueman-applet'"
                        #~`(#$(file-append networking:blueman "/bin/blueman-applet"))))))))
+
            (anon-service polkit-authentication-agent-autostart
              (my-gui-startup:gui-startup-service-type
               (my-gui-startup:gui-startup-extension
@@ -524,6 +546,7 @@
                        'polkit-authentication-agent
                        "Run polkit-authenticator agent"
                        #~`(#$(file-append polkit:polkit-gnome "/libexec/polkit-gnome-authentication-agent-1"))))))))
+
            (anon-service keepassxc-autostart
              (my-gui-startup:gui-startup-service-type
               (my-gui-startup:gui-startup-extension
@@ -532,6 +555,7 @@
                        'keepassxc
                        "Run `keepassxc'"
                        #~`(#$(file-append passwd-utils:keepassxc "/bin/keepassxc"))))))))
+
            (anon-service jgmenu-autostart
              (my-gui-startup:gui-startup-service-type
               (my-gui-startup:gui-startup-extension
@@ -544,6 +568,7 @@
              (home-xdg-configuration-files-service-type
               `(("jgmenu"
                  ,(rsauex-home-file "jgmenu" "jgmenu-config" #:recursive? #t)))))
+
            (anon-service easyeffects-autostart
              (home-profile-service-type
               (list audio:easyeffects))
@@ -555,6 +580,7 @@
                        "Run `easyeffects'"
                        #~`(#$(file-append audio:easyeffects "/bin/easyeffects")
                            "--gapplication-service")))))))
+
            (anon-service emacs-daemon-autostart
              (my-gui-startup:gui-startup-service-type
               (my-gui-startup:gui-startup-extension
@@ -575,28 +601,59 @@
                        (type 'application)
                        (config
                         '((exec . "emacsclient-call browse-url-mail-popup-frame %u")))))))))
+
            ;; Git settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
            (service my-git:git-service-type
                     (my-git:git-configuration
                      (hooks (list (git-dont-push-wip-commits)
                                   (git-prevent-push-to-important-branches)))))
+
+           (anon-service git-conf
+             (home-profile-service-type
+              (list vc:git
+                    (list vc:git "gui")))
+             (home-files-service-type
+              `((".gitconfig"
+                 ,(rsauex-home-file ".gitconfig" "gitconfig")))))
+
            ;; Other settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+           (service my-rofi:rofi-service-type
+                    (my-rofi:rofi-configuration
+                     (config
+                      `(("font" . "Monospace 12")
+                        ;; TODO: are xresources '*dpi' respected?
+                        ("dpi"  . ,(host-dpi))))
+                     (theme
+                      (file-append nordic-theme:rofi-nord-theme
+                                   "/share/rofi/themes/nord.rasi"))))
+
            (anon-service rclone-env
              (home-profile-service-type
               (list sync:rclone))
              (home-environment-variables-service-type
               (list
                (cons "RCLONE_PASSWORD_COMMAND" #~(string-append #$(file-append gnome:libsecret "/bin/secret-tool") " lookup Title rclone"))
-               (cons "RCLONE_CONFIG" (string-append (getenv "HOME") "/dotfiles/home-files-private/rclone/rclone.conf")))))
-           (simple-service 'tmux
-                           home-files-service-type
-                           `((".tmux.conf"
-                              ,(rsauex-home-file ".tmux.conf" "tmux.conf"))))
-           (simple-service 'alacritty
-                           home-xdg-configuration-files-service-type
-                           `(("alacritty/alacritty.toml"
-                              ,(rsauex-home-file "alacritty.toml" "alacritty.toml"))))
+               (cons "RCLONE_CONFIG" "$HOME/dotfiles/home-files-private/rclone/rclone.conf"))))
+
+           (anon-service tmux
+             (home-profile-service-type
+              (list tmux:tmux))
+             (home-files-service-type
+              `((".tmux.conf"
+                 ,(rsauex-home-file ".tmux.conf" "tmux.conf")))))
+
+           (anon-service alacritty
+             (home-profile-service-type
+              (list terms:alacritty))
+             (home-xdg-configuration-files-service-type
+              `(("alacritty/alacritty.toml"
+                 ,(rsauex-home-file "alacritty.toml" "alacritty.toml")))))
+
            (anon-service x3270
+             (home-profile-service-type
+              (list my-x3270:x3270))
              (home-files-service-type
               `((".x3270pro"
                  ,(rsauex-home-file ".x3270pro" "x3270pro"))))
@@ -604,15 +661,10 @@
               (my-xresources-service:xresources-extension
                (xresources
                 `(,(rsauex-home-file "x3270-xresources" "x3270-xresources"))))))
-           (simple-service 'git-conf
-                           home-files-service-type
-                           `((".gitconfig"
-                              ,(rsauex-home-file ".gitconfig" "gitconfig"))))
-           (simple-service 'powershell
-                           home-xdg-configuration-files-service-type
-                           `(("powershell"
-                              ,(rsauex-home-file "powershell" "powershell-config" #:recursive? #t))))
-           (simple-service 'ssh-config
-                           home-files-service-type
-                           `((".ssh/config"
-                              ,(rsauex-home-file "ssh-config" "ssh-config"))))))))
+
+           (anon-service powershell
+             (home-profile-service-type
+              (list powershell:powershell))
+             (home-xdg-configuration-files-service-type
+              `(("powershell"
+                 ,(rsauex-home-file "powershell" "powershell-config" #:recursive? #t)))))))))
