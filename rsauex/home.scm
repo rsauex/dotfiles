@@ -10,7 +10,6 @@
   #:use-module ((gnu packages backup)             #:prefix backup:)
   #:use-module ((gnu packages base)               #:prefix base-packages:)
   #:use-module ((gnu packages emacs)              #:prefix emacs:)
-  #:use-module ((gnu packages fcitx5)             #:prefix fcitx5:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages freedesktop)        #:prefix freedesktop:)
   #:use-module ((gnu packages gimp)               #:prefix gimp:)
@@ -318,9 +317,6 @@
                               (cons "XDG_DATA_DIRS" "$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share")
                               ;; Local bin
                               (cons "PATH" "$HOME/.bin:$HOME/dotfiles/home-files/bin:$HOME/.local/bin:$PATH")
-                              ;; Respect immodule cache (TODO: This shouldn't be necessary...)
-                              (cons "GUIX_GTK2_IM_MODULE_FILE" (string-append (getenv "HOME") "/.guix-home/profile/lib/gtk-2.0/2.10.0/immodules-gtk2.cache"))
-                              (cons "GUIX_GTK3_IM_MODULE_FILE" (string-append (getenv "HOME") "/.guix-home/profile/lib/gtk-3.0/3.0.0/immodules-gtk3.cache"))
                               ;; Enable video hardware acceleration (TODO: Send a patch to mozilla?)
                               (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
                               ;; Make packages from dotfiles available everywhere
@@ -331,6 +327,17 @@
                       `(,(rsauex-home-file "urxvt/colors/nord" "colors")
                         ("Xft.dpi" . ,(host-dpi))
                         ("*dpi"    . ,(host-dpi))))))
+
+           ;; --- Fcitx5 ---
+
+           (service my-fcitx5-service:fcitx5-service-type)
+
+           (anon-service fcitx5-m17n-settings
+             (my-fcitx5-service:fcitx5-service-type
+              (list my-fcitx5:fcitx5-m17n))
+             (home-files-service-type
+              `((".m17n.d/uk-translit.mim"
+                 ,(rsauex-home-file "uk-translit.mim" "uk-translit.mim")))))
 
            ;; --- QT ---
 
@@ -346,15 +353,16 @@
                                           #$(file-append kvantum:kvantum-6 "/lib/qt6/plugins")
                                           ;; qt5ct/qt6ct
                                           #$(file-append qt:qt5ct "/lib/qt5/plugins")
-                                          #$(file-append qt:qt6ct "/lib/qt6/plugins")
-                                          ;; TODO: part of fcitx5
-                                          #$(file-append fcitx5:fcitx5-qt "/lib/qt5/plugins")
-                                          #$(file-append fcitx5:fcitx5-qt "/lib/qt6/plugins"))))
+                                          #$(file-append qt:qt6ct "/lib/qt6/plugins"))))
                   (list
                    ;; implies qt6ct
                    (cons "QT_QPA_PLATFORMTHEME" #~"qt5ct")
                    ;; ok to include both qt5 and qt6 plugins
-                   (cons "QT_PLUGIN_PATH" #~(string-join #$qt-plugin-paths ":")))))))
+                   (cons "QT_PLUGIN_PATH" #~(let ((qt-plugin-paths (string-join #$qt-plugin-paths ":"))
+                                                  (prev-value (getenv "QT_PLUGIN_PATH")))
+                                              (if prev-value
+                                                  (string-append prev-value ":" qt-plugin-paths)
+                                                  qt-plugin-paths))))))))
              (home-xdg-configuration-files-service-type
               `(("qt5ct/qt5ct.conf"
                  ,(rsauex-home-file "qt5ct.conf" "qt5ct.conf"))
@@ -394,9 +402,6 @@
            (service my-xdg-portal-service:xdg-desktop-portal-service-type
                     (my-xdg-portal-service:xdg-desktop-portal-configuration
                      (backends (list my-xdg-portal-service:xdg-desktop-portal-gtk-backend))))
-           (service my-fcitx5-service:fcitx5-service-type
-                    (my-fcitx5-service:fcitx5-configuration
-                     (addons (list my-fcitx5:fcitx5-m17n))))
            (service my-screensaver-service:xss-lock-service-type
                     (my-screensaver-service:xss-lock-configuration
                      (screen-off-timeout 600)
@@ -572,10 +577,6 @@
                            home-xdg-configuration-files-service-type
                            `(("powershell"
                               ,(rsauex-home-file "powershell" "powershell-config" #:recursive? #t))))
-           (simple-service 'ukrainian-layout
-                           home-files-service-type
-                           `((".m17n.d/uk-translit.mim"
-                              ,(rsauex-home-file "uk-translit.mim" "uk-translit.mim"))))
            (simple-service 'ssh-config
                            home-files-service-type
                            `((".ssh/config"
