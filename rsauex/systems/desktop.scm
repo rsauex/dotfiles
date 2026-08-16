@@ -6,7 +6,6 @@
   #:use-module ((gnu packages libusb)             #:prefix libusb:)
   #:use-module ((gnu packages linux)              #:prefix linux:)
   #:use-module ((gnu packages networking)         #:prefix networking:)
-  #:use-module ((gnu packages wm)                 #:prefix wm:)
   #:use-module ((gnu services avahi)              #:prefix avahi-services:)
   #:use-module ((gnu services base)               #:prefix base-services:)
   #:use-module ((gnu services containers)         #:prefix containers-services:)

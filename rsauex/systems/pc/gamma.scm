@@ -1,5 +1,5 @@
 (define-module (rsauex systems pc gamma)
-  #:use-module ((gnu packages virtualization)     #:prefix virtualization:)
+  #:use-module ((gnu packages containers)         #:prefix containers:)
   #:use-module ((gnu services desktop)            #:prefix desktop-services:)
   #:use-module ((gnu services docker)             #:prefix docker-services:)
   #:use-module ((gnu services pm)                 #:prefix pm-services:)
@@ -153,7 +153,7 @@
                           (target "/swapfile"))))
 
     (packages (cons* my-nvidia-container:nvidia-container-toolkit
-                     virtualization:runc
+                     containers:runc
                      (operating-system-packages my-desktop-systems:%my-base-desktop-system)))
 
     (services (cons* (tlp-service)
