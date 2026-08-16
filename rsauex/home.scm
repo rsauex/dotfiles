@@ -312,9 +312,7 @@
                            (let ((qt-platform-plugin-path (string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins"))
                                  (qt-plugin-paths #~(list #$(string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins")
                                                           "/run/current-system/profile/lib/qt5/plugins"
-                                                          #$(file-append qt:qtsvg-5 "/lib/qt5/plugins")))
-                                 (gtk-engine-paths #~(list #$(file-append gtk:murrine "/lib/gtk-2.0")
-                                                           #$(file-append gnome:gnome-themes-extra "/lib/gtk-2.0"))))
+                                                          #$(file-append qt:qtsvg-5 "/lib/qt5/plugins"))))
                              (list
                               ;; Fix scaling issues in Alacritty
                               ;; TODO: Should not be needed. Apparently computed from Xft.dpi in xresources.
@@ -334,8 +332,6 @@
                               ;; Respect QT Plugins (TODO: This shouldn't be necessary...)
                               (cons "QT_QPA_PLATFORM_PLUGIN_PATH" qt-platform-plugin-path)
                               (cons "QT_PLUGIN_PATH" #~(string-join #$qt-plugin-paths ":"))
-                              ;; GTK2 engines (TODO: this should be search-paths from nordic-theme)
-                              (cons "GUIX_GTK2_PATH" #~(string-join #$gtk-engine-paths ":"))
                               ;; Enable video hardware acceleration (TODO: Send a patch to mozilla?)
                               (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
                               ;; Make packages from dotfiles available everywhere
