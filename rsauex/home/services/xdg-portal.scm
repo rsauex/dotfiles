@@ -14,6 +14,8 @@
 
             xdg-desktop-portal-service-type))
 
+(define-maybe string)
+
 (define-configuration/no-serialization xdg-desktop-portal-backend
   (name
    (symbol)
@@ -39,13 +41,22 @@
    "The xdg-desktop-portal package to use")
   (backends
    (list-of-xdg-desktop-portal-backends '())
-   "A list of xdg-desktop-portal backends to enable"))
+   "A list of xdg-desktop-portal backends to enable")
+  (config
+   maybe-string
+   "Portals config file"))
 
 (define (xdg-desktop-portal-backends-profile config)
   (let ((backend-packages (map xdg-desktop-portal-backend-package
-                               (xdg-desktop-portal-configuration-backends config))))
-    (profile
-      (content (packages->manifest backend-packages)))))
+                               (xdg-desktop-portal-configuration-backends config)))
+        (str-config (xdg-desktop-portal-configuration-config config)))
+    (directory-union "xdg-desktop-portal-dir"
+                     (if (maybe-value-set? str-config)
+                         (cons (file-union "xdg-desktop-portal-string-config-dir"
+                                           `(("share/xdg-desktop-portal/portals/portals.conf"
+                                              ,(plain-file "xdg-desktop-portal-string-config" str-config))))
+                               backend-packages)
+                         backend-packages))))
 
 (define (xdg-desktop-portal-gui-startup-service config)
   (let ((xdg-desktop-portal (xdg-desktop-portal-configuration-xdg-desktop-portal config))
