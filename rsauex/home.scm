@@ -57,6 +57,7 @@
   #:use-module ((rsauex channels)                     #:prefix my-channels:)
   #:use-module ((rsauex home services channels)       #:prefix my-channels-service:)
   #:use-module ((rsauex home services cursor-theme)   #:prefix my-cursor-theme:)
+  #:use-module ((rsauex home services dconf)          #:prefix my-dconf-service:)
   #:use-module ((rsauex home services dunst)          #:prefix my-dunst-service:)
   #:use-module ((rsauex home services fcitx5)         #:prefix my-fcitx5-service:)
   #:use-module ((rsauex home services git)            #:prefix my-git:)
@@ -339,6 +340,28 @@
               `((".m17n.d/uk-translit.mim"
                  ,(rsauex-home-file "uk-translit.mim" "uk-translit.mim")))))
 
+           ;; --- GTK ---
+
+           (service my-dconf-service:dconf-service-type)
+
+           (anon-service gtk-settings
+             (my-xsettingsd-service:xsettingsd-service-type
+              (my-xsettingsd-service:xsettingsd-extension
+               (xsettings
+                `(("Net/ThemeName"        . "Nordic-Darker")
+                  ("Net/IconThemeName"    . "breeze-dark")
+                  ("Gtk/FontName"         . "System-UI 11")
+                  ("Gtk/CursorThemeName"  . "default")
+                  ("Gtk/DecorationLayout" . "menu:")))))
+             (my-dconf-service:dconf-service-type
+              (my-dconf-service:dconf-extension
+               (settings
+                `(("org/gnome/desktop/interface" "gtk-theme" "Nordic-Darker")
+                  ("org/gnome/desktop/interface" "icon-theme" "breeze-dark")
+                  ("org/gnome/desktop/interface" "font-name" "System-UI 11")
+                  ("org/gnome/desktop/interface" "cursor-theme" "default")
+                  ("org/gnome/desktop/wm/preferences" "button-layout" "menu:"))))))
+
            ;; --- QT ---
 
            (anon-service qt-settings
@@ -410,11 +433,7 @@
            (service my-xsettingsd-service:xsettingsd-service-type
                     (my-xsettingsd-service:xsettingsd-configuration
                      (xsettings
-                      `(("Net/ThemeName"        . "Nordic-Darker")
-                        ("Net/IconThemeName"    . "breeze-dark")
-                        ("Gtk/FontName"         . "System-UI 11")
-                        ("Gtk/DecorationLayout" . "menu:")
-                        ("Xft/DPI"              . ,(* (host-dpi) 1024))
+                      `(("Xft/DPI"              . ,(* (host-dpi) 1024))
                         ;; TODO: This is only needed for java...
                         ("Xft/Antialias"        . 1)))))
            ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
