@@ -148,15 +148,17 @@ as shepherd package."
                                            #:key
                                            (respawn? #t)
                                            (requirement '())
-                                           (data-packages '()))
+                                           (data-packages '())
+                                           (extra-environment-variables '()))
   (shepherd-service
     (documentation documentation)
     (provision (list name))
     (start #~(make-forkexec-constructor
               #$command-gexp
-              #:environment-variables #$(add-packages-to-xdg-data-dirs-gexp
-                                         data-packages
-                                         #~(default-environment-variables))))
+              #:environment-variables (append (list #$@extra-environment-variables)
+                                              #$(add-packages-to-xdg-data-dirs-gexp
+                                                 data-packages
+                                                 #~(default-environment-variables)))))
     (stop #~(make-kill-destructor))
     (respawn? respawn?)
     (requirement requirement)
