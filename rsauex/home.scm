@@ -322,12 +322,6 @@
                               (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
                               ;; Make packages from dotfiles available everywhere
                               (cons "GUIX_PACKAGE_PATH" (string-append (getenv "HOME") "/dotfiles")))))
-           (service my-xresources-service:xresources-service-type
-                    (my-xresources-service:xresources-configuration
-                     (xresources
-                      `(,(rsauex-home-file "urxvt/colors/nord" "colors")
-                        ("Xft.dpi" . ,(host-dpi))
-                        ("*dpi"    . ,(host-dpi))))))
 
            ;; --- Fcitx5 ---
 
@@ -339,6 +333,70 @@
              (home-files-service-type
               `((".m17n.d/uk-translit.mim"
                  ,(rsauex-home-file "uk-translit.mim" "uk-translit.mim")))))
+
+           ;; --- X11/Xwayland --
+
+           (service my-xsettingsd-service:xsettingsd-service-type)
+
+           (service my-xresources-service:xresources-service-type)
+
+           (anon-service x11-settings
+             (my-xsettingsd-service:xsettingsd-service-type
+              (my-xsettingsd-service:xsettingsd-extension
+               (xsettings
+                `(("Xft/DPI" . ,(* (host-dpi) 1024))))))
+             (my-xresources-service:xresources-service-type
+              (my-xresources-service:xresources-extension
+               (xresources
+                `(("Xft.dpi" . ,(host-dpi))
+                  ("*dpi"    . ,(host-dpi))
+                  ("Xcursor.theme" . "default")
+                  ,(rsauex-home-file "urxvt/colors/nord" "colors")))))
+             (my-gui-startup:gui-startup-service-type
+              (my-gui-startup:gui-startup-extension
+               (services
+                (list (my-shepherd:simple-one-shot-shepherd-service
+                       'update-xlfd-fonts
+                       "Update XLFD fonts list"
+                       #~(lambda ()
+                           (let ((font-paths '("built-ins")))
+                             (for-each
+                              (lambda (path)
+                                (ftw path
+                                     (lambda (file info flag)
+                                       (when (string= "fonts.dir" (basename file))
+                                         (set! font-paths (cons (dirname file) font-paths)))
+                                       #t)))
+                              (list #$(file-append fonts:font-terminus "/share/fonts/")
+                                    #$(file-append xorg:font-alias "/share/fonts/")
+                                    #$(file-append xorg:font-micro-misc "/share/fonts/")
+                                    #$(file-append xorg:font-adobe75dpi "/share/fonts/")))
+                             (invoke #$(file-append xorg:xset "/bin/xset")
+                                     "fp="
+                                     (string-join font-paths ","))
+                             (invoke #$(file-append xorg:xset "/bin/xset")
+                                     "fp" "rehash"))
+                           #t)
+                       #:extra-modules '((ice-9 ftw)))
+                      (my-shepherd:simple-one-shot-shepherd-service
+                       'xset-settings
+                       "Set `xset' settings"
+                       #~(lambda ()
+                           (let ((xset (lambda args
+                                         (apply invoke #$(file-append xorg:xset "/bin/xset") args))))
+                             ;; Cursor speed
+                             (xset "r" "rate" "400" "44"))
+                           #t)))))))
+
+           ;; TODO: RE the theme and produce different sizes
+           ;; (see https://blogs.kde.org/2024/10/09/cursor-size-problems-in-wayland-explained/)
+           (service my-cursor-theme:cursor-theme-service-type
+                    ;; (my-cursor-theme:cursor-theme-configuration
+                    ;;  (theme-package the-dot:the-dot-cursor-theme)
+                    ;;  (theme-name "Dot-Light"))
+                    (my-cursor-theme:cursor-theme-configuration
+                     (theme-package xorg:hackneyed-x11-cursors)
+                     (theme-name "Hackneyed")))
 
            ;; --- GTK ---
 
@@ -396,6 +454,14 @@
                    "kvantum.kvconfig"
                    "theme=Nordic-Darker\n")))))
 
+           ;; --- Java ---
+
+           (anon-service java-settings
+             (my-xsettingsd-service:xsettingsd-service-type
+              (my-xsettingsd-service:xsettingsd-extension
+               (xsettings
+                `(("Xft/Antialias" . 1))))))
+
            ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
            (service my-gui-startup:gui-startup-service-type
                     (my-gui-startup:gui-startup-configuration
@@ -430,54 +496,8 @@
                      (screen-off-timeout 600)
                      (locker-expr #~(let ((i3lock #$(file-append (i3lock-with-login-pam-service) "/bin/i3lock")))
                                       `(,i3lock "--nofork" "-n" "-c" "1D1F21")))))
-           (service my-xsettingsd-service:xsettingsd-service-type
-                    (my-xsettingsd-service:xsettingsd-configuration
-                     (xsettings
-                      `(("Xft/DPI"              . ,(* (host-dpi) 1024))
-                        ;; TODO: This is only needed for java...
-                        ("Xft/Antialias"        . 1)))))
            ;; Autostart ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
            (service my-ssh-service:ssh-agent-service-type)
-           (anon-service update-xlfd-fonts
-             (my-gui-startup:gui-startup-service-type
-              (my-gui-startup:gui-startup-extension
-               (services
-                (list (my-shepherd:simple-one-shot-shepherd-service
-                       'update-xlfd-fonts
-                       "Update XLFD fonts list"
-                       #~(lambda ()
-                           (let ((font-paths '("built-ins")))
-                             (for-each
-                              (lambda (path)
-                                (ftw path
-                                     (lambda (file info flag)
-                                       (when (string= "fonts.dir" (basename file))
-                                         (set! font-paths (cons (dirname file) font-paths)))
-                                       #t)))
-                              (list #$(file-append fonts:font-terminus "/share/fonts/")
-                                    #$(file-append xorg:font-alias "/share/fonts/")
-                                    #$(file-append xorg:font-micro-misc "/share/fonts/")
-                                    #$(file-append xorg:font-adobe75dpi "/share/fonts/")))
-                             (invoke #$(file-append xorg:xset "/bin/xset")
-                                     "fp="
-                                     (string-join font-paths ","))
-                             (invoke #$(file-append xorg:xset "/bin/xset")
-                                     "fp" "rehash"))
-                           #t)
-                       #:extra-modules '((ice-9 ftw))))))))
-           (anon-service xset-settings
-             (my-gui-startup:gui-startup-service-type
-              (my-gui-startup:gui-startup-extension
-               (services
-                (list (my-shepherd:simple-one-shot-shepherd-service
-                       'xset-settings
-                       "Set `xset' settings"
-                       #~(lambda ()
-                           (let ((xset (lambda args
-                                         (apply invoke #$(file-append xorg:xset "/bin/xset") args))))
-                             ;; Cursor speed
-                             (xset "r" "rate" "400" "44"))
-                           #t)))))))
            (anon-service network-manager-applet-autostart
              (my-gui-startup:gui-startup-service-type
               (my-gui-startup:gui-startup-extension
@@ -572,10 +592,6 @@
                            home-files-service-type
                            `((".tmux.conf"
                               ,(rsauex-home-file ".tmux.conf" "tmux.conf"))))
-           (service my-cursor-theme:cursor-theme-service-type
-                    (my-cursor-theme:cursor-theme-configuration
-                     (theme-package the-dot:the-dot-cursor-theme)
-                     (theme-name "Dot-Light")))
            (simple-service 'alacritty
                            home-xdg-configuration-files-service-type
                            `(("alacritty/alacritty.toml"
