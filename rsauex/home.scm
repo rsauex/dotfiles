@@ -10,6 +10,7 @@
   #:use-module ((gnu packages backup)             #:prefix backup:)
   #:use-module ((gnu packages base)               #:prefix base-packages:)
   #:use-module ((gnu packages emacs)              #:prefix emacs:)
+  #:use-module ((gnu packages fcitx5)             #:prefix fcitx5:)
   #:use-module ((gnu packages fonts)              #:prefix fonts:)
   #:use-module ((gnu packages freedesktop)        #:prefix freedesktop:)
   #:use-module ((gnu packages gimp)               #:prefix gimp:)
@@ -208,10 +209,6 @@
                     kde-frameworks:breeze-icons
                     nordic-theme:nordic-darker-theme
 
-                    ;; TODO: make separate service
-                    kvantum:kvantum
-                    qt:qt5ct
-
                     ;; TODO: should be specified only in syncthing-gtk's config
                     syncthing:syncthing
 
@@ -309,10 +306,7 @@
            (my-aspell-service)
            (simple-service 'my-environment
                            home-environment-variables-service-type
-                           (let ((qt-platform-plugin-path (string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins"))
-                                 (qt-plugin-paths #~(list #$(string-append (getenv "HOME") "/.guix-home/profile/lib/qt5/plugins")
-                                                          "/run/current-system/profile/lib/qt5/plugins"
-                                                          #$(file-append qt:qtsvg-5 "/lib/qt5/plugins"))))
+                           (let ()
                              (list
                               ;; Fix scaling issues in Alacritty
                               ;; TODO: Should not be needed. Apparently computed from Xft.dpi in xresources.
@@ -322,16 +316,11 @@
                               (cons "XDG_CURRENT_DESKTOP" "XFCE")
                               ;; Flatpak (TODO: on system level?)
                               (cons "XDG_DATA_DIRS" "$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share")
-                              ;; Better QT
-                              (cons "QT_QPA_PLATFORMTHEME" "qt5ct")
                               ;; Local bin
                               (cons "PATH" "$HOME/.bin:$HOME/dotfiles/home-files/bin:$HOME/.local/bin:$PATH")
                               ;; Respect immodule cache (TODO: This shouldn't be necessary...)
                               (cons "GUIX_GTK2_IM_MODULE_FILE" (string-append (getenv "HOME") "/.guix-home/profile/lib/gtk-2.0/2.10.0/immodules-gtk2.cache"))
                               (cons "GUIX_GTK3_IM_MODULE_FILE" (string-append (getenv "HOME") "/.guix-home/profile/lib/gtk-3.0/3.0.0/immodules-gtk3.cache"))
-                              ;; Respect QT Plugins (TODO: This shouldn't be necessary...)
-                              (cons "QT_QPA_PLATFORM_PLUGIN_PATH" qt-platform-plugin-path)
-                              (cons "QT_PLUGIN_PATH" #~(string-join #$qt-plugin-paths ":"))
                               ;; Enable video hardware acceleration (TODO: Send a patch to mozilla?)
                               (cons "MOZ_DISABLE_RDD_SANDBOX" "1")
                               ;; Make packages from dotfiles available everywhere
@@ -342,6 +331,40 @@
                       `(,(rsauex-home-file "urxvt/colors/nord" "colors")
                         ("Xft.dpi" . ,(host-dpi))
                         ("*dpi"    . ,(host-dpi))))))
+
+           ;; --- QT ---
+
+           (anon-service qt-settings
+             (my-gui-startup:gui-startup-service-type
+              (my-gui-startup:gui-startup-extension
+               (environment
+                (let ((qt-plugin-paths #~(list
+                                          ;; kvantum
+                                          #$(file-append qt:qtsvg-5 "/lib/qt5/plugins")
+                                          #$(file-append qt:qtsvg "/lib/qt6/plugins")
+                                          #$(file-append kvantum:kvantum-5 "/lib/qt5/plugins")
+                                          #$(file-append kvantum:kvantum-6 "/lib/qt6/plugins")
+                                          ;; qt5ct/qt6ct
+                                          #$(file-append qt:qt5ct "/lib/qt5/plugins")
+                                          #$(file-append qt:qt6ct "/lib/qt6/plugins")
+                                          ;; TODO: part of fcitx5
+                                          #$(file-append fcitx5:fcitx5-qt "/lib/qt5/plugins")
+                                          #$(file-append fcitx5:fcitx5-qt "/lib/qt6/plugins"))))
+                  (list
+                   ;; implies qt6ct
+                   (cons "QT_QPA_PLATFORMTHEME" #~"qt5ct")
+                   ;; ok to include both qt5 and qt6 plugins
+                   (cons "QT_PLUGIN_PATH" #~(string-join #$qt-plugin-paths ":")))))))
+             (home-xdg-configuration-files-service-type
+              `(("qt5ct/qt5ct.conf"
+                 ,(rsauex-home-file "qt5ct.conf" "qt5ct.conf"))
+                ("qt6ct/qt6ct.conf"
+                 ,(rsauex-home-file "qt6ct.conf" "qt6ct.conf"))
+                ("Kvantum/kvantum.kvconfig"
+                 ,(plain-file
+                   "kvantum.kvconfig"
+                   "theme=Nordic-Darker\n")))))
+
            ;; GUI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
            (service my-gui-startup:gui-startup-service-type
                     (my-gui-startup:gui-startup-configuration
@@ -529,16 +552,6 @@
                     (my-cursor-theme:cursor-theme-configuration
                      (theme-package the-dot:the-dot-cursor-theme)
                      (theme-name "Dot-Light")))
-           (simple-service 'kvantum-theme
-                           home-xdg-configuration-files-service-type
-                           `(("Kvantum/kvantum.kvconfig"
-                              ,(plain-file
-                                "kvantum.kvconfig"
-                                "theme=Nordic-Darker\n"))))
-           (simple-service 'qt5ct-conf
-                           home-xdg-configuration-files-service-type
-                           `(("qt5ct/qt5ct.conf"
-                              ,(rsauex-home-file "qt5ct.conf" "qt5ct.conf"))))
            (simple-service 'alacritty
                            home-xdg-configuration-files-service-type
                            `(("alacritty/alacritty.toml"
